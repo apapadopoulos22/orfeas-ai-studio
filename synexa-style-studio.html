@@ -1774,9 +1774,13 @@
 
       async function uploadImage(file) {
         try {
+          console.log("[UPLOAD] Starting upload to:", API_BASE);
+          console.log("[UPLOAD] File:", file.name, file.size, file.type);
+
           const formData = new FormData();
           formData.append("image", file);
 
+          console.log("[UPLOAD] Sending fetch request...");
           const response = await fetch(`${API_BASE}/api/upload-image`, {
             method: "POST",
             body: formData,
@@ -1784,6 +1788,12 @@
               "ngrok-skip-browser-warning": "true",
             },
           });
+
+          console.log(
+            "[UPLOAD] Response received:",
+            response.status,
+            response.statusText
+          );
 
           if (!response.ok) {
             let errText = "Upload failed";
@@ -1796,11 +1806,13 @@
                 if (txt) errText = `${errText}: ${txt}`;
               } catch (_) {}
             }
+            console.error("[UPLOAD ERROR]", errText);
             throw new Error(`${errText} (HTTP ${response.status})`);
           }
 
           const data = await response.json();
           currentJobId = data.job_id;
+          console.log("[UPLOAD SUCCESS] Job ID:", currentJobId);
 
           // Update UI
           document.getElementById("results-container").innerHTML = `
@@ -1815,7 +1827,7 @@
           // Enable generate button
           document.getElementById("generate-btn").disabled = false;
         } catch (error) {
-          console.error("Upload error:", error);
+          console.error("[UPLOAD EXCEPTION]", error);
           alert(`❌ Upload failed. Please try again.\n\n${error.message}`);
         }
       }
@@ -1837,6 +1849,10 @@
         );
 
         try {
+          console.log("[GENERATE] Starting 3D generation...");
+          console.log("[GENERATE] Job ID:", currentJobId);
+          console.log("[GENERATE] API Base:", API_BASE);
+
           // Show progress UI
           document
             .getElementById("progress-container")
@@ -1844,6 +1860,10 @@
           document.getElementById("generate-btn").disabled = true;
 
           // Start generation
+          console.log(
+            "[GENERATE] Sending fetch to:",
+            `${API_BASE}/api/generate-3d`
+          );
           const response = await fetch(`${API_BASE}/api/generate-3d`, {
             method: "POST",
             headers: {
@@ -1862,17 +1882,28 @@
             }),
           });
 
+          console.log(
+            "[GENERATE] Response:",
+            response.status,
+            response.statusText
+          );
+
           if (!response.ok) {
-            throw new Error("Generation failed");
+            const errText = await response.text();
+            console.error("[GENERATE ERROR]", errText);
+            throw new Error(
+              `Generation failed (HTTP ${response.status}): ${errText}`
+            );
           }
 
           const data = await response.json();
+          console.log("[GENERATE SUCCESS] Generation started");
 
           // Start polling for status
           startStatusPolling();
         } catch (error) {
-          console.error("Generation error:", error);
-          alert("❌ Generation failed. Please try again.");
+          console.error("[GENERATE EXCEPTION]", error);
+          alert("❌ Generation failed. Please try again.\n\n" + error.message);
           document.getElementById("generate-btn").disabled = false;
           document.getElementById("progress-container").classList.add("hidden");
         }
@@ -1887,6 +1918,8 @@
           clearInterval(statusPollingInterval);
         }
 
+        console.log("[POLLING] Starting status polling for job:", currentJobId);
+
         statusPollingInterval = setInterval(async () => {
           try {
             const response = await fetch(
@@ -1895,19 +1928,32 @@
                 headers: { "ngrok-skip-browser-warning": "true" },
               }
             );
+            if (!response.ok) {
+              console.warn("[POLLING] Response not OK:", response.status);
+              return;
+            }
+
             const data = await response.json();
+            console.log(
+              "[POLLING] Status:",
+              data.status,
+              "Progress:",
+              data.progress
+            );
 
             updateProgress(data);
 
             if (data.status === "completed") {
+              console.log("[POLLING] Generation completed!");
               clearInterval(statusPollingInterval);
               onGenerationComplete(data);
             } else if (data.status === "failed") {
+              console.error("[POLLING] Generation failed!");
               clearInterval(statusPollingInterval);
               onGenerationFailed(data);
             }
           } catch (error) {
-            console.error("Status polling error:", error);
+            console.error("[POLLING ERROR]", error);
           }
         }, 1000);
       }
