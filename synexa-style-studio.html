@@ -1780,6 +1780,9 @@
           const response = await fetch(`${API_BASE}/api/upload-image`, {
             method: "POST",
             body: formData,
+            headers: {
+              "ngrok-skip-browser-warning": "true",
+            },
           });
 
           if (!response.ok) {
@@ -1843,7 +1846,10 @@
           // Start generation
           const response = await fetch(`${API_BASE}/api/generate-3d`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
+            },
             body: JSON.stringify({
               job_id: currentJobId,
               format: format,
@@ -1884,7 +1890,10 @@
         statusPollingInterval = setInterval(async () => {
           try {
             const response = await fetch(
-              `${API_BASE}/api/job-status/${currentJobId}`
+              `${API_BASE}/api/job-status/${currentJobId}`,
+              {
+                headers: { "ngrok-skip-browser-warning": "true" },
+              }
             );
             const data = await response.json();
 
