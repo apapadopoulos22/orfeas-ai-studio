@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ORFEAS AI Studio</title>
+    <script>
+      // Redirect 404s to the index
+      const path = window.location.pathname;
+      const segments = path.split("/").filter((s) => s);
+
+      if (
+        segments.includes("orfeas-ai-studio") ||
+        segments.includes("synexa-style-studio.html")
+      ) {
+        window.location.href = "/orfeas-ai-studio/";
+      } else {
+        window.location.href = "/";
+      }
+    </script>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html>
