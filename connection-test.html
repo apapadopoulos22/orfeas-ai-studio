@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Backend Connection Tester</title>
+    <style>
+      body {
+        font-family: monospace;
+        margin: 20px;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      .test {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ORFEAS Backend Connection Test</h1>
+    <button onclick="testLocalhost()">Test Localhost:5000</button>
+    <button onclick="testNgrok()">Test Ngrok Tunnel</button>
+    <button onclick="testUpload()">Test Upload (Localhost)</button>
+    <hr />
+    <div id="results"></div>
+
+    <script>
+      const API_LOCALHOST = "http://127.0.0.1:5000";
+      const API_NGROK =
+        "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev";
+
+      function log(message, type = "info") {
+        const results = document.getElementById("results");
+        const div = document.createElement("div");
+        div.className = `test ${type}`;
+        div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        results.appendChild(div);
+        console.log(message);
+      }
+
+      async function testLocalhost() {
+        log("Testing localhost:5000...", "info");
+        try {
+          const response = await fetch(`${API_LOCALHOST}/api/models-info`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            log(
+              "✓ Localhost:5000 WORKING - " +
+                JSON.stringify(data).substring(0, 100),
+              "success"
+            );
+          } else {
+            log(`✗ Localhost:5000 returned ${response.status}`, "error");
+          }
+        } catch (err) {
+          log(`✗ Localhost:5000 ERROR: ${err.message}`, "error");
+        }
+      }
+
+      async function testNgrok() {
+        log("Testing Ngrok tunnel...", "info");
+        try {
+          const response = await fetch(`${API_NGROK}/api/models-info`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            log(
+              "✓ Ngrok WORKING - " + JSON.stringify(data).substring(0, 100),
+              "success"
+            );
+          } else {
+            log(`✗ Ngrok returned ${response.status}`, "error");
+          }
+        } catch (err) {
+          log(`✗ Ngrok ERROR: ${err.message}`, "error");
+        }
+      }
+
+      async function testUpload() {
+        log("Creating test image...", "info");
+        const canvas = document.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#00d4ff";
+        ctx.fillRect(0, 0, 256, 256);
+
+        canvas.toBlob(async (blob) => {
+          log("Uploading test image to localhost...", "info");
+          try {
+            const formData = new FormData();
+            formData.append("image", blob, "test.png");
+
+            const response = await fetch(`${API_LOCALHOST}/api/upload-image`, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              log("✓ Upload WORKING - Job ID: " + data.job_id, "success");
+            } else {
+              const text = await response.text();
+              log(
+                `✗ Upload returned ${response.status}: ${text.substring(
+                  0,
+                  100
+                )}`,
+                "error"
+              );
+            }
+          } catch (err) {
+            log(`✗ Upload ERROR: ${err.message}`, "error");
+          }
+        });
+      }
+
+      // Auto-test on load
+      window.addEventListener("load", () => {
+        log("Connection Tester Loaded", "info");
+        log("Localhost URL: " + API_LOCALHOST, "info");
+        log("Ngrok URL: " + API_NGROK, "info");
+      });
+    </script>
+  </body>
+</html>
