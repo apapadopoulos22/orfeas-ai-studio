@@ -1,0 +1,125 @@
+{
+  "timestamp": "2025-10-19T21:58:41.221360",
+  "phases": {
+    "phase_1": {
+      "test_files": [
+        "ai_core\\test_llm_foundation.py",
+        "e2e\\test_text_to_3d_complete.py",
+        "integration\\test_agent_api.py",
+        "integration\\test_api_endpoints.py",
+        "integration\\test_api_performance.py",
+        "integration\\test_api_security.py",
+        "integration\\test_batch_operations.py",
+        "integration\\test_formats.py",
+        "integration\\test_local_agent_endpoints.py",
+        "integration\\test_stl_endpoints.py",
+        "load\\test_load_baseline.py",
+        "load\\test_load_normal.py",
+        "load\\test_load_peak.py",
+        "load\\test_load_spike.py",
+        "load\\test_load_sustained.py",
+        "performance\\test_concurrent_requests.py",
+        "performance\\test_memory_usage.py",
+        "performance\\test_response_times.py",
+        "quality\\test_quality_validator.py",
+        "security\\test_critical_fixes.py",
+        "security\\test_enhanced_validation.py",
+        "security\\test_security.py",
+        "test_batch_processor.py",
+        "test_config.py",
+        "test_e2e.py",
+        "test_encoding_manager.py",
+        "test_gpu_manager.py",
+        "test_hunyuan_integration.py",
+        "test_image_processor.py",
+        "test_stress.py",
+        "unit\\test_config.py",
+        "unit\\test_gpu_manager.py",
+        "unit\\test_hunyuan_integration.py",
+        "unit\\test_stl_processor.py",
+        "unit\\test_utils.py",
+        "unit\\test_validation.py"
+      ],
+      "last_failed": [
+        "{\n  \"test_batch_processor.py::TestBatchProcessor::test_single_job\": true,\n  \"test_batch_processor.py::TestBatchProcessor::test_batch_processing\": true,\n  \"test_batch_processor.py::TestBatchProcessor::"
+      ],
+      "status": "complete"
+    },
+    "phase_2": {
+      "templates_created": 2,
+      "modules_covered": [
+        "gpu_optimization_advanced",
+        "gpu_manager",
+        "batch_processor",
+        "hunyuan_integration",
+        "stl_processor",
+        "validation"
+      ],
+      "status": "complete"
+    },
+    "phase_3": {
+      "total_tests": 0,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "errors": [],
+      "status": "complete"
+    },
+    "phase_4": {
+      "coverage_target": 0.8,
+      "files_analyzed": [
+        "main.py",
+        "gpu_optimization_advanced.py",
+        "gpu_manager.py",
+        "batch_processor.py",
+        "hunyuan_integration.py"
+      ],
+      "coverage_data": {
+        "main.py": {
+          "code_lines": 3494,
+          "test_lines": 0,
+          "estimated_coverage": 0.0
+        },
+        "gpu_optimization_advanced.py": {
+          "code_lines": 308,
+          "test_lines": 0,
+          "estimated_coverage": 0.0
+        },
+        "gpu_manager.py": {
+          "code_lines": 430,
+          "test_lines": 0,
+          "estimated_coverage": 0.0
+        },
+        "batch_processor.py": {
+          "code_lines": 405,
+          "test_lines": 0,
+          "estimated_coverage": 0.0
+        },
+        "hunyuan_integration.py": {
+          "code_lines": 238,
+          "test_lines": 0,
+          "estimated_coverage": 0.0
+        }
+      },
+      "status": "complete"
+    },
+    "phase_6": {
+      "test_runner_created": true,
+      "status": "complete"
+    }
+  },
+  "summary": {
+    "test_files": 36,
+    "templates_created": 2,
+    "modules_covered": [
+      "gpu_optimization_advanced",
+      "gpu_manager",
+      "batch_processor",
+      "hunyuan_integration",
+      "stl_processor",
+      "validation"
+    ],
+    "critical_modules_ok": 3,
+    "files_analyzed": 5
+  }
+}

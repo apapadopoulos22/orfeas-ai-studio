@@ -1,0 +1,122 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-7.4.3, pluggy-1.6.0 -- C:\Program Files\Python311\python.exe
+cachedir: .pytest_cache
+benchmark: 4.0.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+metadata: {'Python': '3.11.9', 'Platform': 'Windows-10-10.0.26100-SP0', 'Packages': {'pytest': '7.4.3', 'pluggy': '1.6.0'}, 'Plugins': {'allure-pytest': '2.13.2', 'anyio': '4.11.0', 'dash': '3.2.0', 'Faker': '20.1.0', 'asyncio': '0.21.1', 'base-url': '2.1.0', 'benchmark': '4.0.0', 'cov': '4.1.0', 'html': '4.1.1', 'json-report': '1.5.0', 'metadata': '3.1.1', 'mock': '3.12.0', 'playwright': '0.7.1', 'timeout': '2.2.0', 'xdist': '3.5.0'}, 'Base URL': ''}
+rootdir: C:\Users\johng\Documents\Erevus\orfeas\backend\tests
+configfile: pytest.ini
+plugins: allure-pytest-2.13.2, anyio-4.11.0, dash-3.2.0, Faker-20.1.0, asyncio-0.21.1, base-url-2.1.0, benchmark-4.0.0, cov-4.1.0, html-4.1.1, json-report-1.5.0, metadata-3.1.1, mock-3.12.0, playwright-0.7.1, timeout-2.2.0, xdist-3.5.0
+asyncio: mode=Mode.AUTO
+collecting ... collected 160 items
+
+tests\test_batch_processor.py::TestBatchProcessorUnit::test_initialization PASSED [  0%]
+tests\test_batch_processor.py::TestBatchProcessorIntegration::test_single_job PASSED [  1%]
+tests\test_batch_processor.py::TestBatchProcessorIntegration::test_batch_processing PASSED [  1%]
+tests\test_batch_processor.py::TestBatchProcessorIntegration::test_job_queue PASSED [  2%]
+tests\test_batch_processor.py::TestBatchProcessorIntegration::test_error_handling PASSED [  3%]
+tests\test_batch_processor.py::TestBatchProcessorIntegration::test_high_load PASSED [  3%]
+tests\test_batch_processor.py::TestBatchOptimization::test_job_grouping PASSED [  4%]
+tests\test_batch_processor.py::TestBatchOptimization::test_memory_management PASSED [  5%]
+tests\test_e2e.py::TestOrfeasStudioE2E::test_homepage_loads ERROR        [  5%]
+tests\test_e2e.py::TestOrfeasStudioE2E::test_upload_interface ERROR      [  6%]
+tests\test_e2e.py::TestOrfeasStudioE2E::test_generation_workflow ERROR   [  6%]
+tests\test_e2e.py::TestOrfeasStudioE2E::test_3d_viewer_loads ERROR       [  7%]
+tests\test_e2e.py::TestOrfeasStudioE2E::test_console_errors FAILED       [  8%]
+
+=================================== ERRORS ====================================
+__________ ERROR at setup of TestOrfeasStudioE2E.test_homepage_loads __________
+tests\conftest.py:520: in e2e_server
+    pytest.fail(\x1b[33m"\x1b[39;49;00m\x1b[33m\u274c E2E test server failed to start on port 8000\x1b[39;49;00m\x1b[33m"\x1b[39;49;00m)\x1b[90m\x1b[39;49;00m
+\x1b[1m\x1b[31mE   Failed: \u274c E2E test server failed to start on port 8000\x1b[0m
+---------------------------- Captured stdout setup ----------------------------
+\n\U0001f680 Starting E2E test server on port 8000...
+----------------------------- Captured log setup ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+DEBUG    urllib3.connectionpool:connectionpool.py:241 Starting new HTTP connection (1): localhost:8000
+_________ ERROR at setup of TestOrfeasStudioE2E.test_upload_interface _________
+tests\conftest.py:520: in e2e_server
+    pytest.fail(\x1b[33m"\x1b[39;49;00m\x1b[33m\u274c E2E test server failed to start on port 8000\x1b[39;49;00m\x1b[33m"\x1b[39;49;00m)\x1b[90m\x1b[39;49;00m
+\x1b[1m\x1b[31mE   Failed: \u274c E2E test server failed to start on port 8000\x1b[0m
+----------------------------- Captured log setup ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+_______ ERROR at setup of TestOrfeasStudioE2E.test_generation_workflow ________
+tests\conftest.py:520: in e2e_server
+    pytest.fail(\x1b[33m"\x1b[39;49;00m\x1b[33m\u274c E2E test server failed to start on port 8000\x1b[39;49;00m\x1b[33m"\x1b[39;49;00m)\x1b[90m\x1b[39;49;00m
+\x1b[1m\x1b[31mE   Failed: \u274c E2E test server failed to start on port 8000\x1b[0m
+----------------------------- Captured log setup ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+_________ ERROR at setup of TestOrfeasStudioE2E.test_3d_viewer_loads __________
+tests\conftest.py:520: in e2e_server
+    pytest.fail(\x1b[33m"\x1b[39;49;00m\x1b[33m\u274c E2E test server failed to start on port 8000\x1b[39;49;00m\x1b[33m"\x1b[39;49;00m)\x1b[90m\x1b[39;49;00m
+\x1b[1m\x1b[31mE   Failed: \u274c E2E test server failed to start on port 8000\x1b[0m
+----------------------------- Captured log setup ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+================================== FAILURES ===================================
+___________________ TestOrfeasStudioE2E.test_console_errors ___________________
+tests\test_e2e.py:114: in test_console_errors
+    await page.goto("http://localhost:8000/orfeas-studio.html")
+..\..\..\..\AppData\Roaming\Python\Python311\site-packages\playwright\async_api\_generated.py:8992: in goto
+    await self._impl_obj.goto(
+..\..\..\..\AppData\Roaming\Python\Python311\site-packages\playwright\_impl\_page.py:556: in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+..\..\..\..\AppData\Roaming\Python\Python311\site-packages\playwright\_impl\_frame.py:153: in goto
+    await self._channel.send(
+..\..\..\..\AppData\Roaming\Python\Python311\site-packages\playwright\_impl\_connection.py:69: in send
+    return await self._connection.wrap_api_call(
+..\..\..\..\AppData\Roaming\Python\Python311\site-packages\playwright\_impl\_connection.py:558: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.Error: Page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8000/orfeas-studio.html
+E   Call log:
+E     - navigating to "http://localhost:8000/orfeas-studio.html", waiting until "load"
+----------------------------- Captured log setup ------------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+---------------------------- Captured log teardown ----------------------------
+DEBUG    asyncio:proactor_events.py:633 Using proactor: IocpProactor
+============================== warnings summary ===============================
+..\..\..\..\AppData\Roaming\Python\Python311\site-packages\_pytest\config\__init__.py:1373
+  C:\Users\johng\AppData\Roaming\Python\Python311\site-packages\_pytest\config\__init__.py:1373: PytestConfigWarning: Unknown config option: asyncio_default_fixture_loop_scope
+  
+    self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
+
+validation.py:29
+  C:\Users\johng\Documents\Erevus\orfeas\backend\validation.py:29: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class Generate3DRequest(BaseModel):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+\x1b[31mERROR\x1b[0m tests\\test_e2e.py::\x1b[1mTestOrfeasStudioE2E::test_homepage_loads\x1b[0m - Failed: \u274c E2E test server failed to start on port 8000
+\x1b[31mERROR\x1b[0m tests\\test_e2e.py::\x1b[1mTestOrfeasStudioE2E::test_upload_interface\x1b[0m - Failed: \u274c E2E test server failed to start on port 8000
+\x1b[31mERROR\x1b[0m tests\\test_e2e.py::\x1b[1mTestOrfeasStudioE2E::test_generation_workflow\x1b[0m - Failed: \u274c E2E test server failed to start on port 8000
+\x1b[31mERROR\x1b[0m tests\\test_e2e.py::\x1b[1mTestOrfeasStudioE2E::test_3d_viewer_loads\x1b[0m - Failed: \u274c E2E test server failed to start on port 8000
+FAILED tests\test_e2e.py::TestOrfeasStudioE2E::test_console_errors - playwright._impl._errors.Error: Page.goto: net::ERR_CONNECTION_REFUSED at h...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+======== 1 failed, 8 passed, 2 warnings, 4 errors in 158.63s (0:02:38) ========

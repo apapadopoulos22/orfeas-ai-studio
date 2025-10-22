@@ -1,0 +1,167 @@
+{
+  "test_summary": {
+    "overall_score": 25.0,
+    "status": "CRITICAL",
+    "grade": "F",
+    "elapsed_time_seconds": 0.02262258529663086,
+    "timestamp": "2025-10-18 16:36:02"
+  },
+  "subsystem_scores": {
+    "llm_integration": 0.0,
+    "rag_system": 50.0,
+    "agent_coordination": 25.0,
+    "end_to_end_integration": 50.0
+  },
+  "detailed_results": {
+    "llm_integration": {
+      "llm_router": {
+        "status": "FAIL",
+        "coverage": 33.33333333333333,
+        "classes_found": 1,
+        "methods_found": 1,
+        "has_error_handling": true,
+        "has_logging": true,
+        "has_async": true,
+        "file_size": 19093,
+        "lines": 583
+      },
+      "multi_llm_orchestrator": {
+        "status": "FAIL",
+        "coverage": 0.0,
+        "strategies_found": 0,
+        "has_task_decomposition": true,
+        "has_result_synthesis": true,
+        "has_quality_assessment": true,
+        "lines": 768
+      },
+      "model_selector": {
+        "status": "FAIL",
+        "coverage": 66.66666666666666,
+        "criteria_found": 4,
+        "models_supported": 0,
+        "has_performance_tracking": true,
+        "has_adaptive_learning": false,
+        "lines": 677
+      },
+      "integration": {
+        "status": "FAIL",
+        "integration_score": 2,
+        "integration_percentage": 33.33333333333333,
+        "all_components_present": true
+      },
+      "subsystem_score": 0.0
+    },
+    "rag_system": {
+      "rag_foundation": {
+        "status": "FAIL",
+        "coverage": 0.0,
+        "modes_found": 0,
+        "has_embedding": true,
+        "has_indexing": false,
+        "has_query_processing": false,
+        "has_reranking": true,
+        "lines": 672
+      },
+      "vector_database": {
+        "status": "PASS",
+        "coverage": 80.0,
+        "providers_supported": 4,
+        "operations_found": 5,
+        "has_connection_pooling": true,
+        "has_caching": false,
+        "has_batch_operations": true,
+        "lines": 721
+      },
+      "knowledge_retrieval": {
+        "status": "FAIL",
+        "coverage": 25.0,
+        "algorithms_found": 1,
+        "has_filtering": false,
+        "has_ranking": true,
+        "has_scoring": true,
+        "has_multi_source": false,
+        "lines": 611
+      },
+      "integration": {
+        "status": "PASS",
+        "integration_score": 4,
+        "integration_percentage": 100.0,
+        "all_components_present": true
+      },
+      "subsystem_score": 50.0
+    },
+    "agent_coordination": {
+      "agent_coordinator": {
+        "status": "FAIL",
+        "coverage": 25.0,
+        "patterns_found": 1,
+        "has_task_distribution": true,
+        "has_load_balancing": true,
+        "has_failover": false,
+        "has_monitoring": true,
+        "lines": 687
+      },
+      "agent_communication": {
+        "status": "FAIL",
+        "coverage": 0.0,
+        "protocols_found": 0,
+        "has_serialization": true,
+        "has_routing": true,
+        "has_queuing": true,
+        "has_retry": false,
+        "lines": 562
+      },
+      "workflow_manager": {
+        "status": "PASS",
+        "coverage": 60.0,
+        "features_found": 3,
+        "has_sequential": false,
+        "has_parallel": true,
+        "has_conditional": true,
+        "has_loops": false,
+        "lines": 571
+      },
+      "integration": {
+        "status": "FAIL",
+        "integration_score": 1,
+        "integration_percentage": 20.0,
+        "all_components_present": true
+      },
+      "subsystem_score": 25.0
+    },
+    "end_to_end": {
+      "llm_to_rag": {
+        "status": "PASS",
+        "cross_references": 2,
+        "message": "LLM components reference RAG system"
+      },
+      "rag_to_agents": {
+        "status": "WARN",
+        "cross_references": 0,
+        "message": "No agent references found"
+      },
+      "agents_to_llm": {
+        "status": "WARN",
+        "cross_references": 0,
+        "message": "No LLM references found"
+      },
+      "full_pipeline": {
+        "status": "PASS",
+        "completion": 111.11111111111111,
+        "llm_files": 4,
+        "rag_files": 3,
+        "agent_files": 3,
+        "total_files": 10,
+        "expected_files": 9
+      },
+      "integration_score": 50.0
+    },
+    "performance": {},
+    "security": {}
+  },
+  "recommendations": [
+    "\u274c Critical integration issues detected",
+    "\u274c Review all subsystem implementations",
+    "\u274c Add missing integration points"
+  ]
+}

@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORFEAS 3D Studio - Cloud Edition</title>
+    <meta name="description" content="ORFEAS 3D Studio - AI-Powered 3D Generation Interface">
+
+    <!-- Three.js for 3D rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+
+    <!-- Socket.IO for real-time updates -->
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>üéØ</text></svg>">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .connection-bar {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #2ed573;
+        }
+
+        .server-info {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e74c3c;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: rgba(231, 76, 60, 0.2);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .back-btn:hover {
+            background: #e74c3c;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .studio-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .studio-header {
+            background: linear-gradient(90deg, rgba(231, 76, 60, 0.8), rgba(192, 57, 43, 0.8));
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .studio-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .studio-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .close { background: #ff5f57; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #28ca42; }
+
+        .studio-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 700px;
+        }
+
+        .input-panel {
+            padding: 2rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .output-panel {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-title {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-zone {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dashed rgba(231, 76, 60, 0.4);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #e74c3c;
+            margin-bottom: 1rem;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .upload-text {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .image-preview-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-info {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .controls-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .option-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .option-label {
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .format-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .format-option:hover,
+        .format-option.selected {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .format-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .format-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .size-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .size-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .size-input-group label {
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .size-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.8rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .size-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .quality-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: white;
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .preview-3d-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .preview-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .model-viewer {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            display: none;
+        }
+
+        .viewer-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .viewer-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .viewer-btn:hover {
+            background: rgba(231, 76, 60, 0.8);
+        }
+
+        .result-section {
+            display: none;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: rgba(46, 204, 113, 0.8);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+
+        .download-btn:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #2ed573;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            border-left-color: #ff4757;
+        }
+
+        .notification.warning {
+            border-left-color: #ffa502;
+        }
+
+        @media (max-width: 768px) {
+            .studio-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .size-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .format-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .connection-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Connection Bar -->
+    <div class="connection-bar">
+        <div class="connection-status">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <span id="connectionText">Connecting to server...</span>
+        </div>
+        <div class="server-info" id="serverInfo">Server: Not connected</div>
+    </div>
+
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <span>üéØ</span>
+                ORFEAS 3D STUDIO
+            </div>
+            <div class="nav-actions">
+                <button onclick="window.close()" class="back-btn">'√ú√™ Close Studio</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="studio-container">
+            <div class="studio-header">
+                <div class="studio-title">
+                    <span>Ô£ø√º¬ß√±</span>
+                    AI-Powered 3D Generator - Cloud Edition
+                </div>
+                <div class="studio-controls">
+                    <button class="control-btn minimize"></button>
+                    <button class="control-btn maximize"></button>
+                    <button class="control-btn close"></button>
+                </div>
+            </div>
+
+            <div class="studio-workspace">
+                <!-- Input Panel -->
+                <div class="input-panel">
+                    <div class="panel-title">
+                        <span>Ô£ø√º√¨‚Ä¢</span>
+                        Input & Configuration
+                    </div>
+
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
+                        <span class="upload-icon">üñºÔ∏è</span>
+                        <div class="upload-text">Drop your image here or click to browse</div>
+                        <div class="upload-subtext">Supports: JPG, PNG, WebP (Max: 10MB)</div>
+                    </div>
+                    <input type="file" id="imageInput" class="file-input" accept=".jpg,.jpeg,.png,.webp" />
+
+                    <!-- Image Preview -->
+                    <div class="image-preview-container" id="imagePreviewContainer">
+                        <img id="imagePreview" class="image-preview" alt="Preview" />
+                        <div id="imageInfo" class="image-info"></div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="controls-section">
+                        <!-- Format Selection -->
+                        <div class="option-group">
+                            <label class="option-label">
+                                <span>Ô£ø√º√©¬Æ</span>
+                                Output Format
+                            </label>
+                            <div class="format-grid">
+                                <div class="format-option selected" data-format="stl">
+                                    <span class="format-icon">üóÉÔ∏è</span>
+                                    <div class="format-name">STL</div>
+                                </div>
+                                <div class="format-option" data-format="obj">
+                                    <span class="format-icon">Ô£ø√º√¨¬∂</span>
+                                    <div class="format-name">OBJ</div>
+                                </div>
+                                <div class="format-option" data-format="glb">
+                                    <span class="format-icon">Ô£ø√º√Æ√ü</span>
+                                    <div class="format-name">GLB</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dimensions -->
+                        <div class="option-group">
+                            <label class="option-label">
+                                <span>Ô£ø√º√¨√®</span>
+                                Model Dimensions (mm)
+                            </label>
+                            <div class="size-controls">
+                                <div class="size-input-group">
+                                    <label for="width">Width</label>
+                                    <input type="number" id="width" class="size-input" value="100" min="10" max="1000" />
+                                </div>
+                                <div class="size-input-group">
+                                    <label for="height">Height</label>
+                                    <input type="number" id="height" class="size-input" value="100" min="10" max="1000" />
+                                </div>
+                                <div class="size-input-group">
+                                    <label for="depth">Depth</label>
+                                    <input type="number" id="depth" class="size-input" value="20" min="1" max="200" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quality Settings -->
+                        <div class="option-group">
+                            <label class="option-label">
+                                <span>'√∂¬∞</span>
+                                Generation Quality
+                            </label>
+                            <div class="quality-slider">
+                                <input type="range" min="1" max="10" value="7" class="slider" id="qualitySlider" />
+                                <div style="display: flex; justify-content: space-between; color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 0.5rem;">
+                                    <span>Fast</span>
+                                    <span id="qualityValue">High (7)</span>
+                                    <span>Ultra</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button class="generate-btn" id="generateBtn" disabled>
+                        Ô£ø√º√∂√Ñ Generate 3D Model
+                    </button>
+
+                    <!-- Progress -->
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Initializing...</div>
+                    </div>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="output-panel">
+                    <div class="panel-title">
+                        <span>Ô£ø√º√¨¬ß</span>
+                        3D Model Preview & Export
+                    </div>
+
+                    <!-- 3D Preview Container -->
+                    <div class="preview-3d-container" id="preview3d">
+                        <div class="preview-placeholder">
+                            <div class="preview-placeholder-icon">Ô£ø√º√©‚â§</div>
+                            <div>3D preview will appear here</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.7;">Upload an image and generate to see the 3D model</div>
+                        </div>
+                        <div class="model-viewer" id="modelViewer">
+                            <div class="viewer-controls">
+                                <button class="viewer-btn" title="Rotate" onclick="toggle3DRotation()">üîÑ</button>
+                                <button class="viewer-btn" title="Reset" onclick="reset3DView()">üéØ</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Results -->
+                    <div class="result-section" id="resultSection">
+                        <h3 style="color: white; margin-bottom: 1rem;">'√∫√ñ Generation Complete!</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 1rem;">Your 3D model has been successfully generated and is ready for download.</p>
+                        <div>
+                            <button class="download-btn" onclick="downloadModel()">Ô£ø√º√¨‚Ä¢ Download Model</button>
+                            <button class="download-btn" onclick="viewFullscreen()">üëÅÔ∏è Fullscreen View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuration from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const serverUrl = urlParams.get('server') || 'http://192.168.1.57:5002';
+
+        // Global variables
+        let isConnected = false;
+        let socket = null;
+        let uploadedImage = null;
+        let selectedFormat = 'stl';
+        let currentJobId = null;
+        let scene, camera, renderer, model, controls;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateServerInfo();
+            testConnection();
+            setupEventListeners();
+
+            // Try to connect WebSocket
+            connectWebSocket();
+        });
+
+        // Connection management
+        async function testConnection() {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const connectionText = document.getElementById('connectionText');
+
+            try {
+                const response = await fetch(`${serverUrl}/api/health`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    signal: AbortSignal.timeout(10000)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    isConnected = true;
+                    statusIndicator.classList.add('connected');
+                    connectionText.textContent = `Connected to ${data.server || 'ORFEAS'}`;
+
+                    updateServerInfo(data);
+                    showNotification(''√∫√ñ Connected to ORFEAS server successfully!', 'success');
+
+                } else {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+
+            } catch (error) {
+                console.error('Connection failed:', error);
+
+                isConnected = false;
+                statusIndicator.classList.remove('connected');
+                connectionText.textContent = 'Connection failed';
+
+                showNotification(''√π√• Failed to connect to ORFEAS server. Please check if your local server is running.', 'error');
+            }
+        }
+
+        function updateServerInfo(data = null) {
+            const serverInfo = document.getElementById('serverInfo');
+            if (data) {
+                serverInfo.textContent = `Server: ${data.server || 'ORFEAS'} | Status: ${data.status || 'Active'} | URL: ${serverUrl}`;
+            } else {
+                serverInfo.textContent = `Server: ${serverUrl}`;
+            }
+        }
+
+        // WebSocket connection for real-time updates
+        function connectWebSocket() {
+            try {
+                const wsUrl = serverUrl.replace('http', 'ws');
+                socket = io(serverUrl);
+
+                socket.on('connect', () => {
+                    console.log('WebSocket connected');
+                    showNotification('Ô£ø√º√Æ√≥ Real-time updates enabled', 'success');
+                });
+
+                socket.on('job_update', (data) => {
+                    console.log('Job update:', data);
+                    handleJobUpdate(data);
+                });
+
+                socket.on('disconnect', () => {
+                    console.log('WebSocket disconnected');
+                });
+
+            } catch (error) {
+                console.warn('WebSocket connection failed:', error);
+            }
+        }
+
+        // Event listeners setup
+        function setupEventListeners() {
+            // File upload handling
+            document.getElementById('imageInput').addEventListener('change', handleFileUpload);
+
+            // Drag and drop
+            const uploadZone = document.querySelector('.upload-zone');
+            uploadZone.addEventListener('dragover', handleDragOver);
+            uploadZone.addEventListener('dragleave', handleDragLeave);
+            uploadZone.addEventListener('drop', handleDrop);
+
+            // Format selection
+            document.querySelectorAll('.format-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.format-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedFormat = this.dataset.format;
+                });
+            });
+
+            // Quality slider
+            document.getElementById('qualitySlider').addEventListener('input', function() {
+                const value = this.value;
+                const labels = ['Draft', 'Low', 'Basic', 'Standard', 'Good', 'High', 'Very High', 'Ultra', 'Maximum', 'Perfect'];
+                document.getElementById('qualityValue').textContent = `${labels[value - 1]} (${value})`;
+            });
+
+            // Generate button
+            document.getElementById('generateBtn').addEventListener('click', startGeneration);
+        }
+
+        // File handling
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                processFile(file);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+
+        function processFile(file) {
+            // Validate file
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showNotification(''√π√• Please select a valid image file (JPG, PNG, WebP)', 'error');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification(''√π√• File size must be less than 10MB', 'error');
+                return;
+            }
+
+            uploadedImage = file;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('imagePreview');
+                const info = document.getElementById('imageInfo');
+                const container = document.getElementById('imagePreviewContainer');
+
+                preview.src = e.target.result;
+                container.style.display = 'block';
+
+                info.innerHTML = `
+                    <strong>üìÅ File:</strong> ${file.name}<br>
+                    <strong>Ô£ø√º√≠√¶ Size:</strong> ${(file.size / (1024 * 1024)).toFixed(2)} MB<br>
+                    <strong>üéØ Type:</strong> ${file.type}<br>
+                    <strong>'√∫√ñ Status:</strong> Ready for processing
+                `;
+
+                // Enable generate button
+                document.getElementById('generateBtn').disabled = false;
+
+                showNotification(''√∫√ñ Image uploaded successfully!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Generation process
+        async function startGeneration() {
+            if (!isConnected) {
+                showNotification(''√π√• Not connected to server. Please refresh and try again.', 'error');
+                return;
+            }
+
+            if (!uploadedImage) {
+                showNotification(''√π√• Please select an image first', 'error');
+                return;
+            }
+
+            try {
+                // Upload image first
+                const jobId = await uploadImage();
+                if (!jobId) return;
+
+                currentJobId = jobId;
+
+                // Subscribe to job updates if WebSocket is available
+                if (socket && socket.connected) {
+                    socket.emit('subscribe_job', { job_id: jobId });
+                }
+
+                // Start generation
+                await generateModel(jobId);
+
+                // Monitor progress
+                if (!socket || !socket.connected) {
+                    // Fallback to polling if WebSocket not available
+                    monitorProgress(jobId);
+                }
+
+            } catch (error) {
+                console.error('Generation failed:', error);
+                showNotification(`'√π√• Generation failed: ${error.message}`, 'error');
+                resetUI();
+            }
+        }
+
+        async function uploadImage() {
+            const formData = new FormData();
+            formData.append('image', uploadedImage);
+
+            const response = await fetch(`${serverUrl}/api/upload-image`, {
+                method: 'POST',
+                mode: 'cors',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                showNotification(`Ô£ø√º√¨¬ß Image uploaded! Job ID: ${data.job_id}`, 'success');
+                return data.job_id;
+            } else {
+                throw new Error('Failed to upload image');
+            }
+        }
+
+        async function generateModel(jobId) {
+            const payload = {
+                job_id: jobId,
+                format: selectedFormat,
+                quality: document.getElementById('qualitySlider').value,
+                method: 'auto',
+                dimensions: {
+                    width: parseInt(document.getElementById('width').value),
+                    height: parseInt(document.getElementById('height').value),
+                    depth: parseInt(document.getElementById('depth').value)
+                }
+            };
+
+            const response = await fetch(`${serverUrl}/api/generate-3d`, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                showUI('generating');
+                showNotification('Ô£ø√º√∂√Ñ 3D generation started!', 'success');
+            } else {
+                throw new Error('Failed to start generation');
+            }
+        }
+
+        // Progress monitoring
+        async function monitorProgress(jobId) {
+            const checkInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${serverUrl}/api/job-status/${jobId}`, {
+                        mode: 'cors'
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        handleJobUpdate(data);
+
+                        if (data.status === 'completed' || data.status === 'failed') {
+                            clearInterval(checkInterval);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Status check failed:', error);
+                }
+            }, 2000);
+        }
+
+        function handleJobUpdate(data) {
+            console.log('Handling job update:', data);
+
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+
+            if (data.progress !== undefined) {
+                progressFill.style.width = data.progress + '%';
+            }
+
+            if (data.step) {
+                progressText.textContent = data.step;
+            }
+
+            if (data.status === 'completed') {
+                showUI('completed');
+                showNotification('Ô£ø√º√©√¢ 3D model generated successfully!', 'success');
+
+                // Show 3D preview if model URL is available
+                if (data.model_url) {
+                    show3DPreview(data.model_url);
+                }
+            } else if (data.status === 'failed') {
+                showUI('error');
+                showNotification(`'√π√• Generation failed: ${data.error || 'Unknown error'}`, 'error');
+            }
+        }
+
+        // UI state management
+        function showUI(state) {
+            const generateBtn = document.getElementById('generateBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const resultSection = document.getElementById('resultSection');
+
+            switch (state) {
+                case 'generating':
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = ''√®‚â• Generating...';
+                    progressContainer.style.display = 'block';
+                    resultSection.style.display = 'none';
+                    break;
+
+                case 'completed':
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Ô£ø√º√∂√Ñ Generate Another Model';
+                    progressContainer.style.display = 'none';
+                    resultSection.style.display = 'block';
+                    break;
+
+                case 'error':
+                    resetUI();
+                    break;
+            }
+        }
+
+        function resetUI() {
+            const generateBtn = document.getElementById('generateBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const resultSection = document.getElementById('resultSection');
+
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Ô£ø√º√∂√Ñ Generate 3D Model';
+            progressContainer.style.display = 'none';
+            resultSection.style.display = 'none';
+        }
+
+        // 3D Preview
+        function show3DPreview(modelUrl) {
+            const modelViewer = document.getElementById('modelViewer');
+            const placeholder = document.querySelector('.preview-placeholder');
+
+            placeholder.style.display = 'none';
+            modelViewer.style.display = 'block';
+
+            // Initialize Three.js viewer
+            if (typeof THREE !== 'undefined') {
+                init3DViewer(modelUrl);
+            } else {
+                showFallback3DViewer();
+            }
+        }
+
+        function init3DViewer(modelUrl) {
+            const container = document.getElementById('modelViewer');
+
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 5);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 50);
+            scene.add(directionalLight);
+
+            // Controls
+            if (typeof THREE.OrbitControls !== 'undefined') {
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+            }
+
+            // Load model
+            if (modelUrl) {
+                loadSTLModel(modelUrl);
+            }
+
+            // Start render loop
+            animate();
+        }
+
+        function loadSTLModel(modelUrl) {
+            if (typeof THREE.STLLoader !== 'undefined') {
+                const loader = new THREE.STLLoader();
+                loader.load(modelUrl, function(geometry) {
+                    const material = new THREE.MeshLambertMaterial({ color: 0xe74c3c });
+                    model = new THREE.Mesh(geometry, material);
+
+                    // Center and scale the model
+                    geometry.computeBoundingBox();
+                    const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+                    model.position.sub(center);
+
+                    scene.add(model);
+                    showNotification(''√∫√ñ 3D model loaded in viewer', 'success');
+                }, undefined, function(error) {
+                    console.error('STL loading failed:', error);
+                    showFallback3DViewer();
+                });
+            } else {
+                showFallback3DViewer();
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (controls) {
+                controls.update();
+            }
+
+            if (renderer) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        function showFallback3DViewer() {
+            const container = document.getElementById('modelViewer');
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; text-align: center;">
+                    <div>
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">Ô£ø√º√©‚â§</div>
+                        <div>3D Model Generated Successfully</div>
+                        <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem;">Three.js not available - Download to view</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Download and view functions
+        async function downloadModel() {
+            if (!currentJobId) {
+                showNotification(''√π√• No model to download', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${serverUrl}/api/download/${currentJobId}/model.${selectedFormat}`, {
+                    mode: 'cors'
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `orfeas_model_${currentJobId}.${selectedFormat}`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+
+                    showNotification(''√∫√ñ Model downloaded successfully!', 'success');
+                } else {
+                    throw new Error('Download failed');
+                }
+            } catch (error) {
+                console.error('Download failed:', error);
+                showNotification(''√π√• Download failed', 'error');
+            }
+        }
+
+        function viewFullscreen() {
+            if (renderer && renderer.domElement) {
+                if (renderer.domElement.requestFullscreen) {
+                    renderer.domElement.requestFullscreen();
+                }
+            }
+        }
+
+        // Viewer controls
+        function toggle3DRotation() {
+            // Toggle auto-rotation if implemented
+            showNotification('üîÑ Rotation toggled', 'info');
+        }
+
+        function reset3DView() {
+            if (camera && controls) {
+                camera.position.set(0, 0, 5);
+                controls.reset();
+                showNotification('üéØ View reset', 'info');
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existing = document.querySelectorAll('.notification');
+            existing.forEach(notif => notif.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Periodic connection check
+        setInterval(() => {
+            if (isConnected) {
+                testConnection();
+            }
+        }, 30000);
+
+        // Console logging
+        console.log('%cüéØ ORFEAS 3D Studio - Cloud Edition', 'color: #e74c3c; font-size: 16px; font-weight: bold;');
+        console.log(`%cServer: ${serverUrl}`, 'color: #2ed573;');
+        console.log('%cWebSocket: Available', socket ? 'color: #2ed573;' : 'color: #ff4757;');
+    </script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+{
+  "image_formats": [
+    {
+      "format": "BMP",
+      "file": "test_image.bmp",
+      "tests": {
+        "file_exists": true,
+        "pil_open": true,
+        "unique_filename": true,
+        "save": true,
+        "checksum": true,
+        "reload": true,
+        "naming_convention": true
+      },
+      "file_size": 786486,
+      "image_info": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "BMP"
+      },
+      "unique_filename": "orfeas_20251013_214316_855da526_test_image.bmp",
+      "saved_path": "test_outputs\\orfeas_20251013_214316_855da526_test_image.bmp",
+      "saved_size": 786486,
+      "checksums": {
+        "original": "2a38d89b683a2664645f2a48e02ea3fb63c038b6c0cf025b761d28218a449c9d",
+        "saved": "2a38d89b683a2664645f2a48e02ea3fb63c038b6c0cf025b761d28218a449c9d"
+      },
+      "pass_rate": "7/7"
+    },
+    {
+      "format": "GIF",
+      "file": "test_image.gif",
+      "tests": {
+        "file_exists": true,
+        "pil_open": true,
+        "unique_filename": true,
+        "save": true,
+        "checksum": true,
+        "reload": true,
+        "naming_convention": true
+      },
+      "file_size": 24000,
+      "image_info": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "P",
+        "format": "GIF"
+      },
+      "unique_filename": "orfeas_20251013_214316_83ed8139_test_image.gif",
+      "saved_path": "test_outputs\\orfeas_20251013_214316_83ed8139_test_image.gif",
+      "saved_size": 24000,
+      "checksums": {
+        "original": "09a12f0a6b5ad72d9fe8699b79504b589dee0c45c8e45f5508cac2d11ee594f7",
+        "saved": "09a12f0a6b5ad72d9fe8699b79504b589dee0c45c8e45f5508cac2d11ee594f7"
+      },
+      "pass_rate": "7/7"
+    },
+    {
+      "format": "JPEG",
+      "file": "test_image.jpeg",
+      "tests": {
+        "file_exists": true,
+        "pil_open": true,
+        "unique_filename": true,
+        "save": true,
+        "checksum": true,
+        "reload": true,
+        "naming_convention": true
+      },
+      "file_size": 29830,
+      "image_info": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "JPEG"
+      },
+      "unique_filename": "orfeas_20251013_214316_78805669_test_image.jpeg",
+      "saved_path": "test_outputs\\orfeas_20251013_214316_78805669_test_image.jpeg",
+      "saved_size": 14811,
+      "checksums": {
+        "original": "bbf94056b1f432f488c5855a45eb3dd0abc41269d2d6745f78245175ceed127e",
+        "saved": "d2f0356126cd807bbe9add54c10c81b6e728d4712af7cf3f0d2d1adc796c9793"
+      },
+      "pass_rate": "7/7"
+    },
+    {
+      "format": "JPG",
+      "file": "test_image.jpg",
+      "tests": {
+        "file_exists": true,
+        "pil_open": true,
+        "unique_filename": true,
+        "save": true,
+        "checksum": true,
+        "reload": true,
+        "naming_convention": true
+      },
+      "file_size": 29099,
+      "image_info": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "JPEG"
+      },
+      "unique_filename": "orfeas_20251013_214316_2a8c5d8f_test_image.jpg",
+      "saved_path": "test_outputs\\orfeas_20251013_214316_2a8c5d8f_test_image.jpg",
+      "saved_size": 14525,
+      "checksums": {
+        "original": "a9164ab0f851af21b15d007a35e2331ddb9e5187faec275a3de3528664888aa4",
+        "saved": "4af6f500bb7fa4562d0013f7ee309eca6f1d9879fe258c170a113a4b1dffccd2"
+      },
+      "pass_rate": "7/7"
+    },
+    {
+      "format": "PNG",
+      "file": "test_image.png",
+      "tests": {
+        "file_exists": true,
+        "pil_open": true,
+        "unique_filename": true,
+        "save": true,
+        "checksum": true,
+        "reload": true,
+        "naming_convention": true
+      },
+      "file_size": 7673,
+      "image_info": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "PNG"
+      },
+      "unique_filename": "orfeas_20251013_214316_856f301b_test_image.png",
+      "saved_path": "test_outputs\\orfeas_20251013_214316_856f301b_test_image.png",
+      "saved_size": 7673,
+      "checksums": {
+        "original": "d52467778bdcdc4fd907d170d61f17ab03e09c2c1cf7e0291edac3c475a78846",
+        "saved": "d52467778bdcdc4fd907d170d61f17ab03e09c2c1cf7e0291edac3c475a78846"
+      },
+      "pass_rate": "7/7"
+    },
+    {
+      "format": "TIFF",
+      "file": "test_image.tiff",
+      "tests": {
+        "file_exists": true,
+        "pil_open": true,
+        "unique_filename": true,
+        "save": true,
+        "checksum": true,
+        "reload": true,
+        "naming_convention": true
+      },
+      "file_size": 786572,
+      "image_info": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "TIFF"
+      },
+      "unique_filename": "orfeas_20251013_214316_e2cb0645_test_image.tiff",
+      "saved_path": "test_outputs\\orfeas_20251013_214316_e2cb0645_test_image.tiff",
+      "saved_size": 786572,
+      "checksums": {
+        "original": "9e5fc10b6b2c1f5bbac2399587e5584a4b5a90cfa998b407004f3120362c0ada",
+        "saved": "9e5fc10b6b2c1f5bbac2399587e5584a4b5a90cfa998b407004f3120362c0ada"
+      },
+      "pass_rate": "7/7"
+    },
+    {
+      "format": "WEBP",
+      "file": "test_image.webp",
+      "tests": {
+        "file_exists": true,
+        "pil_open": true,
+        "unique_filename": true,
+        "save": true,
+        "checksum": true,
+        "reload": true,
+        "naming_convention": true
+      },
+      "file_size": 8154,
+      "image_info": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "WEBP"
+      },
+      "unique_filename": "orfeas_20251013_214316_aae93405_test_image.webp",
+      "saved_path": "test_outputs\\orfeas_20251013_214316_aae93405_test_image.webp",
+      "saved_size": 8056,
+      "checksums": {
+        "original": "b1dfd14f0f5ce11f8aba73fda7d7acde8602485e1d97ee5b15aee6dc1fae733d",
+        "saved": "b4ed5b7a35f915f3a4e0cd5c30e8375aa4d1cf479db0b51321176bf5d55a7e19"
+      },
+      "pass_rate": "7/7"
+    }
+  ],
+  "preview_tests": [
+    {
+      "file": "orfeas_20251013_214316_2a8c5d8f_test_image.jpg",
+      "success": true,
+      "preview_data": {
+        "filename": "orfeas_20251013_214316_2a8c5d8f_test_image.jpg",
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "JPEG",
+        "file_size": 14525,
+        "checksum": "4af6f500bb7fa456"
+      }
+    },
+    {
+      "file": "orfeas_20251013_214316_78805669_test_image.jpeg",
+      "success": true,
+      "preview_data": {
+        "filename": "orfeas_20251013_214316_78805669_test_image.jpeg",
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGB",
+        "format": "JPEG",
+        "file_size": 14811,
+        "checksum": "d2f0356126cd807b"
+      }
+    },
+    {
+      "file": "orfeas_20251013_214316_83ed8139_test_image.gif",
+      "success": true,
+      "preview_data": {
+        "filename": "orfeas_20251013_214316_83ed8139_test_image.gif",
+        "size": [
+          512,
+          512
+        ],
+        "mode": "P",
+        "format": "GIF",
+        "file_size": 24000,
+        "checksum": "09a12f0a6b5ad72d"
+      }
+    }
+  ],
+  "naming_tests": [
+    {
+      "original": "Test Image.png",
+      "sanitized": "test_image.png",
+      "unique": "orfeas_20251013_214316_afcd68c3_test_image.png",
+      "is_safe": true
+    },
+    {
+      "original": "My-Photo-2024.jpg",
+      "sanitized": "my-photo-2024.jpg",
+      "unique": "orfeas_20251013_214316_33c4221f_my-photo-2024.jpg",
+      "is_safe": true
+    },
+    {
+      "original": "file with spaces.jpeg",
+      "sanitized": "file_with_spaces.jpeg",
+      "unique": "orfeas_20251013_214316_bbd1e588_file_with_spaces.jpeg",
+      "is_safe": true
+    },
+    {
+      "original": "UPPERCASE_FILE.PNG",
+      "sanitized": "uppercase_file.PNG",
+      "unique": "orfeas_20251013_214316_7a964ca7_uppercase_file.PNG",
+      "is_safe": true
+    },
+    {
+      "original": "special!@#$%chars.gif",
+      "sanitized": "special_chars.gif",
+      "unique": "orfeas_20251013_214316_3a4ac855_special_chars.gif",
+      "is_safe": true
+    },
+    {
+      "original": "very_long_filename_that_exceeds_normal_length_limits_and_needs_truncation_test.bmp",
+      "sanitized": "very_long_filename_that_exceeds_normal_length_limits_and_needs_truncation_test.bmp",
+      "unique": "orfeas_20251013_214316_b3995cb7_very_long_filename_that_exceeds_normal_length_limi.bmp",
+      "is_safe": true
+    },
+    {
+      "original": "unicode_caf\u00e9_na\u00efve.webp",
+      "sanitized": "unicode_cafe_naive.webp",
+      "unique": "orfeas_20251013_214316_762d59c1_unicode_cafe_naive.webp",
+      "is_safe": true
+    },
+    {
+      "original": "../../../etc/passwd.jpg",
+      "sanitized": "passwd.jpg",
+      "unique": "orfeas_20251013_214316_aee7763e_passwd.jpg",
+      "is_safe": true
+    },
+    {
+      "original": "file...multiple...dots.png",
+      "sanitized": "file_multiple_dots.png",
+      "unique": "orfeas_20251013_214316_ed4b78b5_file_multiple_dots.png",
+      "is_safe": true
+    },
+    {
+      "original": "   leading_trailing_spaces   .tiff",
+      "sanitized": "leading_trailing_spaces.tiff",
+      "unique": "orfeas_20251013_214316_d6be1781_leading_trailing_spaces.tiff",
+      "is_safe": true
+    }
+  ],
+  "3d_formats": [
+    {
+      "format": "stl",
+      "unique_filename": "orfeas_3d_20251013_214316_cd08a037_test_model.stl",
+      "naming_valid": true
+    },
+    {
+      "format": "obj",
+      "unique_filename": "orfeas_3d_20251013_214316_80cdf542_test_model.obj",
+      "naming_valid": true
+    },
+    {
+      "format": "glb",
+      "unique_filename": "orfeas_3d_20251013_214316_010ac9c3_test_model.glb",
+      "naming_valid": true
+    },
+    {
+      "format": "ply",
+      "unique_filename": "orfeas_3d_20251013_214316_94945d0e_test_model.ply",
+      "naming_valid": true
+    }
+  ]
+}

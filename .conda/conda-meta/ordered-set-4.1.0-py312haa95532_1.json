@@ -1,0 +1,105 @@
+{
+  "build": "py312haa95532_1",
+  "build_number": 1,
+  "channel": "https://repo.anaconda.com/pkgs/main/win-64",
+  "constrains": [],
+  "depends": [
+    "python >=3.12,<3.13.0a0"
+  ],
+  "extracted_package_dir": "C:\\Users\\johng\\anaconda3\\pkgs\\ordered-set-4.1.0-py312haa95532_1",
+  "files": [
+    "Lib/site-packages/ordered_set-4.1.0.dist-info/INSTALLER",
+    "Lib/site-packages/ordered_set-4.1.0.dist-info/METADATA",
+    "Lib/site-packages/ordered_set-4.1.0.dist-info/RECORD",
+    "Lib/site-packages/ordered_set-4.1.0.dist-info/REQUESTED",
+    "Lib/site-packages/ordered_set-4.1.0.dist-info/WHEEL",
+    "Lib/site-packages/ordered_set-4.1.0.dist-info/direct_url.json",
+    "Lib/site-packages/ordered_set/__init__.py",
+    "Lib/site-packages/ordered_set/__pycache__/__init__.cpython-312.pyc",
+    "Lib/site-packages/ordered_set/py.typed"
+  ],
+  "fn": "ordered-set-4.1.0-py312haa95532_1.conda",
+  "license": "MIT",
+  "link": {
+    "source": "C:\\Users\\johng\\anaconda3\\pkgs\\ordered-set-4.1.0-py312haa95532_1",
+    "type": 1
+  },
+  "md5": "c8ed29d6892c86f6024c90656c0d73a5",
+  "name": "ordered-set",
+  "package_tarball_full_path": "C:\\Users\\johng\\anaconda3\\pkgs\\ordered-set-4.1.0-py312haa95532_1.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "Lib/site-packages/ordered_set-4.1.0.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set-4.1.0.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "16a54dfd551325308343ebed9e65eb6e06a90e3722113fb9e2048d278eecae8f",
+        "sha256_in_prefix": "16a54dfd551325308343ebed9e65eb6e06a90e3722113fb9e2048d278eecae8f",
+        "size_in_bytes": 5340
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set-4.1.0.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "588be2a2e2e3c4afa5a271d36f82be2592fbdaf408a4e2450953bb93f2c8ae04",
+        "sha256_in_prefix": "588be2a2e2e3c4afa5a271d36f82be2592fbdaf408a4e2450953bb93f2c8ae04",
+        "size_in_bytes": 714
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set-4.1.0.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set-4.1.0.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "1196c6921ec87b83e865f450f08d19b8ff5592537f4ef719e83484e546abe33e",
+        "sha256_in_prefix": "1196c6921ec87b83e865f450f08d19b8ff5592537f4ef719e83484e546abe33e",
+        "size_in_bytes": 81
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set-4.1.0.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "05555e8d05b53b3e5099130d0565d5d20b402a40c033584d03638b3c25d181a0",
+        "sha256_in_prefix": "05555e8d05b53b3e5099130d0565d5d20b402a40c033584d03638b3c25d181a0",
+        "size_in_bytes": 119
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "cad6b380ab3204a8bdb85b41b7ddfcc97c50b5d6add55082ebcd6cf6cd0232a8",
+        "sha256_in_prefix": "cad6b380ab3204a8bdb85b41b7ddfcc97c50b5d6add55082ebcd6cf6cd0232a8",
+        "size_in_bytes": 17146
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "df6f18c619405f4b0d6e45c4d7e88283dc04207a8a577ff5b69f9e70b65bfe4b",
+        "sha256_in_prefix": "df6f18c619405f4b0d6e45c4d7e88283dc04207a8a577ff5b69f9e70b65bfe4b",
+        "size_in_bytes": 21558
+      },
+      {
+        "_path": "Lib/site-packages/ordered_set/py.typed",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "1a63bc34f3b2305bae1f21d701b44bf993b7baedca838cb8725726f2364eb3c9",
+  "size": 18918,
+  "subdir": "win-64",
+  "timestamp": 1699503534000,
+  "url": "https://repo.anaconda.com/pkgs/main/win-64/ordered-set-4.1.0-py312haa95532_1.conda",
+  "version": "4.1.0"
+}

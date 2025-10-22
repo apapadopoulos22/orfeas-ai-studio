@@ -1,0 +1,241 @@
+# ORFEUS Enterprise Agent System - Alerting Rules
+groups:
+  - name: orfeas_enterprise_agents
+    rules:
+      # Agent System Health Alerts
+      - alert: OrfeasAgentSystemDown
+        expr: up{job="orfeas-agents"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: orfeas-agents
+        annotations:
+          summary: "ORFEAS Enterprise Agent System is down"
+          description: "The ORFEAS Enterprise Agent System has been down for more than 30 seconds."
+
+      - alert: OrfeasAgentHighErrorRate
+        expr: rate(orfeas_agent_errors_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: orfeas-agents
+        annotations:
+          summary: "High error rate in ORFEAS Agent System"
+          description: "Agent error rate is {{ $value }} errors per second over the last 5 minutes."
+
+      - alert: OrfeasAgentCommunicationFailure
+        expr: rate(orfeas_agent_communication_failures_total[5m]) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+          service: orfeas-agent-communication
+        annotations:
+          summary: "ORFEAS Agent Communication System failure"
+          description: "Agent communication failure rate is {{ $value }} failures per second."
+
+      # Performance Alerts
+      - alert: OrfeasAgentHighResponseTime
+        expr: histogram_quantile(0.95, rate(orfeas_agent_request_duration_seconds_bucket[5m])) > 5
+        for: 3m
+        labels:
+          severity: warning
+          service: orfeas-agents
+        annotations:
+          summary: "High response time in ORFEAS Agent System"
+          description: "95th percentile response time is {{ $value }}s over the last 5 minutes."
+
+      - alert: OrfeasAgentQueueBacklog
+        expr: orfeas_agent_queue_size > 100
+        for: 2m
+        labels:
+          severity: warning
+          service: orfeas-agents
+        annotations:
+          summary: "ORFEAS Agent queue backlog"
+          description: "Agent queue has {{ $value }} pending tasks."
+
+  - name: orfeas_backend_system
+    rules:
+      # Backend System Alerts
+      - alert: OrfeasBackendDown
+        expr: up{job="orfeas-backend"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: orfeas-backend
+        annotations:
+          summary: "ORFEAS Backend System is down"
+          description: "The ORFEAS Backend System has been down for more than 30 seconds."
+
+      - alert: OrfeasHighCPUUsage
+        expr: rate(process_cpu_seconds_total{job="orfeas-backend"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: orfeas-backend
+        annotations:
+          summary: "High CPU usage in ORFEAS Backend"
+          description: "CPU usage is {{ $value | humanizePercentage }} over the last 5 minutes."
+
+      - alert: OrfeasHighMemoryUsage
+        expr: (process_resident_memory_bytes{job="orfeas-backend"} / (1024^3)) > 8
+        for: 3m
+        labels:
+          severity: warning
+          service: orfeas-backend
+        annotations:
+          summary: "High memory usage in ORFEAS Backend"
+          description: "Memory usage is {{ $value }}GB."
+
+      # GPU Alerts
+      - alert: OrfeasGPUHighUtilization
+        expr: orfeas_gpu_utilization_percent > 95
+        for: 5m
+        labels:
+          severity: warning
+          service: orfeas-gpu
+        annotations:
+          summary: "High GPU utilization"
+          description: "GPU utilization is {{ $value }}% for more than 5 minutes."
+
+      - alert: OrfeasGPUHighTemperature
+        expr: orfeas_gpu_temperature_celsius > 80
+        for: 2m
+        labels:
+          severity: critical
+          service: orfeas-gpu
+        annotations:
+          summary: "High GPU temperature"
+          description: "GPU temperature is {{ $value }}Â°C."
+
+      - alert: OrfeasGPUMemoryHigh
+        expr: (orfeas_gpu_memory_used_bytes / orfeas_gpu_memory_total_bytes) > 0.9
+        for: 3m
+        labels:
+          severity: warning
+          service: orfeas-gpu
+        annotations:
+          summary: "High GPU memory usage"
+          description: "GPU memory usage is {{ $value | humanizePercentage }}."
+
+  - name: orfeas_quality_system
+    rules:
+      # Quality System Alerts
+      - alert: OrfeasQualityScoreDropped
+        expr: orfeas_generation_quality_score < 0.7
+        for: 2m
+        labels:
+          severity: warning
+          service: orfeas-quality
+        annotations:
+          summary: "ORFEAS generation quality score dropped"
+          description: "Average quality score is {{ $value }} below threshold of 0.7."
+
+      - alert: OrfeasGenerationFailureRate
+        expr: rate(orfeas_generation_failures_total[5m]) / rate(orfeas_generation_total[5m]) > 0.05
+        for: 3m
+        labels:
+          severity: warning
+          service: orfeas-backend
+        annotations:
+          summary: "High generation failure rate"
+          description: "Generation failure rate is {{ $value | humanizePercentage }}."
+
+  - name: system_resources
+    rules:
+      # System Resource Alerts
+      - alert: HighSystemCPU
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High system CPU usage"
+          description: "System CPU usage is {{ $value }}% on {{ $labels.instance }}."
+
+      - alert: HighSystemMemory
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.85
+        for: 3m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High system memory usage"
+          description: "System memory usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}."
+
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Low disk space"
+          description: "Disk usage is {{ $value | humanizePercentage }} on {{ $labels.instance }} {{ $labels.mountpoint }}."
+
+  - name: container_monitoring
+    rules:
+      # Container Health Alerts
+      - alert: ContainerDown
+        expr: up{job="cadvisor"} == 0
+        for: 30s
+        labels:
+          severity: warning
+          service: containers
+        annotations:
+          summary: "Container monitoring is down"
+          description: "cAdvisor container monitoring has been down for more than 30 seconds."
+
+      - alert: ContainerHighCPU
+        expr: rate(container_cpu_usage_seconds_total{name!=""}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: containers
+        annotations:
+          summary: "High container CPU usage"
+          description: "Container {{ $labels.name }} CPU usage is {{ $value | humanizePercentage }}."
+
+      - alert: ContainerHighMemory
+        expr: container_memory_usage_bytes{name!=""} / container_spec_memory_limit_bytes{name!=""} > 0.9
+        for: 3m
+        labels:
+          severity: warning
+          service: containers
+        annotations:
+          summary: "High container memory usage"
+          description: "Container {{ $labels.name }} memory usage is {{ $value | humanizePercentage }}."
+
+  - name: redis_monitoring
+    rules:
+      # Redis Alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis service has been down for more than 30 seconds."
+
+      - alert: RedisHighMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 3m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage is {{ $value | humanizePercentage }}."
+
+      - alert: RedisHighConnections
+        expr: redis_connected_clients > 100
+        for: 2m
+        labels:
+          severity: warning
+          service: redis
+        annotations:
+          summary: "High Redis connection count"
+          description: "Redis has {{ $value }} connected clients."

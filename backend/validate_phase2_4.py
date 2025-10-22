@@ -1,0 +1,408 @@
+"""
++==============================================================================â•—
+| [WARRIOR] ORFEAS PHASE 2.4 VALIDATION - ADVANCED CAMERA SYSTEM [WARRIOR]                |
+| Comprehensive Testing for Camera Positioning & Animation                    |
++==============================================================================
+
+ORFEAS Phase 2.4 Validation - Advanced Camera System Testing
+Tests the complete camera system with presets, custom positioning, and animations
+
+Test Coverage:
+1. Backend health check
+2. Camera presets API validation
+3. Custom camera positioning
+4. Turntable animation generation
+5. Orbital animation generation
+6. Camera preset save/load
+7. UI feature detection
+
+Author: ORFEAS 3D WEB SPECIALIST
+Date: October 15, 2025
+"""
+
+import os
+import sys
+import time
+import json
+import requests
+from pathlib import Path
+from typing import Dict, List
+
+# Backend configuration
+BACKEND_URL = "http://127.0.0.1:5000"
+TIMEOUT = 10
+
+# ANSI color codes
+GREEN = "\033[92m"
+RED = "\033[91m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+MAGENTA = "\033[95m"
+CYAN = "\033[96m"
+RESET = "\033[0m"
+
+
+def print_header():
+    """Print test header"""
+    print(f"\n{CYAN}{'='*78}{RESET}")
+    print(f"{CYAN}[WARRIOR] ORFEAS PHASE 2.4 VALIDATION - ADVANCED CAMERA SYSTEM [WARRIOR]{RESET}")
+    print(f"{CYAN}{'='*78}{RESET}\n")
+
+
+def check_backend_health() -> bool:
+    """Check if backend server is running"""
+    print(f"{BLUE}[SEARCH] Checking backend health...{RESET}")
+
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/health", timeout=TIMEOUT)
+
+        if response.status_code == 200:
+            print(f"{GREEN}[OK] Backend is healthy{RESET}\n")
+            return True
+        else:
+            print(f"{RED}[FAIL] Backend returned status {response.status_code}{RESET}\n")
+            return False
+
+    except requests.exceptions.ConnectionError:
+        print(f"{RED}[FAIL] Cannot connect to backend at {BACKEND_URL}{RESET}")
+        print(f"{YELLOW}   Make sure backend is running: python backend/main.py{RESET}\n")
+        return False
+    except Exception as e:
+        print(f"{RED}[FAIL] Health check failed: {e}{RESET}\n")
+        return False
+
+
+def test_camera_presets() -> bool:
+    """Test camera presets API"""
+    print(f"{BLUE} Testing Camera Presets API...{RESET}")
+
+    try:
+        response = requests.get(
+            f"{BACKEND_URL}/api/camera/presets",
+            params={"distance": 10.0},
+            timeout=TIMEOUT
+        )
+
+        if response.status_code != 200:
+            print(f"{RED}[FAIL] API returned status {response.status_code}{RESET}\n")
+            return False
+
+        data = response.json()
+
+        if not data.get('success'):
+            print(f"{RED}[FAIL] API returned success=false{RESET}\n")
+            return False
+
+        # Verify presets
+        expected_presets = ["front", "back", "left", "right", "top", "bottom", "angle1", "angle2"]
+        presets = data.get('presets', [])
+
+        if len(presets) != len(expected_presets):
+            print(f"{RED}[FAIL] Expected {len(expected_presets)} presets, got {len(presets)}{RESET}\n")
+            return False
+
+        configurations = data.get('configurations', {})
+
+        print(f"{GREEN}[OK] Camera Presets API working{RESET}")
+        print(f"   Presets: {len(presets)}")
+        print(f"   Default distance: {data.get('default_distance')}")
+
+        # Check preset structure
+        for preset_name in expected_presets[:2]:  # Check first 2
+            if preset_name in configurations:
+                config = configurations[preset_name]
+                print(f"   {preset_name}: position={config['position']}, fov={config.get('fov', 'N/A')}")
+
+        print()
+        return True
+
+    except Exception as e:
+        print(f"{RED}[FAIL] Camera presets test failed: {e}{RESET}\n")
+        return False
+
+
+def test_custom_position() -> bool:
+    """Test custom camera position API"""
+    print(f"{BLUE}[TARGET] Testing Custom Camera Position...{RESET}")
+
+    try:
+        test_data = {
+            "position": [5, 10, 15],
+            "target": [0, 0, 0],
+            "fov": 60,
+            "projection": "perspective"
+        }
+
+        response = requests.post(
+            f"{BACKEND_URL}/api/camera/position",
+            json=test_data,
+            timeout=TIMEOUT
+        )
+
+        if response.status_code != 200:
+            print(f"{RED}[FAIL] API returned status {response.status_code}{RESET}\n")
+            return False
+
+        data = response.json()
+
+        if not data.get('success'):
+            print(f"{RED}[FAIL] API returned success=false{RESET}\n")
+            return False
+
+        camera = data.get('camera', {})
+        camera_threejs = data.get('camera_threejs', {})
+        look_at = data.get('look_at', {})
+
+        print(f"{GREEN}[OK] Custom Camera Position working{RESET}")
+        print(f"   Position: {camera['position']}")
+        print(f"   Target: {camera['target']}")
+        print(f"   FOV: {camera['fov']}°")
+        print(f"   Projection: {camera['projection']}")
+        print(f"   Distance: {look_at.get('distance', 0):.2f}")
+        print()
+        return True
+
+    except Exception as e:
+        print(f"{RED}[FAIL] Custom position test failed: {e}{RESET}\n")
+        return False
+
+
+def test_turntable_animation() -> bool:
+    """Test turntable animation generation"""
+    print(f"{BLUE} Testing Turntable Animation...{RESET}")
+
+    try:
+        test_data = {
+            "distance": 10.0,
+            "height": 5.0,
+            "duration": 10.0,
+            "speed": 1.0,
+            "axis": "y"
+        }
+
+        response = requests.post(
+            f"{BACKEND_URL}/api/camera/animation/turntable",
+            json=test_data,
+            timeout=TIMEOUT
+        )
+
+        if response.status_code != 200:
+            print(f"{RED}[FAIL] API returned status {response.status_code}{RESET}\n")
+            return False
+
+        data = response.json()
+
+        if not data.get('success'):
+            print(f"{RED}[FAIL] API returned success=false{RESET}\n")
+            return False
+
+        animation = data.get('animation', {})
+
+        print(f"{GREEN}[OK] Turntable Animation working{RESET}")
+        print(f"   Type: {animation.get('animation_type')}")
+        print(f"   Duration: {animation.get('duration')}s")
+        print(f"   Speed: {animation.get('speed')}x")
+        print(f"   Radius: {animation.get('orbital_radius')}")
+        print(f"   Axis: {animation.get('rotation_axis')}")
+        print()
+        return True
+
+    except Exception as e:
+        print(f"{RED}[FAIL] Turntable animation test failed: {e}{RESET}\n")
+        return False
+
+
+def test_orbital_animation() -> bool:
+    """Test orbital path animation generation"""
+    print(f"{BLUE} Testing Orbital Animation...{RESET}")
+
+    try:
+        test_data = {
+            "radius": 10.0,
+            "height_variation": 3.0,
+            "duration": 15.0,
+            "speed": 1.0
+        }
+
+        response = requests.post(
+            f"{BACKEND_URL}/api/camera/animation/orbital",
+            json=test_data,
+            timeout=TIMEOUT
+        )
+
+        if response.status_code != 200:
+            print(f"{RED}[FAIL] API returned status {response.status_code}{RESET}\n")
+            return False
+
+        data = response.json()
+
+        if not data.get('success'):
+            print(f"{RED}[FAIL] API returned success=false{RESET}\n")
+            return False
+
+        animation = data.get('animation', {})
+
+        print(f"{GREEN}[OK] Orbital Animation working{RESET}")
+        print(f"   Type: {animation.get('animation_type')}")
+        print(f"   Duration: {animation.get('duration')}s")
+        print(f"   Radius: {animation.get('orbital_radius')}")
+        print(f"   Height Variation: {animation.get('orbital_height_variation')}")
+        print()
+        return True
+
+    except Exception as e:
+        print(f"{RED}[FAIL] Orbital animation test failed: {e}{RESET}\n")
+        return False
+
+
+def test_save_preset() -> bool:
+    """Test camera preset save"""
+    print(f"{BLUE} Testing Camera Preset Save...{RESET}")
+
+    try:
+        test_data = {
+            "name": "test_preset",
+            "position": [7, 12, 8],
+            "target": [0, 0, 0],
+            "fov": 55,
+            "projection": "perspective",
+            "description": "Test camera preset"
+        }
+
+        response = requests.post(
+            f"{BACKEND_URL}/api/camera/preset/save",
+            json=test_data,
+            timeout=TIMEOUT
+        )
+
+        if response.status_code != 200:
+            print(f"{RED}[FAIL] API returned status {response.status_code}{RESET}\n")
+            return False
+
+        data = response.json()
+
+        if not data.get('success'):
+            print(f"{RED}[FAIL] API returned success=false{RESET}\n")
+            return False
+
+        print(f"{GREEN}[OK] Camera Preset Save working{RESET}")
+        print(f"   Preset Name: {data.get('preset_name')}")
+        print(f"   Saved To: {data.get('preset_file')}")
+        print()
+        return True
+
+    except Exception as e:
+        print(f"{RED}[FAIL] Preset save test failed: {e}{RESET}\n")
+        return False
+
+
+def test_camera_studio_ui() -> bool:
+    """Test if camera studio UI file exists and has required features"""
+    print(f"{BLUE}[IMAGE] Testing Camera Studio UI...{RESET}")
+
+    ui_file = Path(__file__).parent.parent / "camera-studio.html"
+
+    if not ui_file.exists():
+        print(f"{RED}[FAIL] camera-studio.html not found{RESET}\n")
+        return False
+
+    try:
+        with open(ui_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Check for required features
+        required_features = [
+            ("Three.js", "three.min.js"),
+            ("Camera Presets", "data-preset"),
+            ("Custom Position", "camPosX"),
+            ("FOV Control", "fovSlider"),
+            ("Projection Toggle", "data-projection"),
+            ("Turntable Animation", "turntableBtn"),
+            ("Orbital Animation", "orbitBtn"),
+            ("Preset Save", "savePresetBtn"),
+            ("Viewport Canvas", "id=\"viewport\""),
+            ("Animation Controls", "animation-controls")
+        ]
+
+        missing_features = []
+        found_features = []
+
+        for feature_name, feature_marker in required_features:
+            if feature_marker in content:
+                found_features.append(feature_name)
+            else:
+                missing_features.append(feature_name)
+
+        if missing_features:
+            print(f"{YELLOW}[WARN]  Some features not detected:{RESET}")
+            for feature in missing_features:
+                print(f"   - {feature}")
+
+        print(f"{GREEN}[OK] Camera Studio UI file exists{RESET}")
+        print(f"   File size: {len(content):,} bytes")
+        print(f"   Features detected: {len(found_features)}/{len(required_features)}")
+
+        for feature in found_features[:5]:  # Show first 5
+            print(f"   [CHECK] {feature}")
+
+        print()
+        return len(missing_features) == 0
+
+    except Exception as e:
+        print(f"{RED}[FAIL] UI file check failed: {e}{RESET}\n")
+        return False
+
+
+def run_all_tests():
+    """Run all Phase 2.4 validation tests"""
+    print_header()
+
+    tests = [
+        ("Backend Health", check_backend_health),
+        ("Camera Presets API", test_camera_presets),
+        ("Custom Camera Position", test_custom_position),
+        ("Turntable Animation", test_turntable_animation),
+        ("Orbital Animation", test_orbital_animation),
+        ("Camera Preset Save", test_save_preset),
+        ("Camera Studio UI", test_camera_studio_ui)
+    ]
+
+    results = []
+
+    for test_name, test_func in tests:
+        try:
+            result = test_func()
+            results.append((test_name, result))
+        except Exception as e:
+            print(f"{RED}[FAIL] {test_name} crashed: {e}{RESET}\n")
+            results.append((test_name, False))
+
+    # Print summary
+    print(f"\n{CYAN}{'='*78}{RESET}")
+    print(f"{CYAN}[STATS] VALIDATION SUMMARY{RESET}")
+    print(f"{CYAN}{'='*78}{RESET}\n")
+
+    passed = sum(1 for _, result in results if result)
+    total = len(results)
+
+    for test_name, result in results:
+        status = f"{GREEN}[OK] PASS{RESET}" if result else f"{RED}[FAIL] FAIL{RESET}"
+        print(f"  {status} - {test_name}")
+
+    print(f"\n{CYAN}{'='*78}{RESET}")
+
+    if passed == total:
+        print(f"{GREEN} All tests passed! ({passed}/{total}){RESET}")
+        print(f"{GREEN}Phase 2.4 Camera System is fully operational!{RESET}")
+    else:
+        print(f"{YELLOW}[WARN]  {passed}/{total} tests passed{RESET}")
+        print(f"{YELLOW}Some features may need attention.{RESET}")
+
+    print(f"{CYAN}{'='*78}{RESET}\n")
+
+    return passed == total
+
+
+if __name__ == "__main__":
+    success = run_all_tests()
+    sys.exit(0 if success else 1)

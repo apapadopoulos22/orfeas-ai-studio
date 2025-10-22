@@ -1,0 +1,73 @@
++==============================================================================â•—
+|                                                                              |
+|                 [FAST] CSP CDN FIX - QUICK SUMMARY [FAST]                             |
+|                                                                              |
++==============================================================================
+
+ **ISSUE:** CSP blocking CDN source maps (socket.io.min.js.map)
+
+[FAST] **FIX APPLIED:** Added HTTPS CDN domains to connect-src directive
+
+[EDIT] **FILE MODIFIED:** orfeas-studio.html (lines 6-19)
+
+[CONFIG] **WHAT CHANGED:**
+
+BEFORE:
+```
+connect-src 'self' http://localhost:5000 ... ws://localhost:5000;
+```
+
+AFTER:
+```
+connect-src 'self'
+    http://localhost:5000 http://localhost:7777 http://localhost:8000
+    http://127.0.0.1:5000 http://127.0.0.1:7777 http://127.0.0.1:8000
+    ws://localhost:5000 ws://127.0.0.1:5000
+    https://cdn.socket.io https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+```
+
+**ADDED:**
+- https://cdn.socket.io
+- https://cdnjs.cloudflare.com
+- https://cdn.jsdelivr.net
+
+[OK] **WHY THIS WORKS:**
+
+- script-src already allowed these CDNs (for .js files)
+- connect-src now also allows them (for .js.map source maps)
+- Browser can download both scripts AND debugging source maps
+- No more CSP violation errors in console
+
+[TARGET] **USER ACTION REQUIRED:**
+
+1. **Reload Browser:** Press Ctrl+Shift+R in orfeas-studio.html tab
+2. **Check Console:** Should show NO CSP errors
+3. **Continue Testing:** Follow PHASE_3_TESTING_GUIDE.md
+
+[OK] **EXPECTED RESULT:**
+
+Console Output:
+```
+[OK] NO "Refused to connect to 'https://cdn.socket.io/...'" errors
+[OK] Socket.io loads successfully
+[OK] All Phase 3 initialization logs present
+[OK] Backend connected (http://127.0.0.1:5000)
+```
+
+[SHIELD] **SECURITY STATUS:**
+
+[OK] SECURE - CDNs already trusted for scripts
+[OK] Source maps are read-only debugging aids
+[OK] No code execution from .js.map files
+[OK] All other CSP directives still enforced
+
+[WARRIOR] **CSP ERROR ELIMINATED!**
+
+Backend: [OK] ONLINE (http://127.0.0.1:5000)
+Models: [OK] READY (Hunyuan3D loaded)
+Fix: [OK] DEPLOYED (CSP updated)
+Status:  READY FOR TESTING
+
+**RELOAD BROWSER NOW!** [FAST]
+
+See txt/CSP_CDN_SOURCE_MAP_FIX.txt for full technical report.

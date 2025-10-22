@@ -1,0 +1,33 @@
+{
+  "name": "orfeas-makers-portal",
+  "version": "1.0.0",
+  "description": "ORFEAS 3D AI Generation Portal - Cloud Frontend with Local Server Integration",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve -s . -l 8080",
+    "build": "echo 'Static site ready for deployment'",
+    "test": "echo 'Testing local server connectivity'"
+  },
+  "keywords": [
+    "3d-generation",
+    "ai",
+    "hunyuan3d",
+    "stl",
+    "netlify",
+    "webgl",
+    "threejs"
+  ],
+  "author": "ORFEAS Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/orfeas-makers-portal"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/orfeas-makers-portal/issues"
+  },
+  "homepage": "https://orfeas-makers-portal.netlify.app"
+}

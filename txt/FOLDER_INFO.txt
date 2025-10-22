@@ -1,0 +1,42 @@
+# [FOLDER] ORFEAS TXT FILES FOLDER
+
+**All .txt files ALWAYS go in this directory**
+
+---
+
+##  Current Text Files
+
+### Visual Guides
+- `VISUAL_START_GUIDE.txt` - Visual startup instructions
+- `VISUAL_SUMMARY.txt` - Visual project summary
+- `COMPLETION_BANNER.txt` - Completion messages
+
+### Documentation References
+- `DOCUMENTATION.txt` - Points to md\ directory
+- `ONE_CLICK_AUTOMATIC.txt` - Automatic startup info
+- `TEST_BROWSER_AUTO_START.txt` - Browser auto-start testing
+
+---
+
+## [TARGET] Organization Rule
+
+**ALL .txt files in the ORFEAS project MUST be placed in this `txt\` directory.**
+
+This keeps the root directory clean and organized with only executable files and core application files.
+
+---
+
+## [LAUNCH] Quick Access
+
+From root directory:
+```powershell
+# View a text file
+notepad txt\VISUAL_START_GUIDE.txt
+
+# View all text files
+explorer txt\
+```
+
+---
+
+**Last Updated:** October 14, 2025

@@ -1,0 +1,173 @@
+{
+  "timestamp": "2025-10-13T22:58:24.539474",
+  "backend_url": "http://127.0.0.1:5000",
+  "tests_passed": 9,
+  "tests_failed": 1,
+  "tests_skipped": 0,
+  "results": [
+    {
+      "test": "server_connectivity",
+      "status": "PASS",
+      "message": "Server is reachable (HTTP 200)",
+      "timestamp": "2025-10-13T22:58:24.588607"
+    },
+    {
+      "test": "health_endpoint",
+      "status": "PASS",
+      "message": "Health check passed - Mode: full_ai",
+      "timestamp": "2025-10-13T22:58:24.607285",
+      "response": {
+        "active_jobs": 0,
+        "capabilities": [
+          "image_upload",
+          "3d_generation",
+          "stl_export",
+          "gpu_memory_management",
+          "hunyuan3d",
+          "text_to_image",
+          "advanced_texturing"
+        ],
+        "gpu_info": {
+          "allocated_mb": 4918.5419921875,
+          "available": true,
+          "cleanup_count": 0,
+          "device": "NVIDIA GeForce RTX 3090",
+          "free_mb": 19656.8330078125,
+          "generation_count": 0,
+          "max_allocated_mb": 4918.5419921875,
+          "reserved_mb": 5020.0,
+          "total_mb": 24575.375,
+          "utilization_percent": 20.014107586099907
+        },
+        "mode": "full_ai",
+        "processor": {
+          "capabilities": [
+            "image_to_3d"
+          ],
+          "device": "cuda",
+          "formats": [
+            "glb",
+            "gltf",
+            "obj",
+            "stl"
+          ],
+          "has_text2image": false,
+          "model_path": "tencent/Hunyuan3D-2",
+          "model_type": "Hunyuan3D-2.1",
+          "pipelines": {
+            "background_removal": "BackgroundRemover",
+            "shape_generation": "Hunyuan3DDiTFlowMatchingPipeline",
+            "text_to_image": null,
+            "texture_generation": "Hunyuan3DPaintPipeline"
+          },
+          "status": "loaded"
+        },
+        "status": "healthy",
+        "timestamp": "2025-10-13T22:58:24.605285"
+      }
+    },
+    {
+      "test": "models_info",
+      "status": "PASS",
+      "message": "Models info retrieved - Device: cuda",
+      "timestamp": "2025-10-13T22:58:24.622292",
+      "response": {
+        "device": "cuda",
+        "gpu_stats": {
+          "allocated_mb": 4918.5419921875,
+          "available": true,
+          "cleanup_count": 0,
+          "device": "NVIDIA GeForce RTX 3090",
+          "free_mb": 19656.8330078125,
+          "generation_count": 0,
+          "max_allocated_mb": 4918.5419921875,
+          "reserved_mb": 5020.0,
+          "total_mb": 24575.375,
+          "utilization_percent": 20.014107586099907
+        },
+        "mode": "full_ai",
+        "processor": {
+          "capabilities": [
+            "image_to_3d"
+          ],
+          "device": "cuda",
+          "formats": [
+            "glb",
+            "gltf",
+            "obj",
+            "stl"
+          ],
+          "has_text2image": false,
+          "model_path": "tencent/Hunyuan3D-2",
+          "model_type": "Hunyuan3D-2.1",
+          "pipelines": {
+            "background_removal": "BackgroundRemover",
+            "shape_generation": "Hunyuan3DDiTFlowMatchingPipeline",
+            "text_to_image": null,
+            "texture_generation": "Hunyuan3DPaintPipeline"
+          },
+          "status": "loaded"
+        }
+      }
+    },
+    {
+      "test": "upload_image",
+      "status": "PASS",
+      "message": "Image uploaded - Job ID: ea03a178-1eae-48c0-bcbd-4b94d572e9c2",
+      "timestamp": "2025-10-13T22:58:24.675261",
+      "response": {
+        "filename": "orfeas_upload_20251013_225824_17c4c66e_test_image.png",
+        "image_info": {
+          "file_size": 1878,
+          "format": "PNG",
+          "has_transparency": false,
+          "mode": "RGB",
+          "size": [
+            512,
+            512
+          ]
+        },
+        "job_id": "ea03a178-1eae-48c0-bcbd-4b94d572e9c2",
+        "original_filename": "test_image.png",
+        "preview_url": "/api/preview/orfeas_upload_20251013_225824_17c4c66e_test_image.png",
+        "status": "uploaded"
+      }
+    },
+    {
+      "test": "generate_3d",
+      "status": "FAIL",
+      "message": "HTTP 400: {\"details\":[{\"input\":\"medium\",\"loc\":[\"quality\"],\"msg\":\"Input should be a valid integer, unable to parse string as an integer\",\"type\":\"int_parsing\",\"url\":\"https://errors.pydantic.dev/2.12/v/int_parsing",
+      "timestamp": "2025-10-13T22:58:24.692130"
+    },
+    {
+      "test": "job_status",
+      "status": "PASS",
+      "message": "Job not found (expected for completed/cleaned jobs)",
+      "timestamp": "2025-10-13T22:58:24.709662"
+    },
+    {
+      "test": "preview_endpoint",
+      "status": "PASS",
+      "message": "Preview endpoint exists (returned 404 for missing file)",
+      "timestamp": "2025-10-13T22:58:24.723567"
+    },
+    {
+      "test": "download_endpoint",
+      "status": "PASS",
+      "message": "Download endpoint exists (returned error for invalid job)",
+      "timestamp": "2025-10-13T22:58:24.740002"
+    },
+    {
+      "test": "cors_headers",
+      "status": "PASS",
+      "message": "CORS enabled - Allow-Origin: http://localhost:3000",
+      "timestamp": "2025-10-13T22:58:24.754785"
+    },
+    {
+      "test": "websocket_connection",
+      "status": "PASS",
+      "message": "WebSocket connection successful",
+      "timestamp": "2025-10-13T22:58:25.104117"
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║         ORFEAS AI - NETLIFY DEPLOYMENT QUICK START (5 MINUTES)        ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════════════════
+✅ WHAT YOU'LL NEED
+═════════════════════════════════════════════════════════════════════════
+
+1. ✅ Python 3.10+ (already installed)
+2. ✅ Node.js & npm (for netlify-cli)
+3. ✅ ngrok account (free at https://ngrok.com)
+4. ✅ GitHub account (for repository)
+5. ✅ Netlify account (free at https://netlify.com)
+6. ✅ RTX 3090 GPU (for backend processing)
+
+═════════════════════════════════════════════════════════════════════════
+🚀 DEPLOYMENT IN 4 EASY STEPS
+═════════════════════════════════════════════════════════════════════════
+
+OPTION A: AUTOMATED DEPLOYMENT (Recommended)
+────────────────────────────────────────────────────────────────────────
+
+Step 1: Run the deployment script
+
+  .\DEPLOY_TO_NETLIFY_COMPLETE.bat
+
+  This will:
+    ✓ Start backend (Flask on port 5000)
+    ✓ Start ngrok tunnel (creates public HTTPS URL)
+    ✓ Deploy to Netlify (with ngrok URL pre-configured)
+    ✓ Return your live Netlify URL
+
+  That's it! The script handles everything.
+
+
+OPTION B: MANUAL DEPLOYMENT
+────────────────────────────────────────────────────────────────────────
+
+Step 1: Start Backend (Keep Running)
+
+  cd c:\Users\johng\Documents\oscar\backend
+  python main.py
+
+  ✅ Backend will start on http://127.0.0.1:5000
+  ✅ Watch terminal for GPU initialization
+
+
+Step 2: Start ngrok Tunnel (Keep Running)
+
+  In a NEW terminal:
+  .\START_NGROK_TUNNEL.bat
+
+  ✅ ngrok will show you a public HTTPS URL
+  ✅ Example: https://abc123def456.ngrok.io
+  ✅ Copy this URL for the next step
+
+
+Step 3: Deploy Frontend
+
+  In a NEW terminal:
+  cd c:\Users\johng\Documents\oscar
+  netlify deploy --prod
+
+  ✅ When prompted, create a new Netlify site
+  ✅ Your frontend will be deployed
+
+
+Step 4: Verify Connection
+
+  Open your Netlify URL in browser
+  Press F12 → Console tab
+  Look for: [CONFIG] API_BASE = https://abc123def456.ngrok.io
+
+  ✅ Upload an image → Generate 3D → Check it works!
+
+
+═════════════════════════════════════════════════════════════════════════
+📊 SYSTEM OVERVIEW AFTER DEPLOYMENT
+═════════════════════════════════════════════════════════════════════════
+
+User's Browser (Anywhere)
+    ↓
+    └─→ https://your-app.netlify.app (Netlify CDN)
+         ├─ Frontend: synexa-style-studio.html
+         └─ API routes: /api/* → ngrok URL
+              ↓
+              └─→ https://abc123def456.ngrok.io (ngrok tunnel)
+                   ├─ Public HTTPS endpoint
+                   └─ Routes to your machine
+                        ↓
+                        └─→ http://127.0.0.1:5000 (Your Flask Backend)
+                             ├─ GPU Processing: NVIDIA RTX 3090
+                             ├─ 3D Generation: Hunyuan3D-2.1
+                             ├─ Processing Time: 30-120 seconds per image
+                             └─ Output: STL + OBJ + MTL files
+
+
+═════════════════════════════════════════════════════════════════════════
+🔧 TROUBLESHOOTING
+═════════════════════════════════════════════════════════════════════════
+
+PROBLEM: "Connection refused" or CORS errors
+  → Ensure backend is running (http://127.0.0.1:5000/health)
+  → Ensure ngrok tunnel is running
+  → Verify ngrok URL is in netlify.toml
+
+PROBLEM: Backend doesn't start
+  → Check GPU drivers (nvidia-smi)
+  → Check Python packages: pip list | grep torch
+  → Try: python backend/main.py 2>&1 | head -50
+
+PROBLEM: API calls timeout
+  → 3D generation takes 30-120 seconds
+  → Check GPU memory: nvidia-smi
+  → Watch backend logs for errors
+
+PROBLEM: Netlify says "Site not found"
+  → Ensure netlify.toml is in root directory
+  → Run: netlify site:list
+  → Check netlify.toml has correct build settings
+
+PROBLEM: "Gateway timeout" from ngrok
+  → Your machine might have connectivity issues
+  → Check internet speed: https://speedtest.net
+  → Restart ngrok tunnel: Close and restart START_NGROK_TUNNEL.bat
+
+═════════════════════════════════════════════════════════════════════════
+📁 KEY FILES CREATED
+═════════════════════════════════════════════════════════════════════════
+
+DEPLOY_TO_NETLIFY_COMPLETE.bat  ← Full automated deployment script
+START_NGROK_TUNNEL.bat          ← Start public tunnel
+DEPLOY_TO_NETLIFY.bat           ← Alternative deployment script
+netlify.toml                    ← Netlify configuration
+synexa-style-studio.html        ← Frontend (API_BASE configured)
+
+═════════════════════════════════════════════════════════════════════════
+✨ ADVANCED OPTIONS
+═════════════════════════════════════════════════════════════════════════
+
+Option 1: Docker Stack (Production-grade)
+  docker-compose -f docker-compose.production.yml up -d
+  • All services containerized
+  • GPU support enabled
+  • Monitoring included
+
+Option 2: DuckDNS (Free Dynamic DNS alternative to ngrok)
+  • Persistent domain name
+  • Better for long-term deployment
+  • See NETLIFY_DEPLOYMENT_GUIDE.md for setup
+
+Option 3: Self-hosted on VPS
+  • More control
+  • Potential cost
+  • See deployment guide for details
+
+═════════════════════════════════════════════════════════════════════════
+📞 SUPPORT
+═════════════════════════════════════════════════════════════════════════
+
+Console Logs:
+  • Browser: F12 → Console (check for errors)
+  • Backend: Terminal window (watch for GPU messages)
+  • ngrok: ngrok Web UI at http://localhost:4040
+
+Logs:
+  Backend request logs: backend/logs/backend_requests.log
+  GPU status: nvidia-smi (in terminal)
+
+═════════════════════════════════════════════════════════════════════════
+
+Ready? Run: .\DEPLOY_TO_NETLIFY_COMPLETE.bat
+
+═════════════════════════════════════════════════════════════════════════

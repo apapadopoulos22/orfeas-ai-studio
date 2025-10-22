@@ -1,0 +1,52 @@
+# Netlify Configuration for ORFEAS AI Studio Frontend
+# Handles deployment and API routing to local backend
+
+[build]
+  # Frontend doesn't need building (it's static HTML)
+  # Netlify will serve synexa-style-studio.html directly
+  publish = "."
+  command = "echo 'Frontend deployment ready'"
+
+[context.production]
+  # Production environment (when deployed to Netlify)
+  environment = { API_BASE = "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev" }
+
+[context.dev]
+  # Development environment (local testing)
+  environment = { API_BASE = "http://127.0.0.1:5000" }
+
+# Redirect rules for API calls to backend
+# When frontend makes requests to /api/*, route them to backend via ngrok
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev/api/:splat"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/health"
+  to = "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev/health"
+  status = 200
+  force = false
+
+# Serve index for SPA routing (if needed in future)
+[[redirects]]
+  from = "/*"
+  to = "synexa-style-studio.html"
+  status = 200
+
+# HTTP to HTTPS redirect
+[[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
+
+# Headers for security and CORS
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"

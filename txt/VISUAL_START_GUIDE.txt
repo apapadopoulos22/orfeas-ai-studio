@@ -1,0 +1,308 @@
+
++==============================================================================â•—
+|                                                                              |
+|                  [TARGET] HOW TO START ORFEAS - VISUAL GUIDE [TARGET]                     |
+|                                                                              |
++==============================================================================
+
+
+## [LAUNCH] EASIEST METHOD - ONE CLICK!
+
+```
+Step 1: Navigate to project folder
+
+
+[FOLDER] C:\Users\johng\Documents\Erevus\orfeas\
+
+You should see these files:
+   orfeas-studio.html
+  [FOLDER] backend/
+  [FOLDER] Hunyuan3D-2.1/
+  [LAUNCH] START ORFEAS.bat           DOUBLE-CLICK THIS!
+   START_ORFEAS_AUTO.ps1
+   START_ORFEAS_AUTO.bat
+   AUTO_STARTUP_GUIDE.md
+   AUTO_STARTUP_SUCCESS.md
+```
+
+```
+Step 2: Double-click the rocket file
+
+
+  [LAUNCH] START ORFEAS.bat           DOUBLE-CLICK!
+```
+
+```
+Step 3: Watch the magic happen!
+
+
+Window 1 (Startup Script):
+
+ ORFEAS AI Studio - Auto Startup                        
+
+ [1/5] Checking Python installation...                 
+ [OK] Python found: Python 3.11.9                       
+                                                         
+ [2/5] Checking backend directory...                    
+ [OK] Backend directory found: backend\main.py          
+                                                         
+ [3/5] Checking frontend...                             
+ [OK] Frontend HTML found: orfeas-studio.html           
+                                                         
+ [4/5] Starting backend server...                       
+ [INFO] Opening backend server in new window...         
+ [OK] Backend server started (PID: 23472)               
+                                                         
+ [5/5] Waiting for backend to initialize...             
+ [INFO] Please wait 5 seconds...                        
+ [OK] Backend server is running on http://127.0.0.1:5002
+                                                         
+ ====================================================   
+   STARTUP COMPLETE!                                    
+ ====================================================   
+                                                         
+ Open frontend in browser? (Y/N):                       
+
+
+
+Window 2 (Backend Server - Automatically Opened):
+
+ ORFEAS Backend Server                                   
+
+ ===================================================    
+    ORFEAS AI STUDIO - Backend Server                   
+    Automated 3D Generation with Local GPU              
+    Preview Fix - Complete Solution                     
+ ===================================================    
+                                                         
+ [INFO] Python detected successfully                    
+ [INFO] Starting ORFEAS Backend Server...               
+ [INFO] All dependencies satisfied                      
+                                                         
+ [INFO] Checking GPU availability...                    
+ CUDA Available: True                                    
+ GPU Count: 1                                            
+                                                         
+ [INFO] Starting Flask server on http://127.0.0.1:5002  
+ [INFO] WebSocket support enabled                       
+ [INFO] CORS enabled for frontend integration           
+ [INFO] Preview endpoints ready                         
+                                                         
+  * Running on http://127.0.0.1:5002                    
+  * Debug mode: on                                      
+                                                         
+ [READY] Server is running and accepting connections    
+   Keep this window open! Closing will stop server    
+
+```
+
+```
+Step 4: Answer the prompt
+
+
+Open frontend in browser? (Y/N): Y   Type Y and press Enter
+```
+
+```
+Step 5: Frontend opens automatically!
+
+
+Your default browser opens with:
+
+ ORFEAS STUDIO - Creative Workspace                      
+
+  
+  [AI] ORFEAS 3D Generator - Hunyuan AI Engine         
+  
+                                                         
+          
+   Input                3D Preview              
+                                                    
+              
+   [PICTURE] Drop image          3D preview           
+   or click to          will appear             
+   browse               here                    
+              
+                                                    
+  [[LAUNCH] Generate 3D]       [ Download STL]          
+          
+
+
+[OK] Connected to ORFEAS Backend
+[OK] Preview endpoints ready
+[OK] Ready to upload images!
+```
+
+```
+Step 6: YOU'RE DONE! 
+
+
+[OK] Backend server running (check 2nd window)
+[OK] Frontend open in browser
+[OK] Preview functionality working
+[OK] Ready to generate 3D models!
+
+Now you can:
+  1. Upload an image (click drop zone)
+  2. See instant preview (using /api/preview/<filename>)
+  3. Generate 3D model (click Generate button)
+  4. Download STL file
+```
+
+
+## [TARGET] ALTERNATIVE: PowerShell Script Method
+
+```
+Step 1: Find PowerShell script
+
+
+[FOLDER] C:\Users\johng\Documents\Erevus\orfeas\
+
+   START_ORFEAS_AUTO.ps1      This file
+```
+
+```
+Step 2: Right-click the file
+
+
+   START_ORFEAS_AUTO.ps1
+  
+   Right-click
+   Select "Run with PowerShell"
+```
+
+```
+Step 3: Same result as Method 1!
+
+
+All checks run, backend starts, frontend opens!
+```
+
+
+## [STOP] HOW TO STOP
+
+```
+Method 1: Close Backend Window
+
+
+
+ ORFEAS Backend Server                               [X]   Click X
+
+ * Running on http://127.0.0.1:5002                     
+
+
+Server stops immediately.
+```
+
+```
+Method 2: Press Ctrl+C
+
+
+Click in backend window and press: Ctrl + C
+
+Server stops gracefully with:
+[INFO] Server stopped gracefully
+```
+
+
+## [STATS] WHAT EACH FILE DOES
+
+```
+[LAUNCH] START ORFEAS.bat
+
+• One-click launcher
+• Calls PowerShell script automatically
+• Easiest method (just double-click!)
+
+
+START_ORFEAS_AUTO.ps1
+
+• PowerShell version with colors
+• Checks Python, backend, frontend
+• Starts server in new window
+• Verifies server health
+• Offers to open frontend
+
+
+START_ORFEAS_AUTO.bat
+
+• Windows CMD batch file
+• No PowerShell needed
+• Same features as PS1 version
+• Universal Windows compatibility
+
+
+backend/start_backend.bat
+
+• Manual backend starter
+• Can be used standalone
+• Fixed to run main.py (not app.py)
+• Updated for preview endpoints
+```
+
+
+## [OK] VERIFICATION CHECKLIST
+
+```
+After starting, verify everything works:
+
+
+[OK] Backend window is open and showing "Running on http://127.0.0.1:5002"
+[OK] Frontend loaded in browser showing ORFEAS Studio interface
+[OK] Browser console (F12) shows "Connected to ORFEAS Backend"
+[OK] No errors in backend window
+[OK] Upload area visible in frontend
+
+Test by:
+  1. Open browser to: http://127.0.0.1:5002/api/health
+     Should show: {"status":"running","gpu_available":true}
+
+  2. Click upload area in frontend
+  3. Select any PNG/JPG image
+  4. See preview appear immediately  THIS IS THE FIX!
+```
+
+
+## [CONFIG] TROUBLESHOOTING
+
+```
+Problem: "Python is not installed"
+
+Solution:
+1. Install Python from: https://www.python.org/downloads/
+2. Check "Add Python to PATH" during installation
+3. Restart computer
+4. Try again
+```
+
+```
+Problem: Backend window closes immediately
+
+Solution:
+1. Open CMD manually: cd backend
+2. Run: python main.py
+3. Check error messages
+4. Usually: missing packages
+5. Run: pip install -r requirements.txt
+```
+
+```
+Problem: Port 5002 already in use
+
+Solution:
+1. Find process: netstat -ano | findstr :5002
+2. Kill process: taskkill /PID <pid> /F
+3. Or change port in backend/main.py
+```
+
+
++==============================================================================â•—
+|                                                                              |
+|                     [OK] READY TO START! [OK]                                     |
+|                                                                              |
+|              Double-click: [LAUNCH] START ORFEAS.bat                               |
+|                                                                              |
+|              Everything starts automatically!                              |
+|                                                                              |
++==============================================================================
+

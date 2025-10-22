@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bob AI - Local AI Assistant</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .chat-container {
+        width: 90%;
+        max-width: 800px;
+        height: 80vh;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .chat-header .status-indicator {
+        width: 12px;
+        height: 12px;
+        background: #4ade80;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .model-selector {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .model-selector label {
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .model-selector select {
+        flex: 1;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        background: white;
+        color: #333;
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .model-selector select:focus {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+      }
+
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #f7f7f7;
+      }
+
+      .message {
+        margin-bottom: 15px;
+        display: flex;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.user {
+        justify-content: flex-end;
+      }
+
+      .message-content {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 18px;
+        word-wrap: break-word;
+      }
+
+      .message.user .message-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .message.bot .message-content {
+        background: white;
+        color: #333;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .message-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-size: 12px;
+        color: #666;
+        font-weight: 600;
+      }
+
+      .message-header .model-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: bold;
+      }
+
+      .notification {
+        background: #667eea;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        display: inline-block;
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .chat-input-container {
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        gap: 10px;
+      }
+
+      .chat-input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 25px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      .chat-input:focus {
+        border-color: #667eea;
+      }
+
+      .send-button {
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .send-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .send-button:active {
+        transform: translateY(0);
+      }
+
+      .send-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 10px;
+      }
+
+      .typing-indicator span {
+        width: 8px;
+        height: 8px;
+        background: #667eea;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-10px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">
+        <span class="status-indicator"></span>
+        Bob AI - Local AI Assistant
+      </div>
+
+      <div class="model-selector">
+        <label for="modelSelect">🤖 AI Model:</label>
+        <select id="modelSelect">
+          <option value="bob-ai" selected>
+            Bob AI (Local - Fast & Private)
+          </option>
+          <option value="gpt4" disabled>GPT-4 (Cloud - Coming Soon)</option>
+          <option value="claude" disabled>Claude (Cloud - Coming Soon)</option>
+        </select>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot">
+          <div>
+            <div class="message-header">
+              <span class="model-badge">Bob AI</span>
+              <span>Local Assistant</span>
+            </div>
+            <div class="message-content">
+              👋 Hello! I'm Bob AI, your local AI assistant. I run privately on
+              your machine using Ollama and Mistral. Ask me anything!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input
+          type="text"
+          id="chatInput"
+          class="chat-input"
+          placeholder="Type your message here..."
+          onkeypress="handleKeyPress(event)"
+        />
+        <button class="send-button" id="sendButton" onclick="sendMessage()">
+          Send 🚀
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const chatMessages = document.getElementById("chatMessages");
+      const chatInput = document.getElementById("chatInput");
+      const sendButton = document.getElementById("sendButton");
+      const modelSelect = document.getElementById("modelSelect");
+
+      // API base URL
+      const API_URL = "http://localhost:5000";
+
+      // Add message to chat
+      function addMessage(content, isUser = false, modelName = null) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${isUser ? "user" : "bot"}`;
+
+        let messageHTML = "";
+
+        if (!isUser && modelName) {
+          messageHTML = `
+                    <div>
+                        <div class="message-header">
+                            <span class="model-badge">${modelName}</span>
+                            <span>Responding...</span>
+                        </div>
+                        <div class="message-content">${content}</div>
+                    </div>
+                `;
+        } else {
+          messageHTML = `
+                    <div class="message-content">${content}</div>
+                `;
+        }
+
+        messageDiv.innerHTML = messageHTML;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Show notification when Bob AI is used
+      function showBobAINotification() {
+        const notification = document.createElement("div");
+        notification.className = "notification";
+        notification.textContent =
+          "✨ Bob AI is responding from your local machine...";
+        chatMessages.appendChild(notification);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Show typing indicator
+      function showTypingIndicator() {
+        const typingDiv = document.createElement("div");
+        typingDiv.id = "typingIndicator";
+        typingDiv.className = "message bot";
+        typingDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Remove typing indicator
+      function removeTypingIndicator() {
+        const indicator = document.getElementById("typingIndicator");
+        if (indicator) {
+          indicator.remove();
+        }
+      }
+
+      // Send message to Bob AI
+      async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Add user message
+        addMessage(message, true);
+        chatInput.value = "";
+
+        // Disable input while processing
+        chatInput.disabled = true;
+        sendButton.disabled = true;
+
+        // Show notification that Bob AI is being used
+        showBobAINotification();
+
+        // Show typing indicator
+        showTypingIndicator();
+
+        try {
+          const response = await fetch(`${API_URL}/api/local-llm/generate`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              prompt: message,
+              max_tokens: 2048,
+            }),
+          });
+
+          const data = await response.json();
+
+          // Remove typing indicator
+          removeTypingIndicator();
+
+          if (data.error) {
+            addMessage(`❌ Error: ${data.error}`, false, "System");
+          } else {
+            // Add Bob AI response with model name badge
+            addMessage(data.response, false, data.model || "Bob AI");
+
+            // Log performance
+            if (data.latency_ms) {
+              console.log(`Bob AI responded in ${data.latency_ms}ms`);
+            }
+          }
+        } catch (error) {
+          removeTypingIndicator();
+          addMessage(
+            `❌ Connection error: ${error.message}. Make sure Ollama is running.`,
+            false,
+            "System"
+          );
+          console.error("Error:", error);
+        } finally {
+          // Re-enable input
+          chatInput.disabled = false;
+          sendButton.disabled = false;
+          chatInput.focus();
+        }
+      }
+
+      // Handle Enter key press
+      function handleKeyPress(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          sendMessage();
+        }
+      }
+
+      // Check Bob AI status on load
+      async function checkStatus() {
+        try {
+          const response = await fetch(`${API_URL}/api/local-llm/status`);
+          const data = await response.json();
+
+          if (data.enabled && data.available) {
+            console.log("✅ Bob AI is ready!");
+            console.log("Model:", data.model);
+            console.log("Server:", data.server);
+          } else {
+            addMessage(
+              "⚠️ Bob AI is not available. Please make sure Ollama is running with the Mistral model.",
+              false,
+              "System"
+            );
+          }
+        } catch (error) {
+          console.error("Failed to check Bob AI status:", error);
+          addMessage(
+            "⚠️ Cannot connect to Bob AI server. Please check your backend is running.",
+            false,
+            "System"
+          );
+        }
+      }
+
+      // Initialize
+      window.addEventListener("load", () => {
+        checkStatus();
+        chatInput.focus();
+      });
+    </script>
+  </body>
+</html>

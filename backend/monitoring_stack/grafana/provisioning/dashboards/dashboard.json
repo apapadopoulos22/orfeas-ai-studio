@@ -1,0 +1,654 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "orfeas-production-dashboard",
+    "title": "ORFEAS AI Production Dashboard",
+    "tags": ["orfeas", "ai", "production", "monitoring"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "5s",
+    "time": {
+      "from": "now-15m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h"]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate (requests/second)",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(orfeas_http_requests_total[5m])",
+            "legendFormat": "{{method}} {{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "reqps",
+            "label": "Requests/sec"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "thresholds": [],
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "alignAsTable": true
+        }
+      },
+      {
+        "id": 2,
+        "title": "Response Time P95 (milliseconds)",
+        "type": "graph",
+        "gridPos": {
+          "x": 12,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(orfeas_http_request_duration_seconds_bucket[5m])) by (endpoint, le))",
+            "legendFormat": "{{endpoint}} P95",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(orfeas_http_request_duration_seconds_bucket[5m])) by (endpoint, le))",
+            "legendFormat": "{{endpoint}} P99",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "ms",
+            "label": "Response Time"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 200,
+            "colorMode": "critical",
+            "op": "gt",
+            "fill": true,
+            "line": true,
+            "yaxis": "left"
+          }
+        ],
+        "alert": {
+          "name": "High Response Time",
+          "message": "P95 response time exceeded 200ms",
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [200],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ]
+        },
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "alignAsTable": true
+        }
+      },
+      {
+        "id": 3,
+        "title": "Generation Success Rate (%)",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(orfeas_generation_success_total[5m])) / sum(rate(orfeas_generation_total[5m])) * 100",
+            "legendFormat": "Success Rate",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Success %",
+            "min": 0,
+            "max": 100
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 95,
+            "colorMode": "critical",
+            "op": "lt",
+            "fill": true,
+            "line": true,
+            "yaxis": "left"
+          }
+        ],
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "avg": true,
+          "alignAsTable": true
+        }
+      },
+      {
+        "id": 4,
+        "title": "GPU Memory Usage (%)",
+        "type": "gauge",
+        "gridPos": {
+          "x": 8,
+          "y": 8,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "(orfeas_gpu_memory_used_bytes / orfeas_gpu_memory_total_bytes) * 100",
+            "legendFormat": "GPU {{device_id}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": 0,
+                  "color": "green"
+                },
+                {
+                  "value": 70,
+                  "color": "yellow"
+                },
+                {
+                  "value": 85,
+                  "color": "red"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "CPU Usage (%)",
+        "type": "graph",
+        "gridPos": {
+          "x": 16,
+          "y": 8,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "orfeas_cpu_usage_percent",
+            "legendFormat": "CPU Usage",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "CPU %",
+            "min": 0,
+            "max": 100
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 80,
+            "colorMode": "critical",
+            "op": "gt",
+            "fill": true,
+            "line": true,
+            "yaxis": "left"
+          }
+        ],
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "avg": true,
+          "alignAsTable": true
+        }
+      },
+      {
+        "id": 6,
+        "title": "Active Jobs in Queue",
+        "type": "stat",
+        "gridPos": {
+          "x": 0,
+          "y": 16,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "orfeas_job_queue_size",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": 0,
+                  "color": "green"
+                },
+                {
+                  "value": 5,
+                  "color": "yellow"
+                },
+                {
+                  "value": 10,
+                  "color": "red"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Error Rate (5xx errors)",
+        "type": "graph",
+        "gridPos": {
+          "x": 6,
+          "y": 16,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(orfeas_http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(orfeas_http_requests_total[5m])) * 100",
+            "legendFormat": "5xx Error Rate",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(orfeas_http_requests_total{status_code=~\"4..\"}[5m])) / sum(rate(orfeas_http_requests_total[5m])) * 100",
+            "legendFormat": "4xx Error Rate",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Error %",
+            "min": 0
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "thresholds": [
+          {
+            "value": 2,
+            "colorMode": "critical",
+            "op": "gt",
+            "fill": true,
+            "line": true,
+            "yaxis": "left"
+          }
+        ],
+        "alert": {
+          "name": "High Error Rate",
+          "message": "5xx error rate exceeded 2%",
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [2],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ]
+        },
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "alignAsTable": true
+        }
+      },
+      {
+        "id": 8,
+        "title": "Generation Duration Distribution",
+        "type": "heatmap",
+        "gridPos": {
+          "x": 18,
+          "y": 16,
+          "w": 6,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(orfeas_generation_duration_seconds_bucket[5m])) by (le)",
+            "legendFormat": "{{le}}s",
+            "format": "heatmap",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "calculate": false,
+          "cellGap": 2,
+          "cellValues": {},
+          "color": {
+            "exponent": 0.5,
+            "fill": "dark-orange",
+            "mode": "spectrum",
+            "reverse": false,
+            "scale": "exponential",
+            "scheme": "Oranges",
+            "steps": 128
+          },
+          "exemplars": {
+            "color": "rgba(255,0,255,0.7)"
+          },
+          "filterValues": {
+            "le": 1e-9
+          },
+          "legend": {
+            "show": true
+          },
+          "rowsFrame": {
+            "layout": "auto"
+          },
+          "tooltip": {
+            "show": true,
+            "yHistogram": false
+          },
+          "yAxis": {
+            "axisPlacement": "left",
+            "reverse": false,
+            "unit": "s"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "hideFrom": {
+                "tooltip": false,
+                "viz": false,
+                "legend": false
+              },
+              "scaleDistribution": {
+                "type": "linear"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Current Active Generations",
+        "type": "stat",
+        "gridPos": {
+          "x": 6,
+          "y": 16,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "orfeas_active_generations",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": 0,
+                  "color": "green"
+                },
+                {
+                  "value": 3,
+                  "color": "yellow"
+                },
+                {
+                  "value": 5,
+                  "color": "red"
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "Memory Usage (RAM)",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 24,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "orfeas_memory_usage_bytes / 1024 / 1024",
+            "legendFormat": "Memory Usage (MB)",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "decmbytes",
+            "label": "Memory"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true,
+          "avg": true,
+          "alignAsTable": true
+        }
+      },
+      {
+        "id": 11,
+        "title": "Prometheus Targets Status",
+        "type": "table",
+        "gridPos": {
+          "x": 12,
+          "y": 24,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "up",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showHeader": true,
+          "sortBy": [
+            {
+              "displayName": "Value",
+              "desc": false
+            }
+          ]
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": 0,
+                  "color": "red"
+                },
+                {
+                  "value": 1,
+                  "color": "green"
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Status"
+                },
+                {
+                  "id": "custom.displayMode",
+                  "value": "color-background"
+                },
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "0": {
+                          "text": "DOWN"
+                        },
+                        "1": {
+                          "text": "UP"
+                        }
+                      },
+                      "type": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    }
+  }
+}

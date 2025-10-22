@@ -1,0 +1,295 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║              ORFEAS AI - NETLIFY DEPLOYMENT CHECKLIST                  ║
+║                                                                        ║
+║  Complete deployment from local development to global production       ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════════════════
+PRE-DEPLOYMENT CHECKLIST
+═════════════════════════════════════════════════════════════════════════
+
+SYSTEM REQUIREMENTS
+  ☐ Windows 10/11 with PowerShell 5.1+
+  ☐ Python 3.10+
+  ☐ Node.js 18+
+  ☐ NVIDIA RTX 3090 with CUDA 12.0
+  ☐ At least 24GB VRAM available
+  ☐ 50GB free disk space
+  ☐ Stable internet connection (for ngrok tunneling)
+
+ACCOUNTS & CREDENTIALS
+  ☐ GitHub account
+  ☐ Netlify account (netlify.com)
+  ☐ ngrok account (ngrok.com) - Get auth token
+  ☐ GitHub Personal Access Token (for automated deploys)
+
+LOCAL SETUP VERIFICATION
+  ☐ Backend runs without errors: python backend/main.py
+  ☐ GPU initialized: nvidia-smi shows RTX 3090
+  ☐ Flask server starts: http://127.0.0.1:5000/health responds
+  ☐ Frontend loads locally: http://127.0.0.1:5000/studio
+  ☐ Test image generation works (30-120 seconds)
+
+FILE VERIFICATION
+  ☐ synexa-style-studio.html exists in root
+  ☐ netlify.toml exists in root
+  ☐ backend/main.py is runnable
+  ☐ All dependencies installed: pip freeze | findstr torch,transformers
+
+═════════════════════════════════════════════════════════════════════════
+DEPLOYMENT PROCESS CHECKLIST
+═════════════════════════════════════════════════════════════════════════
+
+PHASE 1: SETUP (5 minutes)
+──────────────────────────────────────────────────────────────────────────
+
+Backend Startup
+  ☐ Open Terminal 1
+  ☐ Run: cd c:\Users\johng\Documents\oscar\backend
+  ☐ Run: python -u main.py
+  ☐ Wait for: "Running on http://127.0.0.1:5000"
+  ☐ Verify GPU: Watch for CUDA initialization
+  ☐ Keep terminal open
+
+ngrok Tunnel Setup
+  ☐ Open Terminal 2
+  ☐ Run: .\START_NGROK_TUNNEL.bat
+  ☐ Wait for: "Forwarding https://xxxx-xxxx-xxxx.ngrok.io -> http://localhost:5000"
+  ☐ COPY the ngrok URL: https://xxxx-xxxx-xxxx.ngrok.io
+  ☐ Keep terminal open
+  ☐ Test URL in browser (should show 404 or JSON)
+
+Verify Connection
+  ☐ Backend health check: curl http://127.0.0.1:5000/health
+  ☐ ngrok health check: curl https://YOUR_NGROK_URL/health
+  ☐ Both should respond with 200 status code
+
+PHASE 2: DEPLOYMENT (10 minutes)
+──────────────────────────────────────────────────────────────────────────
+
+Update Configuration Files
+  ☐ Edit netlify.toml:
+    - Replace YOUR_NGROK_URL_HERE with https://xxxx-xxxx-xxxx.ngrok.io
+    - Save the file
+  ☐ Edit synexa-style-studio.html:
+    - Update API_BASE to your ngrok URL
+    - Save the file
+
+Initialize Git Repository
+  ☐ Open Terminal 3
+  ☐ Run: cd c:\Users\johng\Documents\oscar
+  ☐ Run: git init (if not already initialized)
+  ☐ Run: git add .
+  ☐ Run: git commit -m "ORFEAS AI - Initial Netlify deployment"
+  ☐ Run: git remote add origin https://github.com/YOUR_USERNAME/orfeas-ai-frontend.git
+  ☐ Run: git branch -M main
+  ☐ Run: git push -u origin main
+
+Deploy to Netlify
+  ☐ Run: netlify deploy --prod
+  ☐ If first time: Select "Create & configure a new site"
+  ☐ Select your team
+  ☐ Enter site name (e.g., "orfeas-ai-studio")
+  ☐ Wait for deployment to complete
+  ☐ Note the Netlify URL: https://your-app.netlify.app
+
+PHASE 3: VERIFICATION (5 minutes)
+──────────────────────────────────────────────────────────────────────────
+
+Browser Verification
+  ☐ Open Netlify URL: https://your-app.netlify.app
+  ☐ Page loads completely
+  ☐ No 404 errors in console
+  ☐ No CORS errors in console
+
+API Connection Verification
+  ☐ Open DevTools: F12
+  ☐ Go to Console tab
+  ☐ Look for: "[CONFIG] API_BASE = https://YOUR_NGROK_URL"
+  ☐ This confirms correct API configuration
+
+Backend Connectivity
+  ☐ Click on File Upload button
+  ☐ Select a test image
+  ☐ Click "Generate 3D"
+  ☐ Request should reach backend (check backend terminal)
+  ☐ GPU should start processing
+
+Test Full Workflow
+  ☐ Upload image
+  ☐ Monitor GPU usage: nvidia-smi
+  ☐ Wait 30-120 seconds for processing
+  ☐ Generation completes successfully
+  ☐ Download STL/OBJ/MTL files
+  ☐ Preview works in UI
+
+PHASE 4: MONITORING (Ongoing)
+──────────────────────────────────────────────────────────────────────────
+
+Keep Services Running
+  ☐ Backend terminal stays open
+  ☐ ngrok tunnel stays open
+  ☐ Monitor backend for errors
+  ☐ Check GPU memory: nvidia-smi
+
+ngrok Tunnel Maintenance
+  ☐ Note: ngrok URL changes when you restart tunnel
+  ☐ If tunnel restarts: Get new URL and update netlify.toml + frontend
+  ☐ Alternative: Use ngrok Reserved Domains (paid) for permanent URL
+
+Performance Monitoring
+  ☐ Track generation times
+  ☐ Monitor GPU memory usage
+  ☐ Check Netlify analytics: netlify.com dashboard
+  ☐ Review backend logs: backend/logs/backend_requests.log
+
+═════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING QUICK REFERENCE
+═════════════════════════════════════════════════════════════════════════
+
+BACKEND ISSUES
+──────────────────────────────────────────────────────────────────────────
+
+Issue: "ModuleNotFoundError: No module named 'torch'"
+  ☐ Fix: pip install torch transformers diffusers accelerate
+
+Issue: "CUDA runtime error" or GPU not detected
+  ☐ Fix: Update NVIDIA drivers
+  ☐ Fix: Set CUDA_VISIBLE_DEVICES=0
+  ☐ Fix: Check with: nvidia-smi
+
+Issue: "Port 5000 already in use"
+  ☐ Fix: Kill existing process: lsof -i :5000 (Mac/Linux)
+  ☐ Fix: On Windows: netstat -ano | findstr :5000, then taskkill /PID xxx
+
+NGROK ISSUES
+──────────────────────────────────────────────────────────────────────────
+
+Issue: "ngrok command not found"
+  ☐ Fix: Download from https://ngrok.com/download
+  ☐ Fix: Add to PATH or run from extracted folder
+  ☐ Fix: ngrok config add-authtoken YOUR_TOKEN
+
+Issue: "Failed to connect" or tunnel offline
+  ☐ Fix: Check internet connection
+  ☐ Fix: Restart ngrok
+  ☐ Fix: Check firewall allows port 5000
+
+Issue: "Gateway Timeout" when calling backend
+  ☐ Fix: Backend might be processing (wait 30-120 seconds)
+  ☐ Fix: Check backend terminal for errors
+  ☐ Fix: Verify GPU memory available
+
+NETLIFY ISSUES
+──────────────────────────────────────────────────────────────────────────
+
+Issue: "Site not found" or 404
+  ☐ Fix: Ensure netlify.toml in project root
+  ☐ Fix: Run: netlify deploy --prod --dir=.
+
+Issue: "CORS errors" in browser console
+  ☐ Fix: Verify netlify.toml redirects point to ngrok URL
+  ☐ Fix: Check ngrok URL is correct (https://, not http://)
+  ☐ Fix: Netlify may cache - Hard refresh: Ctrl+Shift+R
+
+Issue: "API requests are 404"
+  ☐ Fix: Backend not running or ngrok tunnel closed
+  ☐ Fix: Restart both services
+  ☐ Fix: Check netlify.toml [[redirects]] rules
+
+Issue: "Deployment failed"
+  ☐ Fix: Check git remote: git remote -v
+  ☐ Fix: Ensure all files committed: git status
+  ☐ Fix: Try: netlify deploy --prod --force
+
+FRONTEND ISSUES
+──────────────────────────────────────────────────────────────────────────
+
+Issue: "Image upload doesn't work"
+  ☐ Fix: Check browser console for errors (F12)
+  ☐ Fix: Verify backend health: http://127.0.0.1:5000/health
+  ☐ Fix: Check image format (PNG, JPG supported)
+
+Issue: "Generation takes too long / times out"
+  ☐ Fix: Generation time is 30-120 seconds - be patient
+  ☐ Fix: Check GPU memory: nvidia-smi (should have 6GB+ free)
+  ☐ Fix: Try with smaller image
+
+Issue: "Downloaded files are corrupted"
+  ☐ Fix: Check backend logs for generation errors
+  ☐ Fix: Ensure GPU completed processing (no timeout)
+  ☐ Fix: Try again with different image
+
+═════════════════════════════════════════════════════════════════════════
+DEPLOYMENT SHORTCUTS
+═════════════════════════════════════════════════════════════════════════
+
+Automated (Recommended):
+  .\DEPLOY_TO_NETLIFY_COMPLETE.bat
+  • Starts everything automatically
+  • Guides through each step
+  • Handles configuration updates
+
+Manual Commands:
+
+  Terminal 1 (Backend):
+    cd backend && python -u main.py
+
+  Terminal 2 (ngrok):
+    START_NGROK_TUNNEL.bat
+
+  Terminal 3 (Deploy):
+    netlify deploy --prod
+
+Verification:
+  .\VERIFY_DEPLOYMENT_STATUS.bat  # Full health check
+
+═════════════════════════════════════════════════════════════════════════
+SUCCESS CRITERIA
+═════════════════════════════════════════════════════════════════════════
+
+Your deployment is successful when:
+
+  ✅ Netlify site URL loads in browser
+  ✅ Frontend displays ORFEAS AI Studio interface
+  ✅ Browser console shows: [CONFIG] API_BASE = https://your-ngrok-url
+  ✅ File upload button is functional
+  ✅ Image upload starts 3D generation process
+  ✅ Generation completes in 30-120 seconds
+  ✅ STL/OBJ/MTL files download successfully
+  ✅ 3D preview displays in UI
+  ✅ No CORS, connection, or timeout errors
+
+═════════════════════════════════════════════════════════════════════════
+NEXT STEPS AFTER SUCCESSFUL DEPLOYMENT
+═════════════════════════════════════════════════════════════════════════
+
+Development Enhancements:
+  • Add user authentication (Netlify Identity or Auth0)
+  • Implement job history / save results
+  • Add payment processing for batch jobs
+  • Build mobile app wrapper (React Native)
+
+Production Optimization:
+  • Switch to ngrok Reserved Domains (permanent URL)
+  • Use DuckDNS for more stable tunneling
+  • Deploy backend to cloud (AWS EC2, Azure VM)
+  • Set up CI/CD pipeline for auto-deployment
+  • Add monitoring and alerting
+  • Implement caching layer
+
+Scaling:
+  • Load balancing across multiple GPUs
+  • Queue system for concurrent requests
+  • Job prioritization and rate limiting
+  • Multi-region deployment
+
+═════════════════════════════════════════════════════════════════════════
+
+Ready to deploy? Start with:
+
+  .\DEPLOY_TO_NETLIFY_COMPLETE.bat
+
+═════════════════════════════════════════════════════════════════════════

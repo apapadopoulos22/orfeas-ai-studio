@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORFEAS PROTOCOL Check - ORFEAS PWA Diagnostics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            border: 2px solid rgba(231, 76, 60, 0.5);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #e74c3c;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .check-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .check-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .check-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .check-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .check-icon {
+            font-size: 1.5rem;
+        }
+
+        .check-result {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 2px solid rgba(46, 204, 113, 0.5);
+            color: #2ecc71;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid rgba(231, 76, 60, 0.5);
+            color: #e74c3c;
+        }
+
+        .warning {
+            background: rgba(243, 156, 18, 0.2);
+            border: 2px solid rgba(243, 156, 18, 0.5);
+            color: #f39c12;
+        }
+
+        .info {
+            background: rgba(52, 152, 219, 0.2);
+            border: 2px solid rgba(52, 152, 219, 0.5);
+            color: #3498db;
+        }
+
+        .details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #e74c3c;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .summary {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 2px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #e74c3c;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .summary-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        .summary-number.success {
+            color: #2ecc71;
+        }
+
+        .summary-number.warning {
+            color: #f39c12;
+        }
+
+        .summary-number.error {
+            color: #e74c3c;
+        }
+
+        .summary-number.info {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> ORFEAS PROTOCOL CHECK </h1>
+            <p class="subtitle">ORFEAS PWA Diagnostics & Server Status</p>
+        </div>
+
+        <div class="check-grid">
+            <div class="check-card">
+                <div class="check-title">
+                    <span class="check-icon"></span>
+                    Protocol Check
+                </div>
+                <div id="protocolCheck" class="check-result">
+                    <span class="loading"></span> Checking...
+                </div>
+                <div id="protocolDetails" class="details"></div>
+            </div>
+
+            <div class="check-card">
+                <div class="check-title">
+                    <span class="check-icon"></span>
+                    Service Worker Status
+                </div>
+                <div id="swCheck" class="check-result">
+                    <span class="loading"></span> Checking...
+                </div>
+                <div id="swDetails" class="details"></div>
+            </div>
+
+            <div class="check-card">
+                <div class="check-title">
+                    <span class="check-icon"></span>
+                    PWA Manifest
+                </div>
+                <div id="manifestCheck" class="check-result">
+                    <span class="loading"></span> Checking...
+                </div>
+                <div id="manifestDetails" class="details"></div>
+            </div>
+
+            <div class="check-card">
+                <div class="check-title">
+                    <span class="check-icon"></span>
+                    Backend Server
+                </div>
+                <div id="backendCheck" class="check-result">
+                    <span class="loading"></span> Checking...
+                </div>
+                <div id="backendDetails" class="details"></div>
+            </div>
+                <div class="summary-stat">
+                    <span id="passCount" class="summary-number success">0</span>
+                    <span class="summary-label">Passed</span>
+                </div>
+                <div class="summary-stat">
+                    <span id="warnCount" class="summary-number warning">0</span>
+                    <span class="summary-label">Warnings</span>
+                </div>
+                <div class="summary-stat">
+                    <span id="failCount" class="summary-number error">0</span>
+                    <span class="summary-label">Failed</span>
+                </div>
+                <div class="summary-stat">
+                    <span id="totalScore" class="summary-number info">0%</span>
+                    <span class="summary-label">Overall Score</span>
+                </div>
+                <div class="summary-stat">
+                    <span id="passCount" class="summary-number">0</span>
+                    <span class="summary-label">Passed</span>
+                </div>
+                <div class="summary-stat">
+                    <span id="warnCount" class="summary-number">0</span>
+                    <span class="summary-label">Warnings</span>
+                </div>
+                <div class="summary-stat">
+                    <span id="failCount" class="summary-number">0</span>
+                    <span class="summary-label">Failed</span>
+                </div>
+                <div class="summary-stat">
+                    <span id="totalScore" class="summary-number">0%</span>
+                    <span class="summary-label">Overall Score</span>
+                </div>
+            </div>
+            <button class="action-btn" onclick="location.href='orfeas-studio.html'">
+                 Launch ORFEAS Studio
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let passCount = 0;
+        let warnCount = 0;
+        let failCount = 0;
+
+        function updateSummary() {
+            document.getElementById('passCount').textContent = passCount;
+            document.getElementById('warnCount').textContent = warnCount;
+            document.getElementById('failCount').textContent = failCount;
+
+            const total = passCount + warnCount + failCount;
+            const score = total > 0 ? Math.round((passCount / total) * 100) : 0;
+            document.getElementById('totalScore').textContent = score + '%';
+        }
+
+        function setResult(elementId, status, message, details = '') {
+            const element = document.getElementById(elementId);
+            element.className = 'check-result ' + status;
+
+            let icon = '';
+            if (status === 'error') {
+                icon = '';
+                failCount++;
+            } else if (status === 'warning') {
+                icon = '';
+                warnCount++;
+            } else if (status === 'success') {
+                passCount++;
+            }
+
+            element.innerHTML = `<span>${icon}</span> ${message}`;
+
+            if (details) {
+                document.getElementById(elementId.replace('Check', 'Details')).textContent = details;
+            }
+
+            updateSummary();
+        }
+
+        // Check Protocol
+        function checkProtocol() {
+            const protocol = window.location.protocol;
+            const origin = window.location.origin;
+
+            if (protocol === 'http:' || protocol === 'https:') {
+                setResult('protocolCheck', 'success', `Correct Protocol: ${protocol}`,
+                    `Origin: ${origin}\nService Worker: Supported\nPWA Features: Available`);
+            } else {
+                setResult('protocolCheck', 'error', `Wrong Protocol: ${protocol}`,
+                    `Origin: ${origin}\nService Worker: NOT SUPPORTED\nPWA Features: BLOCKED\n\n SOLUTION: Open via http://localhost:8080/`);
+            }
+        }
+
+        // Check Service Worker
+        async function checkServiceWorker() {
+            if (!('serviceWorker' in navigator)) {
+                setResult('swCheck', 'error', 'Service Worker API not available',
+                    'Browser does not support Service Workers');
+                return;
+            }
+
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    const state = registration.active ? registration.active.state : 'installing';
+                    setResult('swCheck', 'success', `Service Worker ${state}`,
+                        `Scope: ${registration.scope}\nState: ${state}\nUpdate: ${registration.updateViaCache}`);
+                } else {
+                    setResult('swCheck', 'warning', 'Service Worker not registered',
+                        'No service worker found. PWA features limited.\nRegister by visiting orfeas-studio.html');
+                }
+            } catch (error) {
+                setResult('swCheck', 'error', 'Service Worker check failed', error.message);
+            }
+        }
+
+        // Check Manifest
+        async function checkManifest() {
+            try {
+                const response = await fetch('/manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    setResult('manifestCheck', 'success', 'Manifest loaded successfully',
+                        `Name: ${manifest.name}\nShort Name: ${manifest.short_name}\nTheme Color: ${manifest.theme_color}\nDisplay: ${manifest.display}`);
+                } else {
+                    setResult('manifestCheck', 'error', 'Manifest not found',
+                        `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                setResult('manifestCheck', 'error', 'Manifest fetch failed', error.message);
+            }
+        }
+
+        // Check Backend
+        async function checkBackend() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/health', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setResult('backendCheck', 'success', 'Backend server online',
+                        `Status: ${data.status}\nGPU: ${data.gpu_available ? 'Available' : 'Not available'}\nModels: ${data.models_ready ? 'Ready' : 'Loading'}`);
+                } else {
+                    setResult('backendCheck', 'warning', 'Backend returned error',
+                        `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                setResult('backendCheck', 'warning', 'Backend offline',
+                    'Backend server not running. Start with START_BACKEND_STABLE.ps1\nApp will work without backend (limited features)');
+            }
+        }
+
+        // Check Security
+        function checkSecurity() {
+            const features = [];
+
+            if (window.isSecureContext) features.push(' Secure Context');
+            else features.push(' Insecure Context');
+
+            if ('crypto' in window && 'subtle' in crypto) features.push(' Web Crypto API');
+            else features.push(' Web Crypto API');
+
+            if ('caches' in window) features.push(' Cache API');
+            else features.push(' Cache API');
+
+            if ('Notification' in window) features.push(' Notifications API');
+            else features.push(' Notifications API');
+
+            const passed = features.filter(f => f.startsWith('')).length;
+            const total = features.length;
+
+            if (passed === total) {
+                setResult('securityCheck', 'success', `All security features available (${passed}/${total})`,
+                    features.join('\n'));
+            } else if (passed > total / 2) {
+                setResult('securityCheck', 'warning', `Some security features missing (${passed}/${total})`,
+                    features.join('\n'));
+            } else {
+                setResult('securityCheck', 'error', `Security features unavailable (${passed}/${total})`,
+                    features.join('\n'));
+            }
+        }
+
+        // Run all checks
+        async function runAllChecks() {
+            checkProtocol();
+            await checkServiceWorker();
+            await checkManifest();
+            await checkBackend();
+            checkSecurity();
+        }
+
+        // Run checks on page load
+        runAllChecks();
+    </script>
+</body>
+</html>

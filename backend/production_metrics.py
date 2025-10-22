@@ -1,0 +1,303 @@
+# +==============================================================================â•—
+# | [WARRIOR] ORFEAS AI STUDIO - PRODUCTION METRICS EXPORTER [WARRIOR]                         |
+# | Prometheus metrics for backend monitoring                                   |
+# +==============================================================================
+
+"""
+ORFEAS Production Metrics
+=========================
+Exports Prometheus-compatible metrics for:
+- API request rates and latencies
+- GPU utilization and memory
+- Generation queue and processing times
+- Error rates and success metrics
+- System resources (CPU, RAM)
+"""
+
+import time
+import psutil
+import logging
+from functools import wraps
+from typing import Dict, List, Optional, Any, Tuple, Union
+from prometheus_client import (
+    Counter, Histogram, Gauge, Summary,
+    generate_latest, CONTENT_TYPE_LATEST
+)
+
+logger = logging.getLogger(__name__)
+
+# =============================================================================
+# PROMETHEUS METRICS DEFINITIONS
+# =============================================================================
+
+# API Metrics
+http_requests_total = Counter(
+    'flask_http_request_total',
+    'Total HTTP requests',
+    ['method', 'endpoint', 'status']
+)
+
+http_request_duration_seconds = Histogram(
+    'flask_http_request_duration_seconds',
+    'HTTP request latency',
+    ['method', 'endpoint'],
+    buckets=(0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 60.0)
+)
+
+# Generation Metrics
+generation_total = Counter(
+    'generation_total',
+    'Total 3D generation attempts',
+    ['status']  # success, failure
+)
+
+generation_duration_seconds = Histogram(
+    'generation_duration_seconds',
+    'Time to complete 3D generation',
+    buckets=(5.0, 10.0, 20.0, 30.0, 60.0, 120.0, 300.0)
+)
+
+active_generations = Gauge(
+    'active_generations',
+    'Number of currently running generations'
+)
+
+generation_queue_length = Gauge(
+    'generation_queue_length',
+    'Number of generations waiting in queue'
+)
+
+# GPU Metrics (complementary to nvidia_gpu_exporter)
+gpu_memory_allocated_bytes = Gauge(
+    'gpu_memory_allocated_bytes',
+    'GPU memory allocated by PyTorch'
+)
+
+gpu_memory_reserved_bytes = Gauge(
+    'gpu_memory_reserved_bytes',
+    'GPU memory reserved by PyTorch'
+)
+
+# System Metrics
+cpu_usage_percent = Gauge(
+    'system_cpu_usage_percent',
+    'System CPU usage percentage'
+)
+
+memory_usage_bytes = Gauge(
+    'system_memory_usage_bytes',
+    'System memory usage in bytes'
+)
+
+# Error Metrics
+generation_errors_total = Counter(
+    'generation_errors_total',
+    'Total generation errors',
+    ['error_type']
+)
+
+# Cache Metrics
+cache_operations_total = Counter(
+    'cache_operations_total',
+    'Total cache operations',
+    ['operation', 'result']  # get/set/delete, hit/miss/success/failure
+)
+
+# =============================================================================
+# DECORATOR FOR AUTOMATIC REQUEST TRACKING
+# =============================================================================
+
+def track_request(endpoint_name: str) -> Any:
+    """
+    Decorator to automatically track HTTP request metrics
+
+    Usage:
+        @app.route('/api/generate')
+        @track_request('generate_3d')
+        def generate_3d() -> None:
+            ...
+    """
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+            method = 'GET'  # Default, will be overridden by actual request
+            status = 500  # Default to error
+
+            try:
+                # Get actual HTTP method if available
+                from flask import request
+                method = request.method
+
+                # Execute the actual function
+                result = f(*args, **kwargs)
+
+                # Determine status code
+                if isinstance(result, tuple):
+                    status = result[1] if len(result) > 1 else 200
+                else:
+                    status = 200
+
+                return result
+
+            except Exception as e:
+                logger.error(f"Request failed: {e}")
+                status = 500
+                raise
+
+            finally:
+                # Record metrics
+                duration = time.time() - start_time
+                http_requests_total.labels(
+                    method=method,
+                    endpoint=endpoint_name,
+                    status=status
+                ).inc()
+                http_request_duration_seconds.labels(
+                    method=method,
+                    endpoint=endpoint_name
+                ).observe(duration)
+
+        return wrapper
+    return decorator
+
+# =============================================================================
+# GENERATION TRACKING CONTEXT MANAGER
+# =============================================================================
+
+class GenerationTracker:
+    """
+    Context manager for tracking 3D generation metrics
+
+    Usage:
+        with GenerationTracker():
+            # Your generation code here
+            result = generate_3d_model(...)
+    """
+
+    def __init__(self) -> None:
+        self.start_time = None
+
+    def __enter__(self) -> None:
+        self.start_time = time.time()
+        active_generations.inc()
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        duration = time.time() - self.start_time
+        active_generations.dec()
+
+        if exc_type is None:
+            # Success
+            generation_total.labels(status='success').inc()
+            generation_duration_seconds.observe(duration)
+        else:
+            # Failure
+            generation_total.labels(status='failure').inc()
+            error_type = exc_type.__name__ if exc_type else 'Unknown'
+            generation_errors_total.labels(error_type=error_type).inc()
+
+        # Don't suppress exceptions
+        return False
+
+# =============================================================================
+# SYSTEM METRICS UPDATE
+# =============================================================================
+
+def update_system_metrics_prometheus() -> None:
+    """
+    Update system metrics (CPU, memory, GPU)
+    Call this periodically (e.g., every 10 seconds)
+    """
+    try:
+        # CPU usage
+        cpu_percent = psutil.cpu_percent(interval=0.1)
+        cpu_usage_percent.set(cpu_percent)
+
+        # Memory usage
+        mem = psutil.virtual_memory()
+        memory_usage_bytes.set(mem.used)
+
+        # GPU metrics (if CUDA available)
+        try:
+            import torch
+            if torch.cuda.is_available():
+                gpu_memory_allocated_bytes.set(
+                    torch.cuda.memory_allocated()
+                )
+                gpu_memory_reserved_bytes.set(
+                    torch.cuda.memory_reserved()
+                )
+        except Exception as e:
+            logger.debug(f"GPU metrics not available: {e}")
+
+    except Exception as e:
+        logger.error(f"Failed to update system metrics: {e}")
+
+# =============================================================================
+# QUEUE METRICS UPDATE
+# =============================================================================
+
+def update_queue_metrics(queue_length: int):
+    """
+    Update generation queue length
+
+    Args:
+        queue_length: Current number of items in queue
+    """
+    try:
+        generation_queue_length.set(queue_length)
+    except Exception as e:
+        logger.error(f"Failed to update queue metrics: {e}")
+
+# =============================================================================
+# CACHE METRICS TRACKING
+# =============================================================================
+
+def track_cache_operation(operation: str, result: str):
+    """
+    Track cache operations
+
+    Args:
+        operation: 'get', 'set', or 'delete'
+        result: 'hit', 'miss', 'success', or 'failure'
+    """
+    cache_operations_total.labels(
+        operation=operation,
+        result=result
+    ).inc()
+
+# =============================================================================
+# METRICS ENDPOINT HANDLER
+# =============================================================================
+
+def get_metrics_response():
+    """
+    Generate Prometheus metrics response
+
+    Returns:
+        Tuple of (metrics_data, content_type)
+    """
+    update_system_metrics_prometheus()
+    return generate_latest(), CONTENT_TYPE_LATEST
+
+# =============================================================================
+# INITIALIZATION
+# =============================================================================
+
+def initialize_metrics():
+    """
+    Initialize metrics system
+    Should be called on application startup
+    """
+    logger.info("+==============================================================================â•—")
+    logger.info("|              [WARRIOR] ORFEAS PRODUCTION METRICS INITIALIZED [WARRIOR]                   |")
+    logger.info("+==============================================================================")
+    logger.info("Prometheus metrics available at /metrics endpoint")
+
+    # Set initial values
+    active_generations.set(0)
+    generation_queue_length.set(0)
+    update_system_metrics_prometheus()
+
+    return True

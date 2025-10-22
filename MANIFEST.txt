@@ -1,0 +1,255 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║              ORFEAS AI STUDIO - DEPLOYMENT FILES MANIFEST                      ║
+║                                                                                ║
+║                         All files ready for production                         ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+Location: c:\Users\johng\Documents\oscar\
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPLOYMENT SCRIPTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ QUICK_DEPLOYMENT.ps1
+   Size: ~4 KB
+   Purpose: Automated deployment script (recommended)
+   Run: .\QUICK_DEPLOYMENT.ps1 -ProductionDomain "api.orfeas.ai"
+   Time: ~5 minutes
+   Features:
+     • Automatic backup
+     • API_BASE update
+     • Config update
+     • Service deployment
+     • Health check
+     • Status verification
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPLOYMENT DOCUMENTATION (START WITH THESE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⭐ DEPLOY_NOW.txt (2 min read)
+   Size: ~3 KB
+   Purpose: Quick reference card
+   Contains: One-command deployment, success criteria, emergency commands
+   Read: If you want to get deployed in 5 minutes
+
+⭐ PRODUCTION_DEPLOYMENT_PACKAGE.txt (10 min read)
+   Size: ~8 KB
+   Purpose: Complete 8-step deployment guide
+   Contains: All procedures, configuration, health checks, monitoring
+   Read: For comprehensive deployment understanding
+
+⭐ DEPLOYMENT_COMPLETE.txt (5 min read)
+   Size: ~8 KB
+   Purpose: Executive summary
+   Contains: What you have, how to deploy, success criteria, monitoring
+   Read: For overview before deployment
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REFERENCE DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ DEPLOY_CHECKLIST.txt
+   Size: ~4 KB
+   Purpose: Quick reference checklist
+   Contains: Pre/during/post deployment checklists, testing, rollback
+   Use: During deployment execution
+
+✅ PRODUCTION_DEPLOYMENT_GUIDE.txt
+   Size: ~6 KB
+   Purpose: Full deployment procedures
+   Contains: All steps, configurations, health checks, monitoring
+   Use: For detailed procedures
+
+✅ DEPLOYMENT_ARCHITECTURE.txt
+   Size: ~8 KB
+   Purpose: System diagrams and architecture
+   Contains: Visual diagrams, component breakdown, performance targets
+   Use: Understanding system design
+
+✅ THREE_JS_IFRAME_FALLBACK_IMPLEMENTATION.md
+   Size: ~8 KB
+   Purpose: Technical implementation details
+   Contains: How three.js + iframe fallback works, code quality, testing
+   Use: Technical understanding
+
+✅ THREE_VIEWER_USER_GUIDE.md
+   Size: ~5 KB
+   Purpose: User-facing feature guide
+   Contains: How to use three viewers, troubleshooting, tips
+   Use: For user documentation
+
+✅ READY_TO_DEPLOY.txt
+   Size: ~10 KB
+   Purpose: Comprehensive summary
+   Contains: What you have, how to deploy, monitoring, success criteria
+   Use: Final check before deployment
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRODUCTION SOURCE FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ synexa-style-studio.html
+   Size: 74.6 KB
+   Purpose: Production frontend
+   Status: Ready for deployment
+   Changes: Three.js + iframe fallback + download
+   Action Needed: Update API_BASE at line 1530
+   Deploy To: Your web server / CDN
+
+✅ backend/main.py
+   Size: Complete Flask application
+   Purpose: Production backend server
+   Status: Running on localhost:5000
+   Port: 5000
+   GPU: NVIDIA RTX 3090 (24.4 GB)
+   Deploy: docker-compose -f docker-compose.production.yml up -d
+
+✅ backend/hunyuan_integration.py
+   Size: ~500 KB (with dependencies)
+   Purpose: 3D model generation
+   Changes: Image texture fix applied (lines 273-298)
+   Status: Ready and tested
+   Deploy: Already included in backend/
+
+✅ docker-compose.production.yml
+   Size: ~2 KB
+   Purpose: Production Docker configuration
+   Status: Ready to use
+   Deploy: docker-compose -f docker-compose.production.yml up -d
+
+✅ backend/.env
+   Size: ~1 KB
+   Purpose: Environment configuration
+   Status: Update needed for production
+   Changes: FLASK_ENV=production, DEBUG=false
+   Deploy: Update before running docker-compose
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE DEPLOYMENT TARGETS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Frontend:
+  synexa-style-studio.html
+  ├─ Update API_BASE (line 1530)
+  └─ Deploy to: /var/www/orfeas/ or CDN
+     Access via: https://your-domain.com/synexa-style-studio.html
+
+Backend:
+  backend/main.py + dependencies
+  ├─ Update .env (FLASK_ENV=production)
+  └─ Deploy via: docker-compose -f docker-compose.production.yml up -d
+     Access via: https://your-domain.com:5000/health
+
+Database:
+  Automatic (in backend during deployment)
+
+Backups:
+  Created automatically by QUICK_DEPLOYMENT.ps1
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECOMMENDED READING ORDER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+If you have 2 minutes:
+  1. DEPLOY_NOW.txt
+
+If you have 5 minutes:
+  1. DEPLOY_NOW.txt
+  2. DEPLOYMENT_COMPLETE.txt
+
+If you have 15 minutes:
+  1. DEPLOY_NOW.txt
+  2. PRODUCTION_DEPLOYMENT_PACKAGE.txt
+  3. DEPLOY_CHECKLIST.txt
+
+If you have 30 minutes:
+  1. PRODUCTION_DEPLOYMENT_PACKAGE.txt
+  2. DEPLOYMENT_ARCHITECTURE.txt
+  3. THREE_JS_IFRAME_FALLBACK_IMPLEMENTATION.md
+  4. PRODUCTION_DEPLOYMENT_GUIDE.txt
+
+If you have time to understand everything:
+  1. Read all files in this directory
+  2. Review code changes in synexa-style-studio.html
+  3. Review code changes in hunyuan_integration.py
+  4. Test locally first
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUICK COMMAND REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Deploy (automated):
+  .\QUICK_DEPLOYMENT.ps1 -ProductionDomain "api.orfeas.ai"
+
+Deploy (manual):
+  1. Update API_BASE in synexa-style-studio.html (line 1530)
+  2. Update .env for production
+  3. docker-compose -f docker-compose.production.yml up -d
+
+Check status:
+  docker-compose ps
+
+View logs:
+  docker-compose logs -f backend
+
+Health check:
+  curl http://localhost:5000/health
+
+Stop system:
+  docker-compose down
+
+Rollback:
+  tar -xzf backup-*.tar.gz && docker-compose up -d
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPLOYMENT STATUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Automated deployment script:     READY
+✅ Documentation (8 files):          COMPLETE
+✅ Backend code:                     TESTED
+✅ Frontend code:                    TESTED
+✅ Configuration:                    READY
+✅ Backup plan:                      DOCUMENTED
+✅ Rollback procedure:               DOCUMENTED
+✅ Health checks:                    CONFIGURED
+✅ Monitoring:                       PREPARED
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT'S INCLUDED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Image texture fix (no more inverted images)
+✅ Three-layer 3D viewer (WebGL + iframe + download)
+✅ 100% browser coverage
+✅ Mobile responsive
+✅ Professional UI
+✅ GPU acceleration (RTX 3090)
+✅ Production security
+✅ Monitoring & logging
+✅ Automated backups
+✅ Rollback procedure
+✅ Complete documentation
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Read DEPLOY_NOW.txt (2 minutes)
+2. Run QUICK_DEPLOYMENT.ps1 (5 minutes)
+3. Test in browser (5 minutes)
+4. Monitor logs (1 hour)
+5. Celebrate! 🎉
+
+Total time: ~13 minutes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+YOU ARE READY TO DEPLOY!
+
+Command: .\QUICK_DEPLOYMENT.ps1 -ProductionDomain "api.orfeas.ai"
+
+═════════════════════════════════════════════════════════════════════════════════

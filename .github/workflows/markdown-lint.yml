@@ -1,0 +1,109 @@
+name: Markdown Lint
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "**.md"
+      - ".markdownlint.json"
+      - ".github/workflows/markdown-lint.yml"
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "**.md"
+      - ".markdownlint.json"
+
+jobs:
+  markdownlint:
+    name: Lint Markdown Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name:  Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name:  Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name:  Install markdownlint-cli
+        run: |
+          npm install -g markdownlint-cli
+          markdownlint --version
+
+      - name:  Lint Markdown Files
+        id: lint
+        run: |
+          echo "##  Markdown Lint Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Find all markdown files
+          MD_FILES=$(find . -type f -name "*.md" -not -path "*/node_modules/*" -not -path "*/.git/*")
+
+          if [ -z "$MD_FILES" ]; then
+            echo " No markdown files found" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          # Count files
+          FILE_COUNT=$(echo "$MD_FILES" | wc -l)
+          echo " **Total Files:** $FILE_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Run markdownlint
+          if markdownlint $MD_FILES; then
+            echo " **All markdown files passed lint checks!**" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          else
+            echo " **Markdown lint errors found**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "###  How to Fix" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "1. **VS Code:** Save file to auto-fix (if configured)" >> $GITHUB_STEP_SUMMARY
+            echo "2. **CLI:** \`markdownlint --fix <file>\`" >> $GITHUB_STEP_SUMMARY
+            echo "3. **Manual:** Check \`md/MARKDOWN_LINT_PREVENTION_GUIDE.md\`" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name:  Comment on PR (if failed)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `##  Markdown Lint Check Failed
+
+              This PR contains markdown files with lint errors. Please fix them before merging.
+
+              ###  How to Fix
+
+              1. **VS Code:** Save file to auto-fix (if configured)
+              2. **CLI:** \`markdownlint --fix <file>\`
+              3. **Manual:** Check \`md/MARKDOWN_LINT_PREVENTION_GUIDE.md\`
+
+              ###  Documentation
+
+              - [Markdown Lint Prevention Guide](./md/MARKDOWN_LINT_PREVENTION_GUIDE.md)
+              - [Configuration File](./.markdownlint.json)
+
+              Re-run the workflow after fixing the errors.`
+            })
+
+      - name:  Upload Lint Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: markdown-lint-results
+          path: |
+            .markdownlint.json
+          retention-days: 30

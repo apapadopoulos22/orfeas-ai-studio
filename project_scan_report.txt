@@ -1,0 +1,141 @@
+================================================================================
+PROJECT SCAN REPORT - MOJIBAKE & LINTING ISSUES
+================================================================================
+
+SUMMARY:
+  Files with mojibake issues: 4
+  Files with encoding issues: 1
+  Files with linting issues: 2937
+
+================================================================================
+MOJIBAKE ISSUES:
+================================================================================
+
+FILE: md\MOJIBAKE_FIX_COMPLETE.md
+  Line 66: Pattern 'Ã©' found
+    Content: 3. **scan_project_issues.py** - Contains regex patterns like `â€¢`, `Ã©`, etc.
+  Line 66: Pattern 'â€¢' found
+    Content: 3. **scan_project_issues.py** - Contains regex patterns like `â€¢`, `Ã©`, etc.
+  Line 78: Pattern 'â€¢' found
+    Content: | `â€¢` | `•` (bullet) | 100+ |
+  Line 79: Pattern 'Ã©' found
+    Content: | `Ã©` | `é` | 50+ |
+  Line 80: Pattern 'Ã¨' found
+    Content: | `Ã¨` | `è` | 40+ |
+  ... and 10 more issues
+
+FILE: project_scan_report.json
+  Line 11: Pattern 'â€™' found
+    Content: "pattern": "â€™",
+  Line 12: Pattern 'â€™' found
+    Content: "content": "\"pattern\": \"â€™\","
+  Line 16: Pattern 'â€™' found
+    Content: "pattern": "â€™",
+  Line 17: Pattern 'â€™' found
+    Content: "content": "\"content\": \"\\\"pattern\\\": \\\"â€™\\\",\""
+  Line 21: Pattern 'â€™' found
+    Content: "pattern": "â€™",
+  ... and 16049 more issues
+
+FILE: project_scan_report.txt
+  Line 15: Pattern 'Ã©' found
+    Content: Line 66: Pattern 'Ã©' found
+  Line 16: Pattern 'Ã©' found
+    Content: Content: 3. **scan_project_issues.py** - Contains regex patterns like `â€¢`, `Ã©`, etc.
+  Line 16: Pattern 'â€¢' found
+    Content: Content: 3. **scan_project_issues.py** - Contains regex patterns like `â€¢`, `Ã©`, etc.
+  Line 17: Pattern 'â€¢' found
+    Content: Line 66: Pattern 'â€¢' found
+  Line 18: Pattern 'Ã©' found
+    Content: Content: 3. **scan_project_issues.py** - Contains regex patterns like `â€¢`, `Ã©`, etc.
+  ... and 46 more issues
+
+FILE: scan_project_issues.py
+  Line 16: Pattern 'â€™' found
+    Content: (r'â€™', "'"),  # Smart apostrophe
+  Line 17: Pattern 'â€œ' found
+    Content: (r'â€œ', '"'),  # Left double quote
+  Line 19: Pattern 'â€"' found
+    Content: (r'â€"', '—'),  # Em dash
+  Line 19: Pattern 'â€"' found
+    Content: (r'â€"', '—'),  # Em dash
+  Line 20: Pattern 'â€"' found
+    Content: (r'â€"', '–'),  # En dash
+  ... and 11 more issues
+
+================================================================================
+ENCODING ISSUES:
+================================================================================
+
+FILE: scan_output.txt
+  - Cannot decode as UTF-8
+
+================================================================================
+LINTING ISSUES (Python files):
+================================================================================
+
+FILE: Hunyuan3D-2.1-SOURCE\api_server.py
+  - Line 171: Line too long (149 > 120)
+
+FILE: Hunyuan3D-2.1-SOURCE\demo.py
+  - Line 16: Line too long (130 > 120)
+
+FILE: Hunyuan3D-2.1-SOURCE\gradio_app.py
+  - Line 762: Line too long (191 > 120)
+
+FILE: Hunyuan3D-2.1-SOURCE\hy3dpaint\hunyuanpaintpbr\unet\modules.py
+  - Line 647: Line too long (155 > 120)
+
+FILE: Hunyuan3D-2.1-SOURCE\hy3dshape\hy3dshape\models\autoencoders\attention_blocks.py
+  - Line 554: Line too long (143 > 120)
+  - Line 600: Line too long (128 > 120)
+  - Line 647: Line too long (132 > 120)
+  - Line 660: Line too long (148 > 120)
+
+FILE: Hunyuan3D-2.1-SOURCE\hy3dshape\minimal_demo_with_ckpt.py
+  - Line 29: Line too long (125 > 120)
+  - Line 30: Line too long (144 > 120)
+
+FILE: Hunyuan3D-2.1-SOURCE\model_worker.py
+  - Line 129: Line too long (153 > 120)
+
+FILE: Hunyuan3D-2.1\Hunyuan3D-2\docs\source\conf.py
+  - Line 117: Line too long (137 > 120)
+  - Line 119: Line too long (231 > 120)
+
+FILE: Hunyuan3D-2.1\Hunyuan3D-2\gradio_app.py
+  - Line 126: Line too long (123 > 120)
+  - Line 432: Line too long (139 > 120)
+  - Line 502: Line too long (155 > 120)
+  - Line 510: Line too long (172 > 120)
+  - Line 673: Line too long (191 > 120)
+
+FILE: Hunyuan3D-2.1\Hunyuan3D-2\hy3dgen\shapegen\models\autoencoders\attention_blocks.py
+  - Line 544: Line too long (143 > 120)
+  - Line 590: Line too long (128 > 120)
+  - Line 637: Line too long (132 > 120)
+  - Line 650: Line too long (148 > 120)
+
+================================================================================
+STATISTICS BY FILE TYPE:
+================================================================================
+
+.json:
+  Mojibake: 1 files
+  Encoding: 0 files
+  Linting:  0 files
+
+.md:
+  Mojibake: 1 files
+  Encoding: 0 files
+  Linting:  0 files
+
+.py:
+  Mojibake: 1 files
+  Encoding: 0 files
+  Linting:  2937 files
+
+.txt:
+  Mojibake: 1 files
+  Encoding: 1 files
+  Linting:  0 files

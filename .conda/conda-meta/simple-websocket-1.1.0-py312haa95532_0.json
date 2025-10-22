@@ -1,0 +1,178 @@
+{
+  "build": "py312haa95532_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/win-64",
+  "constrains": [],
+  "depends": [
+    "python >=3.12,<3.13.0a0",
+    "wsproto"
+  ],
+  "extracted_package_dir": "C:\\Users\\johng\\anaconda3\\pkgs\\simple-websocket-1.1.0-py312haa95532_0",
+  "files": [
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/INSTALLER",
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/METADATA",
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/RECORD",
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/REQUESTED",
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/WHEEL",
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/direct_url.json",
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/licenses/LICENSE",
+    "Lib/site-packages/simple_websocket-1.1.0.dist-info/top_level.txt",
+    "Lib/site-packages/simple_websocket/__init__.py",
+    "Lib/site-packages/simple_websocket/__pycache__/__init__.cpython-312.pyc",
+    "Lib/site-packages/simple_websocket/__pycache__/aiows.cpython-312.pyc",
+    "Lib/site-packages/simple_websocket/__pycache__/asgi.cpython-312.pyc",
+    "Lib/site-packages/simple_websocket/__pycache__/errors.cpython-312.pyc",
+    "Lib/site-packages/simple_websocket/__pycache__/ws.cpython-312.pyc",
+    "Lib/site-packages/simple_websocket/aiows.py",
+    "Lib/site-packages/simple_websocket/asgi.py",
+    "Lib/site-packages/simple_websocket/errors.py",
+    "Lib/site-packages/simple_websocket/ws.py"
+  ],
+  "fn": "simple-websocket-1.1.0-py312haa95532_0.conda",
+  "license": "MIT",
+  "link": {
+    "source": "C:\\Users\\johng\\anaconda3\\pkgs\\simple-websocket-1.1.0-py312haa95532_0",
+    "type": 1
+  },
+  "md5": "63e52e6da1cf4b1640c3b08824645d7b",
+  "name": "simple-websocket",
+  "package_tarball_full_path": "C:\\Users\\johng\\anaconda3\\pkgs\\simple-websocket-1.1.0-py312haa95532_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "e466796f818d00fe06d21e02c30d9ce2d2c8f0b0404f9c6876e28b645e587424",
+        "sha256_in_prefix": "e466796f818d00fe06d21e02c30d9ce2d2c8f0b0404f9c6876e28b645e587424",
+        "size_in_bytes": 1585
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "1da7c4d03bece3461ad47bd6885769e41f22306c3141be65bcaef1ca616a09b7",
+        "sha256_in_prefix": "1da7c4d03bece3461ad47bd6885769e41f22306c3141be65bcaef1ca616a09b7",
+        "size_in_bytes": 1428
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9",
+        "sha256_in_prefix": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9",
+        "size_in_bytes": 91
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "cf5b6d2ed911839a63b03e5c60c68a73d874ac184f0efba2207174744dc5c691",
+        "sha256_in_prefix": "cf5b6d2ed911839a63b03e5c60c68a73d874ac184f0efba2207174744dc5c691",
+        "size_in_bytes": 96
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/licenses/LICENSE",
+        "path_type": "hardlink",
+        "sha256": "4b8abadcc5e3dd29c71905b84952945699f0a7ba41e6af99eaba46faabe95bb7",
+        "sha256_in_prefix": "4b8abadcc5e3dd29c71905b84952945699f0a7ba41e6af99eaba46faabe95bb7",
+        "size_in_bytes": 1072
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket-1.1.0.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "82c94cb6461dd87ddec67f4943174082c2810844990f24f19ae90017d233e5a0",
+        "sha256_in_prefix": "82c94cb6461dd87ddec67f4943174082c2810844990f24f19ae90017d233e5a0",
+        "size_in_bytes": 17
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "10a6a432454ef6f8395a55e31c42624f02367a602ab3dab6d99c49cfdbc9e1ca",
+        "sha256_in_prefix": "10a6a432454ef6f8395a55e31c42624f02367a602ab3dab6d99c49cfdbc9e1ca",
+        "size_in_bytes": 167
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "1efcea954ca59e252e9cb045d988019afef291b19a8a7368b55da9b1e1fa1fc6",
+        "sha256_in_prefix": "1efcea954ca59e252e9cb045d988019afef291b19a8a7368b55da9b1e1fa1fc6",
+        "size_in_bytes": 333
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/__pycache__/aiows.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "dc1ca1bb036d3fc8fc9ef8e6dfeae197ad42a39684e533954df6431b999f7376",
+        "sha256_in_prefix": "dc1ca1bb036d3fc8fc9ef8e6dfeae197ad42a39684e533954df6431b999f7376",
+        "size_in_bytes": 24543
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/__pycache__/asgi.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "63a45249f8d48543f5a826efd00049d79cebe95b5661e6bf0eed815d6cefe24a",
+        "sha256_in_prefix": "63a45249f8d48543f5a826efd00049d79cebe95b5661e6bf0eed815d6cefe24a",
+        "size_in_bytes": 3212
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/__pycache__/errors.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "89ae1ee62cc2aead36509be3a5a8cacb5f318e3089ed7a050554cd3308a77e18",
+        "sha256_in_prefix": "89ae1ee62cc2aead36509be3a5a8cacb5f318e3089ed7a050554cd3308a77e18",
+        "size_in_bytes": 1534
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/__pycache__/ws.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "d26b5e54fc9ab8313bcb0d9b00e0275ab95d0a30297fb1908028d081a5ccc773",
+        "sha256_in_prefix": "d26b5e54fc9ab8313bcb0d9b00e0275ab95d0a30297fb1908028d081a5ccc773",
+        "size_in_bytes": 24728
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/aiows.py",
+        "path_type": "hardlink",
+        "sha256": "087201200376733d34e12e2d3de4cb01c42e4fd881830ebe840d100ff2590f50",
+        "sha256_in_prefix": "087201200376733d34e12e2d3de4cb01c42e4fd881830ebe840d100ff2590f50",
+        "size_in_bytes": 20978
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/asgi.py",
+        "path_type": "hardlink",
+        "sha256": "89cdad9ab508faef6f8cc3738ea20e45cf20ee902c1b015df582488e9a471d55",
+        "sha256_in_prefix": "89cdad9ab508faef6f8cc3738ea20e45cf20ee902c1b015df582488e9a471d55",
+        "size_in_bytes": 1823
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/errors.py",
+        "path_type": "hardlink",
+        "sha256": "06d47c078388f852f63bf552222f5c98b3286c7a9c276161bd09d1b6fbcc952a",
+        "sha256_in_prefix": "06d47c078388f852f63bf552222f5c98b3286c7a9c276161bd09d1b6fbcc952a",
+        "size_in_bytes": 652
+      },
+      {
+        "_path": "Lib/site-packages/simple_websocket/ws.py",
+        "path_type": "hardlink",
+        "sha256": "363ec348c9d484e5c6608f63e70bc93299b95ff73b88d0e0d07ec4a4940f6fda",
+        "sha256_in_prefix": "363ec348c9d484e5c6608f63e70bc93299b95ff73b88d0e0d07ec4a4940f6fda",
+        "size_in_bytes": 22789
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "b908be794e2aa3901a873698796e15f519fb41e3c22cbb70532cfdba0f88f786",
+  "size": 35516,
+  "subdir": "win-64",
+  "timestamp": 1749547992000,
+  "url": "https://repo.anaconda.com/pkgs/main/win-64/simple-websocket-1.1.0-py312haa95532_0.conda",
+  "version": "1.1.0"
+}

@@ -1,0 +1,21 @@
+# ============================================================================
+# ORFEAS AI 2Dâ†’3D Studio - Grafana Dashboard Provisioning
+# ============================================================================
+# Author: ORFEAS Protocol - Monitoring Master
+# Date: October 14, 2025
+# Purpose: Auto-provision dashboards in Grafana
+# ============================================================================
+
+apiVersion: 1
+
+providers:
+  - name: 'ORFEAS Dashboards'
+    orgId: 1
+    folder: 'ORFEAS AI'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: true

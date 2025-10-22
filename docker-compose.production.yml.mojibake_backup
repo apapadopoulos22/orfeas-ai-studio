@@ -1,0 +1,246 @@
+# =============================================================================
+# ORFEAS AI 2DÃ¢â€ â€™3D Studio - Production Docker Compose
+# =============================================================================
+# ORFEAS AI Project
+#
+# Full production stack with:
+# - Backend (Flask + Gunicorn + GPU acceleration)
+# - Nginx (Reverse proxy + HTTPS)
+# - Redis (Job queue)
+# - Prometheus (Metrics collection)
+# - Grafana (Metrics visualization)
+# =============================================================================
+
+version: '3.8'
+
+# ==========================================
+# SERVICES
+# ==========================================
+
+services:
+  # ----------------------------------------
+  # Backend: ORFEAS AI 2DÃ¢â€ â€™3D Generation
+  # ----------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: orfeas-backend:production
+    container_name: orfeas-backend-production
+    restart: unless-stopped
+
+    environment:
+      # Flask configuration
+      FLASK_ENV: production
+      TESTING: 0
+      LOG_LEVEL: INFO
+
+      # GPU configuration
+      GPU_MEMORY_LIMIT: 0.8
+      MAX_CONCURRENT_JOBS: 3
+      DEVICE: cuda
+      CUDA_VISIBLE_DEVICES: 0
+
+      # Model configuration
+      HUNYUAN3D_PATH: /app/Hunyuan3D-2.1
+      MODEL_CACHE_DIR: /root/.cache/huggingface
+      DEFAULT_STEPS: 50
+      MAX_STEPS: 100
+
+      # Performance
+      XFORMERS_DISABLED: 1
+
+      # Monitoring
+      PROMETHEUS_PORT: 9090
+
+    ports:
+      - "5000:5000"
+
+    volumes:
+      # Persistent model cache
+      - huggingface-cache:/root/.cache/huggingface
+      - hy3dgen-cache:/root/.cache/hy3dgen
+
+      # Application data
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+
+      # Configuration
+      - ./.env.production:/app/.env:ro
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    networks:
+      - orfeas-network
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ----------------------------------------
+  # Nginx: Reverse Proxy + HTTPS
+  # ----------------------------------------
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: orfeas-nginx
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./orfeas-studio.html:/usr/share/nginx/html/index.html:ro
+      - ./orfeas-3d-engine-hybrid.js:/usr/share/nginx/html/orfeas-3d-engine-hybrid.js:ro
+      - ./service-worker.js:/usr/share/nginx/html/service-worker.js:ro
+      - ./manifest.json:/usr/share/nginx/html/manifest.json:ro
+      - ./icons:/usr/share/nginx/html/icons:ro
+
+    depends_on:
+      - backend
+
+    networks:
+      - orfeas-network
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ----------------------------------------
+  # Redis: Job Queue & Caching
+  # ----------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: orfeas-redis
+    restart: unless-stopped
+
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis-data:/data
+
+    networks:
+      - orfeas-network
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ----------------------------------------
+  # Prometheus: Metrics Collection
+  # ----------------------------------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: orfeas-prometheus
+    restart: unless-stopped
+
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./backend/monitoring_stack/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+    depends_on:
+      - backend
+
+    networks:
+      - orfeas-network
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ----------------------------------------
+  # Grafana: Metrics Visualization
+  # ----------------------------------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: orfeas-grafana
+    restart: unless-stopped
+
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: orfeas_admin_2025
+      GF_USERS_ALLOW_SIGN_UP: false
+      GF_SERVER_ROOT_URL: http://localhost:3000
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./backend/monitoring_stack/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/orfeas-dashboard.json:ro
+
+    depends_on:
+      - prometheus
+
+    networks:
+      - orfeas-network
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ==========================================
+# NETWORKS
+# ==========================================
+
+networks:
+  orfeas-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# ==========================================
+# VOLUMES
+# ==========================================
+
+volumes:
+  # Model caches (persistent)
+  huggingface-cache:
+    driver: local
+  hy3dgen-cache:
+    driver: local
+
+  # Application data
+  redis-data:
+    driver: local
+
+  # Monitoring data
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

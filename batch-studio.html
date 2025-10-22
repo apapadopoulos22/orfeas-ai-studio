@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ORFEAS BATCH STUDIO - Multi-Image 3D Generation</title>
+
+    <!-- Preconnect to backend -->
+    <link rel="preconnect" href="http://127.0.0.1:5000" crossorigin>
+    <link rel="preconnect" href="http://localhost:5000" crossorigin>
+
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #e74c3c;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #95a5a6;
+            font-size: 1.1rem;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #95a5a6;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .upload-zone {
+            border: 3px dashed rgba(231, 76, 60, 0.5);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone:hover {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .upload-zone.dragover {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #e74c3c;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ecf0f1;
+            font-weight: 500;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .queue-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .job-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .job-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .job-info {
+            padding: 1rem;
+        }
+
+        .job-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(149, 165, 166, 0.3);
+            color: #95a5a6;
+        }
+
+        .status-processing {
+            background: rgba(52, 152, 219, 0.3);
+            color: #3498db;
+            animation: pulse 2s infinite;
+        }
+
+        .status-complete {
+            background: rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+
+        .status-error {
+            background: rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .job-details {
+            font-size: 0.85rem;
+            color: #95a5a6;
+            margin: 0.5rem 0;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-remove {
+            background: rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        .gpu-monitor {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gpu-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #e74c3c;
+        }
+
+        .gpu-bar {
+            margin-bottom: 1rem;
+        }
+
+        .gpu-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .gpu-progress {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .gpu-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #e74c3c);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .queue-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1> ORFEAS BATCH STUDIO</h1>
+            <p>Multi-Image 3D Generation with Real-Time Processing</p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-label">Total Jobs</div>
+                <div class="stat-value" id="stat-total">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Processing</div>
+                <div class="stat-value" id="stat-processing">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Completed</div>
+                <div class="stat-value" id="stat-completed">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Queue</div>
+                <div class="stat-value" id="stat-queue">0</div>
+            </div>
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon"></div>
+            <div class="upload-text">Drag & Drop Images Here</div>
+            <div class="upload-hint">or click to select files (supports multiple images)</div>
+            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg" multiple>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <div class="control-group">
+                <label class="control-label">Output Format</label>
+                <select id="formatSelect" class="control-input">
+                    <option value="stl">STL (3D Printing)</option>
+                    <option value="obj">OBJ (Universal)</option>
+                    <option value="glb">GLB (Web3D)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Quality Level</label>
+                <select id="qualitySelect" class="control-input">
+                    <option value="low">Low (Fast - 20s)</option>
+                    <option value="medium" selected>Medium (Balanced - 40s)</option>
+                    <option value="high">High (Best Quality - 60s)</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" id="startBtn" disabled>
+                 Start Batch Generation
+            </button>
+        </div>
+
+        <!-- Job Queue -->
+        <div class="queue-container" id="jobQueue"></div>
+
+        <!-- GPU Monitor -->
+        <div class="gpu-monitor">
+            <div class="gpu-title">âš¡ GPU Utilization Monitor</div>
+            <div class="gpu-bar">
+                <div class="gpu-label">
+                    <span>GPU Memory</span>
+                    <span id="gpu-memory-text">0 MB / 0 MB</span>
+                </div>
+                <div class="gpu-progress">
+                    <div class="gpu-fill" id="gpu-memory-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="gpu-bar">
+                <div class="gpu-label">
+                    <span>Processing Slots</span>
+                    <span id="gpu-slots-text">0 / 4</span>
+                </div>
+                <div class="gpu-progress">
+                    <div class="gpu-fill" id="gpu-slots-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // ORFEAS BATCH STUDIO - Phase 2.2 Maximum Efficiency
+        // ============================================================================
+
+        const BACKEND_URL = 'http://127.0.0.1:5000';
+        let socket = null;
+        let jobs = [];
+        let uploadedFiles = [];
+
+        // Initialize Socket.IO
+        function initializeSocket() {
+            socket = io(BACKEND_URL, {
+                transports: ['websocket', 'polling'],
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000
+            });
+
+            socket.on('connect', () => {
+                console.log(' Connected to backend');
+                updateConnectionStatus(true);
+            });
+
+            socket.on('disconnect', () => {
+                console.log(' Disconnected from backend');
+                updateConnectionStatus(false);
+            });
+
+            socket.on('batch_progress', (data) => {
+                console.log(' Batch progress:', data);
+                handleBatchProgress(data);
+            });
+
+            socket.on('generation_progress', (data) => {
+                console.log(' Generation progress:', data);
+                handleGenerationProgress(data);
+            });
+
+            socket.on('generation_complete', (data) => {
+                console.log(' Generation complete:', data);
+                handleGenerationComplete(data);
+            });
+
+            socket.on('generation_error', (data) => {
+                console.log(' Generation error:', data);
+                handleGenerationError(data);
+            });
+        }
+
+        // Upload Zone Handlers
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const startBtn = document.getElementById('startBtn');
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            const validFiles = Array.from(files).filter(file => {
+                return file.type.startsWith('image/');
+            });
+
+            if (validFiles.length === 0) {
+                alert('Please select valid image files (PNG, JPG, JPEG)');
+                return;
+            }
+
+            uploadedFiles = [...uploadedFiles, ...validFiles];
+
+            validFiles.forEach(file => {
+                const jobId = generateJobId();
+                const job = {
+                    id: jobId,
+                    file: file,
+                    status: 'pending',
+                    progress: 0,
+                    format: document.getElementById('formatSelect').value,
+                    quality: document.getElementById('qualitySelect').value
+                };
+                jobs.push(job);
+                createJobCard(job);
+            });
+
+            updateStats();
+            startBtn.disabled = jobs.length === 0;
+        }
+
+        function createJobCard(job) {
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.id = `job-${job.id}`;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                card.innerHTML = `
+                    <img class="job-image" src="${e.target.result}" alt="Preview">
+                    <div class="job-info">
+                        <div class="job-status">
+                            <span class="status-badge status-pending">PENDING</span>
+                            <span>${job.file.name}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="job-details">
+                            Format: ${job.format.toUpperCase()} | Quality: ${job.quality}
+                        </div>
+                        <div class="job-actions">
+                            <button class="btn btn-small btn-download hidden" onclick="downloadJob('${job.id}')">
+                                 Download
+                            </button>
+                            <button class="btn btn-small btn-remove" onclick="removeJob('${job.id}')">
+                                 Remove
+                            </button>
+                        </div>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(job.file);
+
+            document.getElementById('jobQueue').appendChild(card);
+        }
+
+        async function startBatchGeneration() {
+            if (jobs.length === 0) return;
+
+            startBtn.disabled = true;
+            startBtn.textContent = ' Processing...';
+
+            const formData = new FormData();
+
+            // Add files
+            jobs.forEach((job, index) => {
+                formData.append('files', job.file);
+            });
+
+            // Add batch configuration
+            formData.append('format_type', document.getElementById('formatSelect').value);
+            formData.append('quality', document.getElementById('qualitySelect').value);
+            formData.append('batch_size', '4'); // Process 4 simultaneously
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/batch-generate`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log(' Batch generation started:', data);
+                    // Update job statuses
+                    jobs.forEach((job, index) => {
+                        if (data.job_ids && data.job_ids[index]) {
+                            job.backendJobId = data.job_ids[index];
+                            updateJobStatus(job.id, 'processing', 0);
+                        }
+                    });
+                } else {
+                    alert(`Error: ${data.error || 'Batch generation failed'}`);
+                    startBtn.disabled = false;
+                    startBtn.textContent = ' Start Batch Generation';
+                }
+            } catch (error) {
+                console.error(' Batch generation error:', error);
+                alert('Failed to start batch generation. Is the backend running?');
+                startBtn.disabled = false;
+                startBtn.textContent = ' Start Batch Generation';
+            }
+        }
+
+        function updateJobStatus(jobId, status, progress) {
+            const job = jobs.find(j => j.id === jobId);
+            if (!job) return;
+
+            job.status = status;
+            job.progress = progress;
+
+            const card = document.getElementById(`job-${jobId}`);
+            if (!card) return;
+
+            const statusBadge = card.querySelector('.status-badge');
+            const progressFill = card.querySelector('.progress-fill');
+            const downloadBtn = card.querySelector('.btn-download');
+
+            statusBadge.textContent = status.toUpperCase();
+            statusBadge.className = `status-badge status-${status}`;
+            progressFill.style.width = `${progress}%`;
+
+            if (status === 'complete') {
+                downloadBtn.classList.remove('hidden');
+            }
+
+            updateStats();
+        }
+
+        function handleBatchProgress(data) {
+            // Update GPU monitor
+            if (data.gpu_usage) {
+                updateGPUMonitor(data.gpu_usage);
+            }
+        }
+
+        function handleGenerationProgress(data) {
+            const job = jobs.find(j => j.backendJobId === data.job_id);
+            if (job) {
+                updateJobStatus(job.id, 'processing', data.progress || 0);
+            }
+        }
+
+        function handleGenerationComplete(data) {
+            const job = jobs.find(j => j.backendJobId === data.job_id);
+            if (job) {
+                job.outputFile = data.output_file;
+                updateJobStatus(job.id, 'complete', 100);
+            }
+
+            // Check if all jobs complete
+            const allComplete = jobs.every(j => j.status === 'complete' || j.status === 'error');
+            if (allComplete) {
+                startBtn.disabled = false;
+                startBtn.textContent = ' Batch Complete';
+            }
+        }
+
+        function handleGenerationError(data) {
+            const job = jobs.find(j => j.backendJobId === data.job_id);
+            if (job) {
+                updateJobStatus(job.id, 'error', 0);
+            }
+        }
+
+        function updateGPUMonitor(gpuData) {
+            const memoryBar = document.getElementById('gpu-memory-bar');
+            const memoryText = document.getElementById('gpu-memory-text');
+            const slotsBar = document.getElementById('gpu-slots-bar');
+            const slotsText = document.getElementById('gpu-slots-text');
+
+            if (gpuData.memory_used_mb && gpuData.memory_total_mb) {
+                const memoryPercent = (gpuData.memory_used_mb / gpuData.memory_total_mb) * 100;
+                memoryBar.style.width = `${memoryPercent}%`;
+                memoryText.textContent = `${gpuData.memory_used_mb} MB / ${gpuData.memory_total_mb} MB`;
+            }
+
+            const processingJobs = jobs.filter(j => j.status === 'processing').length;
+            const slotsPercent = (processingJobs / 4) * 100;
+            slotsBar.style.width = `${slotsPercent}%`;
+            slotsText.textContent = `${processingJobs} / 4`;
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = jobs.length;
+            document.getElementById('stat-processing').textContent = jobs.filter(j => j.status === 'processing').length;
+            document.getElementById('stat-completed').textContent = jobs.filter(j => j.status === 'complete').length;
+            document.getElementById('stat-queue').textContent = jobs.filter(j => j.status === 'pending').length;
+        }
+
+        async function downloadJob(jobId) {
+            const job = jobs.find(j => j.id === jobId);
+            if (!job || !job.outputFile) return;
+
+            window.open(`${BACKEND_URL}${job.outputFile}`, '_blank');
+        }
+
+        function removeJob(jobId) {
+            const jobIndex = jobs.findIndex(j => j.id === jobId);
+            if (jobIndex === -1) return;
+
+            const job = jobs[jobIndex];
+            if (job.status === 'processing') {
+                if (!confirm('This job is currently processing. Remove anyway?')) {
+                    return;
+                }
+            }
+
+            jobs.splice(jobIndex, 1);
+            document.getElementById(`job-${jobId}`).remove();
+
+            updateStats();
+            startBtn.disabled = jobs.length === 0;
+        }
+
+        function generateJobId() {
+            return `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+
+        function updateConnectionStatus(connected) {
+            // Could add visual indicator here
+            console.log(connected ? ' Backend connected' : ' Backend disconnected');
+        }
+
+        // Start button handler
+        startBtn.addEventListener('click', startBatchGeneration);
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log(' ORFEAS BATCH STUDIO INITIALIZED');
+            initializeSocket();
+        });
+    </script>
+</body>
+</html>

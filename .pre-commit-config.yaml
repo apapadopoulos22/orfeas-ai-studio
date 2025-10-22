@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: utf8-normalization-check
+        name: UTF-8 normalization check (encoding_fixer)
+        entry: python -m backend.tools.encoding_fixer --root . --dry-run --check --summary-only
+        language: system
+        pass_filenames: false
+        types_or: [text]

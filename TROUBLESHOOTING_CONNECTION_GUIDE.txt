@@ -1,0 +1,302 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║  FRONTEND-BACKEND CONNECTION TROUBLESHOOTING GUIDE                     ║
+║                                                                        ║
+║  Quick Reference for Connection Issues                                ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════════════════
+ISSUE HISTORY
+═════════════════════════════════════════════════════════════════════════
+
+Incident: October 22, 2025
+Problem:  Frontend could not connect to backend
+Cause:    API_BASE pointed to production domain (not available locally)
+Fix:      Updated API_BASE to local backend (http://127.0.0.1:5000)
+Status:   RESOLVED ✅
+
+═════════════════════════════════════════════════════════════════════════
+CONFIGURATION REFERENCE
+═════════════════════════════════════════════════════════════════════════
+
+LOCAL DEVELOPMENT SETUP:
+  Frontend API_BASE:  http://127.0.0.1:5000
+  Backend Listen:     0.0.0.0:5000
+  Browser Access:     http://127.0.0.1:5000/studio
+  Health Check:       http://127.0.0.1:5000/health
+
+PRODUCTION SETUP (when deploying):
+  Frontend API_BASE:  https://your-domain.com (or https://api.orfeas.ai)
+  Backend Listen:     (configured by your hosting)
+  Browser Access:     https://your-domain.com/studio
+  Health Check:       https://your-domain.com/health
+
+═════════════════════════════════════════════════════════════════════════
+QUICK DIAGNOSTICS
+═════════════════════════════════════════════════════════════════════════
+
+Check Backend Running:
+  PowerShell: Get-Process python
+  Expected: python.exe listed with PID
+
+Check Port Listening:
+  PowerShell: netstat -ano | findstr :5000
+  Expected: LISTENING on 127.0.0.1:5000
+
+Check Health Endpoint:
+  PowerShell: Invoke-WebRequest http://127.0.0.1:5000/health
+  Expected: StatusCode 200
+
+Check Frontend Configuration:
+  File: synexa-style-studio.html
+  Line 1531: const API_BASE = "http://127.0.0.1:5000"
+  Expected: http://127.0.0.1:5000 (NOT https://api.orfeas.ai)
+
+═════════════════════════════════════════════════════════════════════════
+COMMON PROBLEMS & SOLUTIONS
+═════════════════════════════════════════════════════════════════════════
+
+Problem 1: "Cannot connect to backend"
+  Symptoms:
+    • Upload button doesn't work
+    • Console shows connection errors
+    • Health endpoint unreachable
+
+  Diagnosis:
+    $ Get-Process python                    # Backend running?
+    $ netstat -ano | findstr :5000          # Port listening?
+    $ Invoke-WebRequest http://127.0.0.1:5000/health  # Responding?
+
+  Solutions:
+    1. Start backend: cd backend && python main.py
+    2. Wait 60 seconds for initialization
+    3. Check firewall allows port 5000
+    4. Verify no other process on port 5000
+    5. Clear browser cache: Ctrl+Shift+Delete
+
+Problem 2: "API_BASE pointing to wrong domain"
+  Symptoms:
+    • CORS error in browser console
+    • Works locally, fails on different machine
+    • Can't upload images
+
+  Check:
+    Open synexa-style-studio.html
+    Search for: const API_BASE
+    Line 1531: Should be http://127.0.0.1:5000 (local)
+             or https://your-domain.com (production)
+
+  Fix:
+    For Local: const API_BASE = "http://127.0.0.1:5000";
+    For Prod:  const API_BASE = "https://api.orfeas.ai";
+
+Problem 3: "Browser cache showing old config"
+  Symptoms:
+    • Changes to HTML don't take effect
+    • Old API_BASE still being used
+    • Browser console shows old errors
+
+  Solution:
+    Hard refresh browser: Ctrl+F5 (Windows) or Cmd+Shift+R (Mac)
+    Or: Clear browser cache completely
+        Settings → Privacy → Clear browsing data
+
+Problem 4: "Firewall blocking port 5000"
+  Symptoms:
+    • Connection refused error
+    • Works on same machine, not from network
+
+  Solutions (Windows):
+    1. Open Windows Defender Firewall
+    2. Allow app through firewall
+    3. Add Python.exe and port 5000
+    4. Or disable firewall for testing: Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled false
+
+Problem 5: "Backend process crashes"
+  Symptoms:
+    • Backend was running, now doesn't respond
+    • Python process stopped
+    • Console shows errors
+
+  Diagnosis:
+    $ Get-Process python                    # Is it running?
+    $ cat backend\logs\backend_requests.log # What's the error?
+
+  Solution:
+    1. Restart backend: python main.py
+    2. Check logs for errors
+    3. Fix GPU memory if OOM
+    4. Verify all dependencies installed
+
+═════════════════════════════════════════════════════════════════════════
+MONITORING CHECKLIST
+═════════════════════════════════════════════════════════════════════════
+
+Daily Checks:
+  □ Backend running: Get-Process python
+  □ Port listening: netstat -ano | findstr :5000
+  □ Health responding: Invoke-WebRequest http://127.0.0.1:5000/health
+  □ No errors in logs: Get-Content backend\logs\backend_requests.log
+  □ GPU healthy: nvidia-smi
+
+On Connection Issues:
+  □ Verify API_BASE in synexa-style-studio.html
+  □ Clear browser cache (Ctrl+F5)
+  □ Check firewall settings
+  □ Review backend logs
+  □ Test health endpoint
+  □ Verify port 5000 available
+  □ Restart backend if needed
+
+═════════════════════════════════════════════════════════════════════════
+COMMANDS REFERENCE
+═════════════════════════════════════════════════════════════════════════
+
+Start Backend:
+  cd c:\Users\johng\Documents\oscar\backend
+  python main.py
+
+Stop Backend:
+  Ctrl+C (in terminal running python main.py)
+
+Test Backend:
+  Invoke-WebRequest http://127.0.0.1:5000/health
+
+View Recent Logs:
+  Get-Content backend\logs\backend_requests.log -Tail 50
+
+Monitor Logs Live:
+  Get-Content backend\logs\backend_requests.log -Tail 50 -Wait
+
+Check GPU Status:
+  nvidia-smi
+
+Check Python Process:
+  Get-Process python
+
+Check Port in Use:
+  netstat -ano | findstr :5000
+
+Kill Python Process:
+  Stop-Process -Name python -Force
+
+═════════════════════════════════════════════════════════════════════════
+FILES INVOLVED
+═════════════════════════════════════════════════════════════════════════
+
+Frontend:
+  File: c:\Users\johng\Documents\oscar\synexa-style-studio.html
+  Critical Line 1531: const API_BASE = "http://127.0.0.1:5000";
+  Purpose: Configures backend URL for API calls
+
+Backend:
+  File: c:\Users\johng\Documents\oscar\backend\main.py
+  Listen: 0.0.0.0:5000
+  Purpose: Flask server handling API requests
+
+Configuration:
+  File: c:\Users\johng\Documents\oscar\START_SERVER.bat
+  Purpose: Launches backend with production settings
+
+Logs:
+  File: c:\Users\johng\Documents\oscar\backend\logs\backend_requests.log
+  Purpose: Request tracking and debugging
+
+═════════════════════════════════════════════════════════════════════════
+ENVIRONMENT VARIABLES (Backend)
+═════════════════════════════════════════════════════════════════════════
+
+FLASK_ENV=production          # Production mode
+DEBUG=false                   # Disable debug (security)
+DEVICE=cuda                   # GPU acceleration
+XFORMERS_DISABLED=1           # Compatibility
+GPU_MEMORY_LIMIT=0.8          # 80% VRAM usage
+MAX_CONCURRENT_JOBS=3         # Parallel processing
+LOCAL_LLM_ENABLED=false       # Default setting
+ENABLE_MONITORING=true        # Health checks
+LOG_LEVEL=INFO                # Logging detail
+
+═════════════════════════════════════════════════════════════════════════
+API ENDPOINTS
+═════════════════════════════════════════════════════════════════════════
+
+Health Check:
+  GET http://127.0.0.1:5000/health
+  Response: {"status": "healthy", "gpu_available": true, ...}
+
+Upload Image:
+  POST http://127.0.0.1:5000/api/upload-image
+  Body: FormData with "image" file
+  Response: {"job_id": "uuid", "status": "success"}
+
+Generate 3D:
+  POST http://127.0.0.1:5000/api/generate-3d
+  Body: {"job_id": "uuid", "format": "stl", "quality": 7, ...}
+  Response: {"job_id": "uuid", "status": "processing"}
+
+Job Status:
+  GET http://127.0.0.1:5000/api/job-status/{job_id}
+  Response: {"status": "completed", "progress": 100, ...}
+
+Download:
+  GET http://127.0.0.1:5000/api/download/{job_id}/{filename}
+  Returns: Binary STL file
+
+═════════════════════════════════════════════════════════════════════════
+TESTING WORKFLOW
+═════════════════════════════════════════════════════════════════════════
+
+1. Test Backend Health:
+   Invoke-WebRequest http://127.0.0.1:5000/health
+
+2. Test Frontend Connection:
+   Open: http://127.0.0.1:5000/studio
+   Check: Browser console for errors (F12)
+
+3. Test Upload:
+   Upload a test image (JPG, PNG, or WebP)
+   Check: Response in browser network tab
+
+4. Test Generation:
+   Click "Generate 3D Model"
+   Wait: 1-5 minutes for processing
+   Check: Model appears in viewer
+
+5. Test Download:
+   Click "Download 3D Model"
+   Verify: STL file downloads
+
+═════════════════════════════════════════════════════════════════════════
+RESOLUTION SUMMARY
+═════════════════════════════════════════════════════════════════════════
+
+What Was Wrong:
+  API_BASE = "https://api.orfeas.ai" (production domain)
+  Backend running on localhost:5000 (local)
+  → CORS error, connection refused
+
+What Was Fixed:
+  API_BASE = "http://127.0.0.1:5000" (local backend)
+  Frontend now connects to running backend
+  → Full functionality restored
+
+Verification:
+  ✅ Backend health responding (HTTP 200)
+  ✅ Frontend API_BASE updated
+  ✅ Connection established
+  ✅ All endpoints accessible
+
+Current Status:
+  ✅ System operational
+  ✅ Ready for use
+  ✅ All features working
+
+═════════════════════════════════════════════════════════════════════════
+
+Document Created: October 22, 2025
+Last Updated: October 22, 2025
+Status: Current
+Version: 1.0
+
+═════════════════════════════════════════════════════════════════════════

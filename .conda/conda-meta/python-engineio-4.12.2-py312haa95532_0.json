@@ -1,0 +1,518 @@
+{
+  "build": "py312haa95532_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/win-64",
+  "constrains": [
+    "websocket-client >=0.54.0",
+    "requests >=2.21.0",
+    "aiohttp >=3.4"
+  ],
+  "depends": [
+    "python >=3.12,<3.13.0a0",
+    "simple-websocket >=0.10.0"
+  ],
+  "extracted_package_dir": "C:\\Users\\johng\\anaconda3\\pkgs\\python-engineio-4.12.2-py312haa95532_0",
+  "files": [
+    "Lib/site-packages/engineio/__init__.py",
+    "Lib/site-packages/engineio/__pycache__/__init__.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/async_client.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/async_server.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/async_socket.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/base_client.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/base_server.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/base_socket.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/client.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/exceptions.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/json.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/middleware.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/packet.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/payload.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/server.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/socket.cpython-312.pyc",
+    "Lib/site-packages/engineio/__pycache__/static_files.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_client.py",
+    "Lib/site-packages/engineio/async_drivers/__init__.py",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/__init__.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/_websocket_wsgi.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/aiohttp.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/asgi.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/eventlet.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/gevent.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/gevent_uwsgi.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/sanic.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/threading.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/__pycache__/tornado.cpython-312.pyc",
+    "Lib/site-packages/engineio/async_drivers/_websocket_wsgi.py",
+    "Lib/site-packages/engineio/async_drivers/aiohttp.py",
+    "Lib/site-packages/engineio/async_drivers/asgi.py",
+    "Lib/site-packages/engineio/async_drivers/eventlet.py",
+    "Lib/site-packages/engineio/async_drivers/gevent.py",
+    "Lib/site-packages/engineio/async_drivers/gevent_uwsgi.py",
+    "Lib/site-packages/engineio/async_drivers/sanic.py",
+    "Lib/site-packages/engineio/async_drivers/threading.py",
+    "Lib/site-packages/engineio/async_drivers/tornado.py",
+    "Lib/site-packages/engineio/async_server.py",
+    "Lib/site-packages/engineio/async_socket.py",
+    "Lib/site-packages/engineio/base_client.py",
+    "Lib/site-packages/engineio/base_server.py",
+    "Lib/site-packages/engineio/base_socket.py",
+    "Lib/site-packages/engineio/client.py",
+    "Lib/site-packages/engineio/exceptions.py",
+    "Lib/site-packages/engineio/json.py",
+    "Lib/site-packages/engineio/middleware.py",
+    "Lib/site-packages/engineio/packet.py",
+    "Lib/site-packages/engineio/payload.py",
+    "Lib/site-packages/engineio/server.py",
+    "Lib/site-packages/engineio/socket.py",
+    "Lib/site-packages/engineio/static_files.py",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/INSTALLER",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/METADATA",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/RECORD",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/REQUESTED",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/WHEEL",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/direct_url.json",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/licenses/LICENSE",
+    "Lib/site-packages/python_engineio-4.12.2.dist-info/top_level.txt"
+  ],
+  "fn": "python-engineio-4.12.2-py312haa95532_0.conda",
+  "license": "MIT",
+  "link": {
+    "source": "C:\\Users\\johng\\anaconda3\\pkgs\\python-engineio-4.12.2-py312haa95532_0",
+    "type": 1
+  },
+  "md5": "58557f89235adfac88404665595d2568",
+  "name": "python-engineio",
+  "package_tarball_full_path": "C:\\Users\\johng\\anaconda3\\pkgs\\python-engineio-4.12.2-py312haa95532_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "Lib/site-packages/engineio/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "d11d8f635117bb7b2270fee6900d3f431115191945960becc5f841caa4441350",
+        "sha256_in_prefix": "d11d8f635117bb7b2270fee6900d3f431115191945960becc5f841caa4441350",
+        "size_in_bytes": 481
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "99cf023df04ede0519d4e1442ad2ac6a064f9bb898b5840d96fdebc9a66ac0f4",
+        "sha256_in_prefix": "99cf023df04ede0519d4e1442ad2ac6a064f9bb898b5840d96fdebc9a66ac0f4",
+        "size_in_bytes": 640
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/async_client.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "36b1d61ec35ff957340c8845654a7daccb0b5b2f2001210aabc0f7ea2856f228",
+        "sha256_in_prefix": "36b1d61ec35ff957340c8845654a7daccb0b5b2f2001210aabc0f7ea2856f228",
+        "size_in_bytes": 39707
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/async_server.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "06adae92b8184a38bfb80ecd19f2d64a777d833d606334a6ea7f2ccbbea808e9",
+        "sha256_in_prefix": "06adae92b8184a38bfb80ecd19f2d64a777d833d606334a6ea7f2ccbbea808e9",
+        "size_in_bytes": 30760
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/async_socket.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "1eaceb0e2ffff4baa019da113092e2720ee922decc32cef5155e651d26c825a8",
+        "sha256_in_prefix": "1eaceb0e2ffff4baa019da113092e2720ee922decc32cef5155e651d26c825a8",
+        "size_in_bytes": 16124
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/base_client.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "ce364839df6feb9a7815a403232b42ab7e24cd665e988270d1f3cf06f8b63473",
+        "sha256_in_prefix": "ce364839df6feb9a7815a403232b42ab7e24cd665e988270d1f3cf06f8b63473",
+        "size_in_bytes": 7360
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/base_server.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "4d171a8d3691367d80d1d345377f27bfa9f2ef051beb96de33be4138f179fc98",
+        "sha256_in_prefix": "4d171a8d3691367d80d1d345377f27bfa9f2ef051beb96de33be4138f179fc98",
+        "size_in_bytes": 16791
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/base_socket.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "fbdc9ff6d294d006efb9ea7e750875ecf7897d3af835da2d4658b41480f43df9",
+        "sha256_in_prefix": "fbdc9ff6d294d006efb9ea7e750875ecf7897d3af835da2d4658b41480f43df9",
+        "size_in_bytes": 855
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/client.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "03517ff8d645ef2fa85da83786b4f0bd3cb40240dfa302acc079df459681afdb",
+        "sha256_in_prefix": "03517ff8d645ef2fa85da83786b4f0bd3cb40240dfa302acc079df459681afdb",
+        "size_in_bytes": 33475
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/exceptions.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "2be9ecd5945e21e426257dbae4b8f5f166f6657ed99a97207087152e5c43d4f6",
+        "sha256_in_prefix": "2be9ecd5945e21e426257dbae4b8f5f166f6657ed99a97207087152e5c43d4f6",
+        "size_in_bytes": 1063
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/json.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "a5962386f9a3205fd0795cbab2b6e82845291e46df79fd6dbb324c35a9c400e1",
+        "sha256_in_prefix": "a5962386f9a3205fd0795cbab2b6e82845291e46df79fd6dbb324c35a9c400e1",
+        "size_in_bytes": 713
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/middleware.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "5a033c5f458e52fa33fecbde7fd1a193a22c981098d705d62a085d8ae09d7abf",
+        "sha256_in_prefix": "5a033c5f458e52fa33fecbde7fd1a193a22c981098d705d62a085d8ae09d7abf",
+        "size_in_bytes": 4619
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/packet.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "c263b37acef569ab76fea2c388f01f60c515c490d602e72872b1b8f520a163be",
+        "sha256_in_prefix": "c263b37acef569ab76fea2c388f01f60c515c490d602e72872b1b8f520a163be",
+        "size_in_bytes": 3838
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/payload.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "f84ff1111db84f4118482bbad95fb7e2a4c9685cd08320b77cdbbb6f5b63df22",
+        "sha256_in_prefix": "f84ff1111db84f4118482bbad95fb7e2a4c9685cd08320b77cdbbb6f5b63df22",
+        "size_in_bytes": 2079
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/server.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "a33585dd5a78ab33b2cb5ca6796d44ec81a74d7d992d12e4ff0512914e74d861",
+        "sha256_in_prefix": "a33585dd5a78ab33b2cb5ca6796d44ec81a74d7d992d12e4ff0512914e74d861",
+        "size_in_bytes": 24414
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/socket.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "b433330530dce6ab0f28e07c8a7a82c9d8b93968d789397cf4636dd5ad8e58d3",
+        "sha256_in_prefix": "b433330530dce6ab0f28e07c8a7a82c9d8b93968d789397cf4636dd5ad8e58d3",
+        "size_in_bytes": 14507
+      },
+      {
+        "_path": "Lib/site-packages/engineio/__pycache__/static_files.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "9c7e7adf00738d8ff028e0883708464c5377e0f4bf29faa2c0e7c34792640fff",
+        "sha256_in_prefix": "9c7e7adf00738d8ff028e0883708464c5377e0f4bf29faa2c0e7c34792640fff",
+        "size_in_bytes": 2131
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_client.py",
+        "path_type": "hardlink",
+        "sha256": "f172d9e8c46429ab08f700722b6bd7ead31f4e7a23b72dfb693dcda8b444e17f",
+        "sha256_in_prefix": "f172d9e8c46429ab08f700722b6bd7ead31f4e7a23b72dfb693dcda8b444e17f",
+        "size_in_bytes": 29585
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "6617628daa68ce03b906ddb927fa7a9556df60efb82e5db8a5afff29a80b0079",
+        "sha256_in_prefix": "6617628daa68ce03b906ddb927fa7a9556df60efb82e5db8a5afff29a80b0079",
+        "size_in_bytes": 149
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/_websocket_wsgi.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "8972e638c208f397b2a09fbfcc1ff12b6e99c1d6ee9c9c81168dc6dfffeaa7d6",
+        "sha256_in_prefix": "8972e638c208f397b2a09fbfcc1ff12b6e99c1d6ee9c9c81168dc6dfffeaa7d6",
+        "size_in_bytes": 2117
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/aiohttp.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "5e0edf38a346883038933313c68ae02d520d38ec681554a2fd753c2e9646957e",
+        "sha256_in_prefix": "5e0edf38a346883038933313c68ae02d520d38ec681554a2fd753c2e9646957e",
+        "size_in_bytes": 5720
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/asgi.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "f225ad4b803a3803b118f26f8ca111f39ef3f584bce24630457a4019c30d3bd0",
+        "sha256_in_prefix": "f225ad4b803a3803b118f26f8ca111f39ef3f584bce24630457a4019c30d3bd0",
+        "size_in_bytes": 14442
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/eventlet.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "f9172146eb91acbe02561c94f079afbbced5853b833da85c1ae700b15e1f9ac1",
+        "sha256_in_prefix": "f9172146eb91acbe02561c94f079afbbced5853b833da85c1ae700b15e1f9ac1",
+        "size_in_bytes": 2872
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/gevent.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "aea13921729717ee3c6597516798fb3697353df0d7d71829a33fbbe550ab0b1a",
+        "sha256_in_prefix": "aea13921729717ee3c6597516798fb3697353df0d7d71829a33fbbe550ab0b1a",
+        "size_in_bytes": 4170
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/gevent_uwsgi.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "76eecd2542b09ca22f4a93d8905f7a1206645d456ae8adf9e4a0cde1e447b269",
+        "sha256_in_prefix": "76eecd2542b09ca22f4a93d8905f7a1206645d456ae8adf9e4a0cde1e447b269",
+        "size_in_bytes": 7419
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/sanic.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "f04b1270c6d78df3355117eae001eac3c34f0d509a09824002ef38ada5c90693",
+        "sha256_in_prefix": "f04b1270c6d78df3355117eae001eac3c34f0d509a09824002ef38ada5c90693",
+        "size_in_bytes": 6610
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/threading.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "d14e98daa97791f888e142d4e7281e185b7b4dc3e1bae0cc31dfc3e3f80afd61",
+        "sha256_in_prefix": "d14e98daa97791f888e142d4e7281e185b7b4dc3e1bae0cc31dfc3e3f80afd61",
+        "size_in_bytes": 999
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/__pycache__/tornado.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "b775fd082ac362d72bca0a305935dd13cfd517b5e4f83b02881b1edf84326a85",
+        "sha256_in_prefix": "b775fd082ac362d72bca0a305935dd13cfd517b5e4f83b02881b1edf84326a85",
+        "size_in_bytes": 9875
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/_websocket_wsgi.py",
+        "path_type": "hardlink",
+        "sha256": "2ee3847ca85b030f12a650793cca5828852a7c23c469d404a6a7a2abf95e3880",
+        "sha256_in_prefix": "2ee3847ca85b030f12a650793cca5828852a7c23c469d404a6a7a2abf95e3880",
+        "size_in_bytes": 949
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/aiohttp.py",
+        "path_type": "hardlink",
+        "sha256": "3810c685a357587c50930873653daf95300ea9645e192e928e4f6edc1121fcc7",
+        "sha256_in_prefix": "3810c685a357587c50930873653daf95300ea9645e192e928e4f6edc1121fcc7",
+        "size_in_bytes": 3754
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/asgi.py",
+        "path_type": "hardlink",
+        "sha256": "5ad8092386516d6992d06ea5aadcb1037e455897ece5c0d1bd7b294731b9c6c2",
+        "sha256_in_prefix": "5ad8092386516d6992d06ea5aadcb1037e455897ece5c0d1bd7b294731b9c6c2",
+        "size_in_bytes": 11383
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/eventlet.py",
+        "path_type": "hardlink",
+        "sha256": "9f5cb83a33dd8f82761887a9e4de7a3b6f686b9350805255713063c8ed42f86b",
+        "sha256_in_prefix": "9f5cb83a33dd8f82761887a9e4de7a3b6f686b9350805255713063c8ed42f86b",
+        "size_in_bytes": 1735
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/gevent.py",
+        "path_type": "hardlink",
+        "sha256": "867247796743404da37e82c23f90e7c153f3b1095c4cb254300e4455fd542fe9",
+        "sha256_in_prefix": "867247796743404da37e82c23f90e7c153f3b1095c4cb254300e4455fd542fe9",
+        "size_in_bytes": 2962
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/gevent_uwsgi.py",
+        "path_type": "hardlink",
+        "sha256": "9ba6b2e5da2ff450d09747db7a229e13e3ab8792e217accb95843ae0e6b74f98",
+        "sha256_in_prefix": "9ba6b2e5da2ff450d09747db7a229e13e3ab8792e217accb95843ae0e6b74f98",
+        "size_in_bytes": 5954
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/sanic.py",
+        "path_type": "hardlink",
+        "sha256": "1985fc61647519b466f8690c4c04247e459b635d8c393d485760f31f45f1f0db",
+        "sha256_in_prefix": "1985fc61647519b466f8690c4c04247e459b635d8c393d485760f31f45f1f0db",
+        "size_in_bytes": 4495
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/threading.py",
+        "path_type": "hardlink",
+        "sha256": "cb0986e7d7781fa38766329aac137defef411c4b11c45133f5837e13d400bbf2",
+        "sha256_in_prefix": "cb0986e7d7781fa38766329aac137defef411c4b11c45133f5837e13d400bbf2",
+        "size_in_bytes": 463
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_drivers/tornado.py",
+        "path_type": "hardlink",
+        "sha256": "99b547b3598409fcc548dbf7dee8a09294c1b4d3d3d2ee3d939cdac9b7b0748a",
+        "sha256_in_prefix": "99b547b3598409fcc548dbf7dee8a09294c1b4d3d3d2ee3d939cdac9b7b0748a",
+        "size_in_bytes": 5893
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_server.py",
+        "path_type": "hardlink",
+        "sha256": "f007ffbb07fc98a382246a9529add0374933eff0762b571da529acbe4028051e",
+        "sha256_in_prefix": "f007ffbb07fc98a382246a9529add0374933eff0762b571da529acbe4028051e",
+        "size_in_bytes": 27412
+      },
+      {
+        "_path": "Lib/site-packages/engineio/async_socket.py",
+        "path_type": "hardlink",
+        "sha256": "9c76340cf3e4d05b48f5d8d49d05adcd9ddc7b6383d7ce13bbe0e8a7b24b83d2",
+        "sha256_in_prefix": "9c76340cf3e4d05b48f5d8d49d05adcd9ddc7b6383d7ce13bbe0e8a7b24b83d2",
+        "size_in_bytes": 10715
+      },
+      {
+        "_path": "Lib/site-packages/engineio/base_client.py",
+        "path_type": "hardlink",
+        "sha256": "a0e76afb347b920f10a6f006b62d330488850501b21042f054c64db5ca09da28",
+        "sha256_in_prefix": "a0e76afb347b920f10a6f006b62d330488850501b21042f054c64db5ca09da28",
+        "size_in_bytes": 5827
+      },
+      {
+        "_path": "Lib/site-packages/engineio/base_server.py",
+        "path_type": "hardlink",
+        "sha256": "4bf3b96564b374a9f80810b7523ae167f39aaf0df981edc69a0e4cdc25790bd9",
+        "sha256_in_prefix": "4bf3b96564b374a9f80810b7523ae167f39aaf0df981edc69a0e4cdc25790bd9",
+        "size_in_bytes": 14653
+      },
+      {
+        "_path": "Lib/site-packages/engineio/base_socket.py",
+        "path_type": "hardlink",
+        "sha256": "b10a9b3527c684c406df1cf06abe885cc6a5dbc0bb4394c8010446a7be16b76a",
+        "sha256_in_prefix": "b10a9b3527c684c406df1cf06abe885cc6a5dbc0bb4394c8010446a7be16b76a",
+        "size_in_bytes": 399
+      },
+      {
+        "_path": "Lib/site-packages/engineio/client.py",
+        "path_type": "hardlink",
+        "sha256": "d092948df30d83d9643b5b7c5f776bf88db5eb8291577ef7e976d8c3ffcd4315",
+        "sha256_in_prefix": "d092948df30d83d9643b5b7c5f776bf88db5eb8291577ef7e976d8c3ffcd4315",
+        "size_in_bytes": 27334
+      },
+      {
+        "_path": "Lib/site-packages/engineio/exceptions.py",
+        "path_type": "hardlink",
+        "sha256": "172b8c6f9aa15fd09460fddf1287b59be7da53de80a5d41349b6e569aa28f0b0",
+        "sha256_in_prefix": "172b8c6f9aa15fd09460fddf1287b59be7da53de80a5d41349b6e569aa28f0b0",
+        "size_in_bytes": 292
+      },
+      {
+        "_path": "Lib/site-packages/engineio/json.py",
+        "path_type": "hardlink",
+        "sha256": "486e454e88ea7758b1eaed1d29726c655aaa7588a864b3b84b618f2fb04a9775",
+        "sha256_in_prefix": "486e454e88ea7758b1eaed1d29726c655aaa7588a864b3b84b618f2fb04a9775",
+        "size_in_bytes": 405
+      },
+      {
+        "_path": "Lib/site-packages/engineio/middleware.py",
+        "path_type": "hardlink",
+        "sha256": "e4d2815f3f9fb6e144ad407f57d203bd11da48eb2386d5be367b89b6ab81d677",
+        "sha256_in_prefix": "e4d2815f3f9fb6e144ad407f57d203bd11da48eb2386d5be367b89b6ab81d677",
+        "size_in_bytes": 3750
+      },
+      {
+        "_path": "Lib/site-packages/engineio/packet.py",
+        "path_type": "hardlink",
+        "sha256": "60ede099e294a0ac88b14ab67b5cfb6627ebe4f19e4b78276827aa47bc23e614",
+        "sha256_in_prefix": "60ede099e294a0ac88b14ab67b5cfb6627ebe4f19e4b78276827aa47bc23e614",
+        "size_in_bytes": 3198
+      },
+      {
+        "_path": "Lib/site-packages/engineio/payload.py",
+        "path_type": "hardlink",
+        "sha256": "1885aed159dacb858d6650f11ea5603f7e2d2930575f9f0e02b27e98ee730f71",
+        "sha256_in_prefix": "1885aed159dacb858d6650f11ea5603f7e2d2930575f9f0e02b27e98ee730f71",
+        "size_in_bytes": 1539
+      },
+      {
+        "_path": "Lib/site-packages/engineio/server.py",
+        "path_type": "hardlink",
+        "sha256": "e3fc5db47d2dcaeb22810babc0e78316b1eda1db611533886ce559fbf7248795",
+        "sha256_in_prefix": "e3fc5db47d2dcaeb22810babc0e78316b1eda1db611533886ce559fbf7248795",
+        "size_in_bytes": 22957
+      },
+      {
+        "_path": "Lib/site-packages/engineio/socket.py",
+        "path_type": "hardlink",
+        "sha256": "39ac3513b643c8e09a4bb295d79d60d6ef6ba8e7f52491e1e60b6d114d1c49e0",
+        "sha256_in_prefix": "39ac3513b643c8e09a4bb295d79d60d6ef6ba8e7f52491e1e60b6d114d1c49e0",
+        "size_in_bytes": 10342
+      },
+      {
+        "_path": "Lib/site-packages/engineio/static_files.py",
+        "path_type": "hardlink",
+        "sha256": "a707b3f4b40569241731bb48d2f2f20fa5038a8910e2b35f99162054b28eb617",
+        "sha256_in_prefix": "a707b3f4b40569241731bb48d2f2f20fa5038a8910e2b35f99162054b28eb617",
+        "size_in_bytes": 2064
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "093869cb1e95b5ea8938e5e938d966286a3d35364e46f3fcebe8fa8469c6054c",
+        "sha256_in_prefix": "093869cb1e95b5ea8938e5e938d966286a3d35364e46f3fcebe8fa8469c6054c",
+        "size_in_bytes": 2270
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "246681789fc19d9088b12750b4c95b05c3e687f6c62b6bf09f7ef2e91c591d53",
+        "sha256_in_prefix": "246681789fc19d9088b12750b4c95b05c3e687f6c62b6bf09f7ef2e91c591d53",
+        "size_in_bytes": 4357
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9",
+        "sha256_in_prefix": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9",
+        "size_in_bytes": 91
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "e61d3e26fd9868164aa5fb5f54908d8ae042d0adc733a301718c162ed147c66f",
+        "sha256_in_prefix": "e61d3e26fd9868164aa5fb5f54908d8ae042d0adc733a301718c162ed147c66f",
+        "size_in_bytes": 95
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/licenses/LICENSE",
+        "path_type": "hardlink",
+        "sha256": "c9e97d3dbc1fbbcdb4f7808b282cd646db887aff4f5313fe6bbe8d4c31405a9c",
+        "sha256_in_prefix": "c9e97d3dbc1fbbcdb4f7808b282cd646db887aff4f5313fe6bbe8d4c31405a9c",
+        "size_in_bytes": 1082
+      },
+      {
+        "_path": "Lib/site-packages/python_engineio-4.12.2.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "bbc3e6362b0264bc1161c5ab34b7bdc2eb50dadb78ccd8bc207dfad9cf875ae0",
+        "sha256_in_prefix": "bbc3e6362b0264bc1161c5ab34b7bdc2eb50dadb78ccd8bc207dfad9cf875ae0",
+        "size_in_bytes": 9
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "66c2d450b69f7fc11ad6271cbda8b8c4fd1429723f727fb3580be6d97b6fcd42",
+  "size": 142879,
+  "subdir": "win-64",
+  "timestamp": 1749570795000,
+  "url": "https://repo.anaconda.com/pkgs/main/win-64/python-engineio-4.12.2-py312haa95532_0.conda",
+  "version": "4.12.2"
+}

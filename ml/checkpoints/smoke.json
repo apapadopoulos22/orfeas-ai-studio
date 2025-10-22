@@ -1,0 +1,21 @@
+{
+  "w": 182090870089707.0,
+  "b": 15326861662799.717,
+  "config": {
+    "epochs": 1,
+    "lr": 0.1,
+    "batch_size": 16,
+    "seed": 42,
+    "dataset_path": null,
+    "checkpoint_path": "./ml/checkpoints/smoke.json"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 1.499633096169834e+27,
+      "w": 182090870089707.0,
+      "b": 15326861662799.717,
+      "time_ms": 0.0
+    }
+  ]
+}

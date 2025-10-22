@@ -1,0 +1,379 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║     ORFEAS AI - NETLIFY DEPLOYMENT - COMMAND REFERENCE                ║
+║                                                                        ║
+║  Use this file as your quick command guide for deployment             ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════════════════
+🎯 THE THREE COMMANDS YOU NEED
+═════════════════════════════════════════════════════════════════════════
+
+COMMAND 1: Start Backend (Terminal 1)
+──────────────────────────────────────────────────────────────────────────
+
+cd c:\Users\johng\Documents\oscar\backend
+python -u main.py
+
+  What it does:
+    • Initializes NVIDIA CUDA
+    • Loads Hunyuan3D-2.1 model into VRAM
+    • Starts Flask server on http://127.0.0.1:5000
+    • Ready to process 3D generation requests
+
+  You'll know it's ready when:
+    ✅ You see: "Running on http://127.0.0.1:5000"
+    ✅ GPU memory is allocated (~20GB)
+    ✅ No error messages
+
+
+COMMAND 2: Start ngrok Tunnel (Terminal 2)
+──────────────────────────────────────────────────────────────────────────
+
+.\START_NGROK_TUNNEL.bat
+
+  What it does:
+    • Creates public HTTPS URL for local backend
+    • Encrypts traffic with TLS
+    • Handles dynamic IP changes
+
+  You'll know it's ready when:
+    ✅ You see: "Forwarding https://xxxx-xxxx-xxxx.ngrok.io -> http://localhost:5000"
+    ✅ Copy this URL for next command
+
+
+COMMAND 3: Deploy to Netlify (Terminal 3 or 3A - Automated)
+──────────────────────────────────────────────────────────────────────────
+
+Option A: FULLY AUTOMATED (Recommended)
+
+  .\DEPLOY_TO_NETLIFY_COMPLETE.bat
+
+  What it does:
+    1. Checks all prerequisites (Python, Node, netlify-cli, ngrok)
+    2. Prompts for ngrok URL (from Terminal 2)
+    3. Updates netlify.toml with your ngrok URL
+    4. Commits files to git
+    5. Deploys to Netlify
+    6. Returns your live Netlify URL
+
+  Just keep Terminals 1 and 2 open while this runs
+
+
+Option B: MANUAL STEPS
+
+  cd c:\Users\johng\Documents\oscar
+
+  # Update netlify.toml with ngrok URL
+  powershell -Command "(Get-Content 'netlify.toml') -replace 'YOUR_NGROK_URL_HERE', 'https://YOUR_NGROK_URL' | Set-Content 'netlify.toml'"
+
+  # Initialize git (if needed)
+  git init
+  git remote add origin https://github.com/YOUR_USERNAME/orfeas-ai-frontend.git
+
+  # Commit changes
+  git add .
+  git config user.email "deploy@orfeas.local"
+  git config user.name "ORFEAS"
+  git commit -m "ORFEAS AI - Netlify deployment"
+
+  # Deploy
+  netlify deploy --prod
+
+═════════════════════════════════════════════════════════════════════════
+🔍 VERIFICATION COMMANDS
+═════════════════════════════════════════════════════════════════════════
+
+Check Backend Health:
+──────────────────────────────────────────────────────────────────────────
+
+curl http://127.0.0.1:5000/health
+
+Expected output: {"status": "ok", ...}
+
+
+Check ngrok Connection:
+──────────────────────────────────────────────────────────────────────────
+
+curl https://YOUR_NGROK_URL/health
+
+Expected output: {"status": "ok", ...}
+
+
+Check GPU Status:
+──────────────────────────────────────────────────────────────────────────
+
+nvidia-smi
+
+Expected: RTX 3090 with memory allocation
+
+
+Check Netlify Sites:
+──────────────────────────────────────────────────────────────────────────
+
+netlify sites:list
+
+Expected: Your deployed site listed with URL
+
+
+Verify Frontend Configuration:
+──────────────────────────────────────────────────────────────────────────
+
+Open browser console (F12 → Console) and look for:
+
+  [CONFIG] API_BASE = https://your-ngrok-url.ngrok.io
+
+This confirms your frontend knows where the backend is
+
+═════════════════════════════════════════════════════════════════════════
+📊 REAL-TIME MONITORING WHILE RUNNING
+═════════════════════════════════════════════════════════════════════════
+
+GPU Monitoring (Watch while generating 3D models):
+──────────────────────────────────────────────────────────────────────────
+
+nvidia-smi
+
+Continuously (every second):
+  watch -n 1 nvidia-smi
+
+Shows: Memory usage, GPU utilization, temperature
+
+
+ngrok Activity (Watch requests coming through tunnel):
+──────────────────────────────────────────────────────────────────────────
+
+Open web browser:
+  http://localhost:4040
+
+Shows:
+  • All requests from Netlify frontend
+  • Response status codes
+  • Request/response body
+  • Latency metrics
+
+
+Backend Logs:
+──────────────────────────────────────────────────────────────────────────
+
+Live tail (watch in real-time):
+  Get-Content -Path "c:\Users\johng\Documents\oscar\backend\logs\backend_requests.log" -Wait -Tail 50
+
+Last 50 lines:
+  Get-Content "c:\Users\johng\Documents\oscar\backend\logs\backend_requests.log" -Tail 50
+
+Filter for errors:
+  Select-String -Path "c:\Users\johng\Documents\oscar\backend\logs\backend_requests.log" -Pattern "ERROR|CRITICAL|Exception"
+
+═════════════════════════════════════════════════════════════════════════
+⚙️  TROUBLESHOOTING COMMANDS
+═════════════════════════════════════════════════════════════════════════
+
+If Backend Won't Start:
+──────────────────────────────────────────────────────────────────────────
+
+Check Python:
+  python --version
+  Expected: Python 3.10+
+
+Check if port 5000 is in use:
+  netstat -ano | findstr :5000
+  If found, kill it: taskkill /PID [PID_NUMBER]
+
+Try with verbose output:
+  python -u main.py 2>&1
+
+Check CUDA:
+  nvidia-smi
+  Expected: RTX 3090 visible
+
+
+If ngrok Won't Start:
+──────────────────────────────────────────────────────────────────────────
+
+Check if installed:
+  ngrok --version
+
+If not installed:
+  Download from https://ngrok.com/download
+  Extract and add to PATH
+
+Check auth token:
+  ngrok config add-authtoken YOUR_TOKEN_HERE
+  (Get token from https://dashboard.ngrok.com)
+
+Check connectivity:
+  ping ngrok.com
+
+
+If Netlify Deploy Fails:
+──────────────────────────────────────────────────────────────────────────
+
+Check git status:
+  git status
+  Make sure all files are committed
+
+Check git remote:
+  git remote -v
+  Should show https://github.com/YOUR_USERNAME/orfeas-ai-frontend.git
+
+Retry with force:
+  netlify deploy --prod --force
+
+Check Netlify auth:
+  netlify status
+  Should show logged-in user
+
+
+If API Calls Return 404:
+──────────────────────────────────────────────────────────────────────────
+
+Backend not running:
+  Check Terminal 1, restart: python -u main.py
+
+ngrok tunnel closed:
+  Check Terminal 2, restart: .\START_NGROK_TUNNEL.bat
+
+ngrok URL changed:
+  Copy new URL from Terminal 2
+  Update netlify.toml
+  Run: netlify deploy --prod
+
+=═════════════════════════════════════════════════════════════════════════
+🚀 PRODUCTION DEPLOYMENT SEQUENCE
+═════════════════════════════════════════════════════════════════════════
+
+If deploying for first time or fresh setup:
+
+Step 1 - Clean Slate
+  netstat -ano | findstr :5000  # Check no old processes
+  taskkill /PID [PID] /F         # Kill if exists
+
+Step 2 - Validate Environment
+  .\VERIFY_DEPLOYMENT_STATUS.bat # Full health check
+
+Step 3 - Start Backend
+  cd backend
+  python -u main.py
+  # Wait for "Running on http://127.0.0.1:5000"
+
+Step 4 - Start ngrok
+  .\START_NGROK_TUNNEL.bat
+  # Copy URL: https://xxxx-xxxx-xxxx.ngrok.io
+
+Step 5 - Deploy
+  .\DEPLOY_TO_NETLIFY_COMPLETE.bat
+  # Enter ngrok URL when prompted
+  # Watch for deployment completion
+
+Step 6 - Verify
+  Open browser → Netlify URL
+  F12 → Console
+  Look for: [CONFIG] API_BASE = https://your-ngrok-url
+  Upload image → Generate → Verify it works
+
+═════════════════════════════════════════════════════════════════════════
+💾 GIT COMMANDS FOR VERSION CONTROL
+═════════════════════════════════════════════════════════════════════════
+
+Initialize repo (first time):
+  git init
+  git remote add origin https://github.com/YOUR_USERNAME/orfeas-ai-frontend.git
+
+Check status:
+  git status
+
+Stage all changes:
+  git add .
+
+Commit:
+  git commit -m "ORFEAS AI - [Your message here]"
+
+Push:
+  git push -u origin main
+
+View log:
+  git log --oneline -10
+
+═════════════════════════════════════════════════════════════════════════
+🔐 ENVIRONMENT VARIABLES
+═════════════════════════════════════════════════════════════════════════
+
+Set for current session (PowerShell):
+
+  $env:ORFEAS_MODE="production"
+  $env:CUDA_VISIBLE_DEVICES="0"
+  $env:LOCAL_LLM_ENABLED="true"
+
+View current environment:
+
+  Get-ChildItem env: | findstr ORFEAS
+
+Set in .env file (persistent):
+
+  Edit: c:\Users\johng\Documents\oscar\.env
+  Add: ORFEAS_MODE=production
+
+═════════════════════════════════════════════════════════════════════════
+📈 PERFORMANCE BENCHMARKS
+═════════════════════════════════════════════════════════════════════════
+
+Expected Performance Metrics:
+
+Backend Startup:
+  • CUDA initialization: 5-10 seconds
+  • Model loading: 15-30 seconds
+  • First request: 60+ seconds (model warmup)
+  • Subsequent requests: 30-120 seconds
+
+Network:
+  • ngrok latency: 50-200ms
+  • Netlify CDN: <100ms
+  • Total roundtrip: ~500-1500ms
+
+GPU Usage:
+  • Idle: <500MB VRAM
+  • Processing: 18-20GB VRAM
+  • Temperature: 60-75°C
+
+File Sizes:
+  • Generated STL: 5-50MB (depends on complexity)
+  • synexa-style-studio.html: ~800KB
+  • Netlify deployment: <2MB
+
+═════════════════════════════════════════════════════════════════════════
+📚 DOCUMENTATION QUICK LINKS
+═════════════════════════════════════════════════════════════════════════
+
+DEPLOYMENT_SETUP_COMPLETE.txt       ← Start here (overview)
+NETLIFY_QUICK_START_5MIN.txt        ← 5-minute guide
+DEPLOYMENT_CHECKLIST_COMPLETE.txt   ← Detailed steps
+NETLIFY_DEPLOYMENT_GUIDE.md         ← Full reference
+TROUBLESHOOTING_CONNECTION_GUIDE.txt ← Error solving
+CONNECTION_FIX_COMPLETE.txt          ← API connection issues
+
+═════════════════════════════════════════════════════════════════════════
+✅ SUCCESS INDICATORS
+═════════════════════════════════════════════════════════════════════════
+
+You'll know everything is working when:
+
+  ✅ Backend terminal shows: "Running on http://127.0.0.1:5000"
+  ✅ ngrok terminal shows: "Forwarding https://xxxx.ngrok.io"
+  ✅ Browser loads Netlify URL without 404
+  ✅ Console shows: [CONFIG] API_BASE = https://xxxx.ngrok.io
+  ✅ File upload form is functional
+  ✅ Image upload → 3D generation starts
+  ✅ GPU utilization shows in nvidia-smi
+  ✅ Generation completes in 30-120 seconds
+  ✅ Files download successfully
+  ✅ 3D preview displays in browser
+
+═════════════════════════════════════════════════════════════════════════
+
+🎉 READY TO DEPLOY?
+
+  .\DEPLOY_TO_NETLIFY_COMPLETE.bat
+
+═════════════════════════════════════════════════════════════════════════

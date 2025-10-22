@@ -1,0 +1,228 @@
+"""
+ORFEAS AI 2DÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢3D Studio - Input Validation & Security
+======================================================
+ORFEAS AI Project
+
+Pydantic models for request validation and security hardening
+"""
+
+from typing import Dict, Literal, Optional
+from pydantic import BaseModel, Field, field_validator, ConfigDict
+import re
+
+# UUID validation pattern
+UUID_PATTERN = re.compile(r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$')
+
+
+class ImageUploadRequest(BaseModel):
+    """Validation for image upload metadata"""
+    max_size_mb: int = Field(default=50, ge=1, le=100)
+
+
+class DimensionsModel(BaseModel):
+    """3D model dimensions validation"""
+    width: int = Field(..., ge=1, le=1000, description="Width in mm")
+    height: int = Field(..., ge=1, le=1000, description="Height in mm")
+    depth: int = Field(..., ge=1, le=500, description="Depth/thickness in mm")
+
+
+class Generate3DRequest(BaseModel):
+    """Validation for 3D generation request"""
+    job_id: str = Field(..., description="UUID from upload response")
+    format: Literal['stl', 'obj', 'glb', 'ply'] = Field(default='stl')
+    dimensions: DimensionsModel = Field(default_factory=lambda: DimensionsModel(width=100, height=100, depth=20))
+    quality: int = Field(default=7, ge=1, le=10, description="Quality level 1-10")
+
+    @field_validator('job_id')
+    @classmethod
+    def validate_job_id(cls, v):
+        """Validate job_id is proper UUID format"""
+        if not UUID_PATTERN.match(v):
+            raise ValueError("job_id must be a valid UUID")
+        return v
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "job_id": "550e8400-e29b-41d4-a716-446655440000",
+                "format": "stl",
+                "dimensions": {"width": 100, "height": 100, "depth": 20},
+                "quality": 7
+            }
+        }
+    )
+
+
+class TextToImageRequest(BaseModel):
+    """Validation for text-to-image generation"""
+    prompt: str = Field(..., min_length=3, max_length=1000, description="Text prompt")
+    style: Literal['realistic', 'artistic', 'anime', 'cyberpunk', 'fantasy', 'minimalist'] = Field(default='realistic')
+    width: int = Field(default=512, ge=256, le=2048)
+    height: int = Field(default=512, ge=256, le=2048)
+    steps: int = Field(default=50, ge=10, le=150)
+    guidance_scale: float = Field(default=7.0, ge=1.0, le=20.0)
+
+    @field_validator('prompt')
+    @classmethod
+    def validate_prompt(cls, v):
+        """Sanitize prompt text"""
+        # Remove potentially dangerous characters
+        v = v.strip()
+        if not v:
+            raise ValueError("Prompt cannot be empty")
+        # Basic SQL injection prevention
+        dangerous_patterns = ['DROP ', 'DELETE ', 'INSERT ', 'UPDATE ', 'SELECT ', '--', '/*', '*/']
+        v_upper = v.upper()
+        for pattern in dangerous_patterns:
+            if pattern in v_upper:
+                raise ValueError(f"Prompt contains forbidden pattern: {pattern}")
+        return v
+
+
+class FileUploadValidator:
+    """Utility class for file upload validation"""
+
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'webp'}
+    ALLOWED_MIME_TYPES = {
+        'image/png', 'image/jpeg', 'image/jpg',
+        'image/gif', 'image/bmp', 'image/tiff',
+        'image/webp'
+    }
+    MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
+
+    @classmethod
+    def validate_filename(cls, filename: str) -> tuple[bool, Optional[str]]:
+        """
+        Validate filename for security
+
+        Returns:
+            (is_valid, error_message)
+        """
+        if not filename:
+            return False, "No filename provided"
+
+        # Check for path traversal attempts
+        if '..' in filename or '/' in filename or '\\' in filename:
+            return False, "Invalid filename: path traversal detected"
+
+        # Check file extension
+        if '.' not in filename:
+            return False, "No file extension"
+
+        ext = filename.rsplit('.', 1)[1].lower()
+        if ext not in cls.ALLOWED_EXTENSIONS:
+            return False, f"Invalid file type. Allowed: {', '.join(cls.ALLOWED_EXTENSIONS)}"
+
+        return True, None
+
+    @classmethod
+    def validate_file_size(cls, size: int) -> tuple[bool, Optional[str]]:
+        """Validate file size"""
+        if size <= 0:
+            return False, "File is empty"
+        if size > cls.MAX_FILE_SIZE:
+            return False, f"File too large (max {cls.MAX_FILE_SIZE // (1024*1024)}MB)"
+        return True, None
+
+    @classmethod
+    def validate_mime_type(cls, mime_type: str) -> tuple[bool, Optional[str]]:
+        """Validate MIME type"""
+        if mime_type not in cls.ALLOWED_MIME_TYPES:
+            return False, f"Invalid MIME type: {mime_type}"
+        return True, None
+
+
+class RateLimiter:
+    """Simple in-memory rate limiter"""
+
+    def __init__(self, max_requests: int = 60, window_seconds: int = 60):
+        """
+        Initialize rate limiter
+
+        Args:
+            max_requests: Maximum requests per window
+            window_seconds: Time window in seconds
+        """
+        from collections import defaultdict
+        from datetime import datetime, timedelta
+
+        self.max_requests = max_requests
+        self.window = timedelta(seconds=window_seconds)
+        self.requests = defaultdict(list)  # ip -> [timestamp, ...]
+
+    def is_allowed(self, identifier: str) -> tuple[bool, Optional[str]]:
+        """
+        Check if request is allowed for identifier (IP address)
+
+        Returns:
+            (is_allowed, error_message)
+        """
+        from datetime import datetime
+
+        now = datetime.now()
+
+        # Clean old requests
+        self.requests[identifier] = [
+            ts for ts in self.requests[identifier]
+            if now - ts < self.window
+        ]
+
+        # Check rate limit
+        if len(self.requests[identifier]) >= self.max_requests:
+            return False, f"Rate limit exceeded. Max {self.max_requests} requests per {self.window.seconds}s"
+
+        # Record request
+        self.requests[identifier].append(now)
+        return True, None
+
+
+class SecurityHeaders:
+    """Security headers middleware"""
+
+    @staticmethod
+    def apply_security_headers(response):
+        """
+        Apply comprehensive security headers to Flask response
+
+        [ORFEAS] PRODUCTION FIX: Enhanced Content Security Policy
+        """
+        # Content Security Policy - Production-ready configuration
+        csp_policy = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.socket.io https://cdnjs.cloudflare.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
+            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
+            "img-src 'self' data: blob: https: http://127.0.0.1:5000; "
+            "connect-src 'self' ws://127.0.0.1:5000 http://127.0.0.1:5000 "
+            "https://api.openai.com https://api.stability.ai https://image.pollinations.ai "
+            "https://huggingface.co https://router.huggingface.co; "
+            "frame-src 'none'; "
+            "object-src 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'; "
+            "upgrade-insecure-requests;"
+        )
+        response.headers['Content-Security-Policy'] = csp_policy
+
+        # Additional security headers
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+
+        # HSTS only for production HTTPS (commented out for local dev)
+        # response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+
+        return response
+
+
+# Global rate limiter instance
+_rate_limiter = None
+
+def get_rate_limiter(max_requests: int = 60, window_seconds: int = 60) -> RateLimiter:
+    """Get or create rate limiter singleton"""
+    global _rate_limiter
+    if _rate_limiter is None:
+        _rate_limiter = RateLimiter(max_requests, window_seconds)
+    return _rate_limiter

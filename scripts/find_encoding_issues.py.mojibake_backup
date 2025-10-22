@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Find files with encoding issues from the encoding fix summary"""
+
+import json
+import os
+
+# Load the encoding fix summary
+with open('scripts/encoding_fix_summary.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+print(f"Total files scanned: {data['total']}")
+print(f"Files fixed: {data['fixed']}")
+print(f"Errors: {data['errors']}")
+print("\n" + "="*80)
+
+# Find files with non-standard encoding
+standard_encodings = {'utf-8', 'utf_8', 'ascii'}
+files_with_issues = []
+
+for detail in data['details']:
+    encoding = detail.get('encoding', '')
+    if encoding not in standard_encodings and not encoding.startswith('ERROR'):
+        files_with_issues.append(detail)
+
+print(f"\nFiles with non-standard encoding: {len(files_with_issues)}")
+print("="*80)
+
+# Show top 20 files with issues
+for i, file_info in enumerate(files_with_issues[:20], 1):
+    file_path = file_info['file']
+    encoding = file_info['encoding']
+    fixed = file_info['fixed']
+
+    # Make path relative and shorter
+    rel_path = os.path.relpath(file_path, os.path.dirname(__file__))
+    if len(rel_path) > 80:
+        rel_path = "..." + rel_path[-77:]
+
+    status = "✓ Fixed" if fixed else "⚠ Needs attention"
+    print(f"{i:2}. [{status}] {encoding:20} - {rel_path}")
+
+# Find files that might still have mojibake
+print("\n" + "="*80)
+print("Checking for potential mojibake patterns...")
+print("="*80)
+
+mojibake_patterns = ['Ã', 'â€', 'Å', '½', '¢', '³', 'Ã©', 'Ã´']
+files_to_check = []
+
+for detail in data['details']:
+    if detail['fixed']:
+        files_to_check.append(detail['file'])
+
+# Sample check on a few files
+import random
+sample_files = random.sample(files_to_check, min(10, len(files_to_check)))
+
+mojibake_found = []
+for file_path in sample_files:
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+            content = f.read()
+            if any(pattern in content for pattern in mojibake_patterns):
+                mojibake_found.append(file_path)
+    except:
+        pass
+
+if mojibake_found:
+    print(f"\n⚠ Found {len(mojibake_found)} files that may still have mojibake:")
+    for fp in mojibake_found:
+        print(f"  - {os.path.relpath(fp, os.path.dirname(__file__))}")
+else:
+    print("\n✓ No obvious mojibake patterns found in sample")
+
+print("\n" + "="*80)
+print("Summary:")
+print(f"  • Total files with non-standard encoding: {len(files_with_issues)}")
+print(f"  • Files already fixed: {sum(1 for f in files_with_issues if f['fixed'])}")
+print(f"  • Files needing attention: {sum(1 for f in files_with_issues if not f['fixed'])}")
+print("="*80)

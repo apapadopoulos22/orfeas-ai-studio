@@ -1,0 +1,96 @@
+{
+  "generated_at": "2025-10-17T06:26:57.797198",
+  "summary": {
+    "total_pipelines": 2,
+    "avg_duration": 124.62018859386444,
+    "min_duration": 81.88954472541809,
+    "max_duration": 167.3508324623108,
+    "stage_breakdown": {
+      "image_loading": {
+        "avg_duration": 0.008581399917602539,
+        "min_duration": 0.008417129516601562,
+        "max_duration": 0.008745670318603516,
+        "count": 2
+      },
+      "image_preprocessing": {
+        "avg_duration": 0.25531065464019775,
+        "min_duration": 0.08734989166259766,
+        "max_duration": 0.42327141761779785,
+        "count": 2
+      },
+      "shape_generation": {
+        "avg_duration": 124.01743578910828,
+        "min_duration": 81.27862119674683,
+        "max_duration": 166.75625038146973,
+        "count": 2
+      }
+    },
+    "bottlenecks": [
+      {
+        "stage": "shape_generation",
+        "avg_percent": 99.44933780296196,
+        "avg_duration_seconds": 124.01743578910828,
+        "occurrences": 2,
+        "severity": "critical"
+      }
+    ],
+    "timestamp": "2025-10-17T06:26:57.797198"
+  },
+  "recommendations": [
+    "\ud83d\udd34 CRITICAL: 'shape_generation' takes 99.4% (124.02s) - optimize this stage first",
+    "   \u2192 Enable mixed precision (FP16) for faster inference",
+    "   \u2192 Reduce inference steps (50 \u2192 30-40) if quality permits",
+    "   \u2192 Consider model quantization (INT8)",
+    "\u23f1\ufe0f Average duration 124.6s exceeds target (60s)",
+    "   \u2192 Target 45% improvement to reach <60s goal",
+    "\ud83d\udcca High variance detected - performance inconsistent",
+    "   \u2192 Investigate GPU memory contention",
+    "   \u2192 Check for I/O bottlenecks"
+  ],
+  "recent_pipelines": [
+    {
+      "id": "baseline_1",
+      "duration": 167.3508324623108,
+      "timestamp": 1760682335.895812,
+      "stages": [
+        {
+          "name": "image_loading",
+          "duration": 0.008745670318603516,
+          "percent": 0.005225949694975754
+        },
+        {
+          "name": "image_preprocessing",
+          "duration": 0.42327141761779785,
+          "percent": 0.25292459642417564
+        },
+        {
+          "name": "shape_generation",
+          "duration": 166.75625038146973,
+          "percent": 99.64470921829745
+        }
+      ]
+    },
+    {
+      "id": "baseline_2",
+      "duration": 81.88954472541809,
+      "timestamp": 1760682417.7868686,
+      "stages": [
+        {
+          "name": "image_loading",
+          "duration": 0.008417129516601562,
+          "percent": 0.01027863757800198
+        },
+        {
+          "name": "image_preprocessing",
+          "duration": 0.08734989166259766,
+          "percent": 0.10666794150033258
+        },
+        {
+          "name": "shape_generation",
+          "duration": 81.27862119674683,
+          "percent": 99.25396638762648
+        }
+      ]
+    }
+  ]
+}

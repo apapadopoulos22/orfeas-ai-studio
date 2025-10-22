@@ -1,0 +1,341 @@
+{
+  "build": "py312haa95532_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/win-64",
+  "constrains": [],
+  "depends": [
+    "flask >=2",
+    "limits >=3.13",
+    "ordered-set >4,<5",
+    "python >=3.12,<3.13.0a0",
+    "rich >=12,<14"
+  ],
+  "extracted_package_dir": "C:\\Users\\johng\\anaconda3\\pkgs\\flask-limiter-3.12-py312haa95532_0",
+  "files": [
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/INSTALLER",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/LICENSE.txt",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/METADATA",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/RECORD",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/REQUESTED",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/WHEEL",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/direct_url.json",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/entry_points.txt",
+    "Lib/site-packages/Flask_Limiter-3.12.dist-info/top_level.txt",
+    "Lib/site-packages/flask_limiter/__init__.py",
+    "Lib/site-packages/flask_limiter/__pycache__/__init__.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/_compat.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/_version.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/commands.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/constants.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/errors.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/extension.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/manager.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/typing.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/util.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/version.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/__pycache__/wrappers.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/_compat.py",
+    "Lib/site-packages/flask_limiter/_version.py",
+    "Lib/site-packages/flask_limiter/commands.py",
+    "Lib/site-packages/flask_limiter/constants.py",
+    "Lib/site-packages/flask_limiter/contrib/__init__.py",
+    "Lib/site-packages/flask_limiter/contrib/__pycache__/__init__.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/contrib/__pycache__/util.cpython-312.pyc",
+    "Lib/site-packages/flask_limiter/contrib/util.py",
+    "Lib/site-packages/flask_limiter/errors.py",
+    "Lib/site-packages/flask_limiter/extension.py",
+    "Lib/site-packages/flask_limiter/manager.py",
+    "Lib/site-packages/flask_limiter/py.typed",
+    "Lib/site-packages/flask_limiter/typing.py",
+    "Lib/site-packages/flask_limiter/util.py",
+    "Lib/site-packages/flask_limiter/version.py",
+    "Lib/site-packages/flask_limiter/wrappers.py"
+  ],
+  "fn": "flask-limiter-3.12-py312haa95532_0.conda",
+  "license": "MIT",
+  "link": {
+    "source": "C:\\Users\\johng\\anaconda3\\pkgs\\flask-limiter-3.12-py312haa95532_0",
+    "type": 1
+  },
+  "md5": "c9b78fc41412ebcfc46c597afad0c8ed",
+  "name": "flask-limiter",
+  "package_tarball_full_path": "C:\\Users\\johng\\anaconda3\\pkgs\\flask-limiter-3.12-py312haa95532_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/LICENSE.txt",
+        "path_type": "hardlink",
+        "sha256": "4fa8bb92aec5e6020f7dc9e8f450b15391dcc26db6063ab4b87655dc495c8ec4",
+        "sha256_in_prefix": "4fa8bb92aec5e6020f7dc9e8f450b15391dcc26db6063ab4b87655dc495c8ec4",
+        "size_in_bytes": 1061
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "e25db36d57846bada09aa51444721bc941ef82bdc43ba40fb4eb5a7052ef007b",
+        "sha256_in_prefix": "e25db36d57846bada09aa51444721bc941ef82bdc43ba40fb4eb5a7052ef007b",
+        "size_in_bytes": 6566
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "78b449a0e8285b32969cb7d1ee876dcbe650c70a3da2ea29424313b8f8303b73",
+        "sha256_in_prefix": "78b449a0e8285b32969cb7d1ee876dcbe650c70a3da2ea29424313b8f8303b73",
+        "size_in_bytes": 2801
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "227f454cdc5e3fad0a9d3906c3bc24ea624f61dfdd4128c46665dd05d30223ef",
+        "sha256_in_prefix": "227f454cdc5e3fad0a9d3906c3bc24ea624f61dfdd4128c46665dd05d30223ef",
+        "size_in_bytes": 91
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "296a1815f96ed0032829e7bcb6cc4813eadcc70217c645e972996b990a44b83e",
+        "sha256_in_prefix": "296a1815f96ed0032829e7bcb6cc4813eadcc70217c645e972996b990a44b83e",
+        "size_in_bytes": 93
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/entry_points.txt",
+        "path_type": "hardlink",
+        "sha256": "5cfd432c602d4b34933bed5ed25d8547d72196e70abec182821ff07c23bda23f",
+        "sha256_in_prefix": "5cfd432c602d4b34933bed5ed25d8547d72196e70abec182821ff07c23bda23f",
+        "size_in_bytes": 54
+      },
+      {
+        "_path": "Lib/site-packages/Flask_Limiter-3.12.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "47ac845b190ddea92c479993aea6ddcb1e9f69d2e681eb58c4cc37a5e9171304",
+        "sha256_in_prefix": "47ac845b190ddea92c479993aea6ddcb1e9f69d2e681eb58c4cc37a5e9171304",
+        "size_in_bytes": 14
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "079dc7d2143dfb23de805816a230e3d8d91aa0fe3c6521dc9cccdc1375bbb6a4",
+        "sha256_in_prefix": "079dc7d2143dfb23de805816a230e3d8d91aa0fe3c6521dc9cccdc1375bbb6a4",
+        "size_in_bytes": 491
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "c8986ec915a331c73374cbfd3df2c1070637c36741cee8224e2577ab2063f249",
+        "sha256_in_prefix": "c8986ec915a331c73374cbfd3df2c1070637c36741cee8224e2577ab2063f249",
+        "size_in_bytes": 664
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/_compat.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "754b2e80cc358175c1bc233e5f8c08e05d8ac22e82b6f278f799e9df1c515ac3",
+        "sha256_in_prefix": "754b2e80cc358175c1bc233e5f8c08e05d8ac22e82b6f278f799e9df1c515ac3",
+        "size_in_bytes": 645
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/_version.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "cec7b5bf2e8aa27c5dcafd0d2ca783e4b4b3e4c55966663b4cdd4d3e1ff3e8fa",
+        "sha256_in_prefix": "cec7b5bf2e8aa27c5dcafd0d2ca783e4b4b3e4c55966663b4cdd4d3e1ff3e8fa",
+        "size_in_bytes": 527
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/commands.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "d72d5c46a949b63a27bb790ffc89de2e9eb24878841bb8b33f595d79155c796f",
+        "sha256_in_prefix": "d72d5c46a949b63a27bb790ffc89de2e9eb24878841bb8b33f595d79155c796f",
+        "size_in_bytes": 25719
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/constants.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "22ec4c8d81cb40a6c8ec9b3f93c74538d6b69bda840b30b0805aa2c883a0a67c",
+        "sha256_in_prefix": "22ec4c8d81cb40a6c8ec9b3f93c74538d6b69bda840b30b0805aa2c883a0a67c",
+        "size_in_bytes": 3286
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/errors.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "581c3d625275bc677348697a7e7f4cc773a537b26f966765bb69c8a40dfe0da2",
+        "sha256_in_prefix": "581c3d625275bc677348697a7e7f4cc773a537b26f966765bb69c8a40dfe0da2",
+        "size_in_bytes": 1638
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/extension.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "1f5bbb2ffcd53d06fa2a250fb9d8647247cba023d6557889ea6c041792263cfa",
+        "sha256_in_prefix": "1f5bbb2ffcd53d06fa2a250fb9d8647247cba023d6557889ea6c041792263cfa",
+        "size_in_bytes": 57189
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/manager.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "9697c93cd8f8d402288ce31fe827169b8d501c458365750edf07edbbefaf433f",
+        "sha256_in_prefix": "9697c93cd8f8d402288ce31fe827169b8d501c458365750edf07edbbefaf433f",
+        "size_in_bytes": 13155
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/typing.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "5ae6997014e7f749077956f3fac6cb6ab49dbd7c2b85205491857f5ac5f44638",
+        "sha256_in_prefix": "5ae6997014e7f749077956f3fac6cb6ab49dbd7c2b85205491857f5ac5f44638",
+        "size_in_bytes": 488
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/util.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "54723912d935c19c253d6d623f81955726fe38982a9de249d8777424bc3362dd",
+        "sha256_in_prefix": "54723912d935c19c253d6d623f81955726fe38982a9de249d8777424bc3362dd",
+        "size_in_bytes": 1458
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/version.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "73511b827f6a1d6c57991bb482e635276de55d25ffc013b65f95899df94ee1a9",
+        "sha256_in_prefix": "73511b827f6a1d6c57991bb482e635276de55d25ffc013b65f95899df94ee1a9",
+        "size_in_bytes": 196
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/__pycache__/wrappers.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "17f9f37b894d174f5433eed4547a331ade251fe370961275dbbf04d59115ad7a",
+        "sha256_in_prefix": "17f9f37b894d174f5433eed4547a331ade251fe370961275dbbf04d59115ad7a",
+        "size_in_bytes": 8063
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/_compat.py",
+        "path_type": "hardlink",
+        "sha256": "8eb518468228e23397a792435a0a4befb17a0ae8ffd225fbc92b1339f62b3ecf",
+        "sha256_in_prefix": "8eb518468228e23397a792435a0a4befb17a0ae8ffd225fbc92b1339f62b3ecf",
+        "size_in_bytes": 379
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/_version.py",
+        "path_type": "hardlink",
+        "sha256": "814ab8c906154e0f11160caaad96dd4fd751c3afd14f735c9630220a280b81e9",
+        "sha256_in_prefix": "814ab8c906154e0f11160caaad96dd4fd751c3afd14f735c9630220a280b81e9",
+        "size_in_bytes": 517
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/commands.py",
+        "path_type": "hardlink",
+        "sha256": "217fe33e6a472ea4edded4d5805b68103c4d346e2378d0a0127f734d578027f1",
+        "sha256_in_prefix": "217fe33e6a472ea4edded4d5805b68103c4d346e2378d0a0127f734d578027f1",
+        "size_in_bytes": 23480
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/constants.py",
+        "path_type": "hardlink",
+        "sha256": "346500bde446efe38461b6261a06f5ef60459a4d59a4e199a20b3284fd414b7e",
+        "sha256_in_prefix": "346500bde446efe38461b6261a06f5ef60459a4d59a4e199a20b3284fd414b7e",
+        "size_in_bytes": 2902
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/contrib/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "62bd3a232de2fc5d5cc1348670658ec4c1ce65a427c928911417ec1fc4b2ae27",
+        "sha256_in_prefix": "62bd3a232de2fc5d5cc1348670658ec4c1ce65a427c928911417ec1fc4b2ae27",
+        "size_in_bytes": 28
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/contrib/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "62afaecaabdd38b2af1aae17ff76d0ff248d909c6c9828c0351cd4b11e08c21f",
+        "sha256_in_prefix": "62afaecaabdd38b2af1aae17ff76d0ff248d909c6c9828c0351cd4b11e08c21f",
+        "size_in_bytes": 184
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/contrib/__pycache__/util.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "5d7d2dfae63cf45ed26078d5b16a18d6c819af2eba79a53f1037036887df26a0",
+        "sha256_in_prefix": "5d7d2dfae63cf45ed26078d5b16a18d6c819af2eba79a53f1037036887df26a0",
+        "size_in_bytes": 602
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/contrib/util.py",
+        "path_type": "hardlink",
+        "sha256": "5ca5f9a6a03b7fe7063fb210b60dad9f2a10936121e4be078b7cc3a568eaff7b",
+        "sha256_in_prefix": "5ca5f9a6a03b7fe7063fb210b60dad9f2a10936121e4be078b7cc3a568eaff7b",
+        "size_in_bytes": 306
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/errors.py",
+        "path_type": "hardlink",
+        "sha256": "8ff3f137c28ae191e50ed0d49dc10d5a9dc88cd8f6fcd5c1a4f5866580c9d183",
+        "sha256_in_prefix": "8ff3f137c28ae191e50ed0d49dc10d5a9dc88cd8f6fcd5c1a4f5866580c9d183",
+        "size_in_bytes": 1086
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/extension.py",
+        "path_type": "hardlink",
+        "sha256": "0556c28dbb6e20178711b63b832320a94e7fef07a83e99247e5a7b6967ff3d44",
+        "sha256_in_prefix": "0556c28dbb6e20178711b63b832320a94e7fef07a83e99247e5a7b6967ff3d44",
+        "size_in_bytes": 51847
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/manager.py",
+        "path_type": "hardlink",
+        "sha256": "67bf0170925bfd9fab9b1936819c0ad140144babd6a22083f0acf222d41062de",
+        "sha256_in_prefix": "67bf0170925bfd9fab9b1936819c0ad140144babd6a22083f0acf222d41062de",
+        "size_in_bytes": 10679
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/py.typed",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/typing.py",
+        "path_type": "hardlink",
+        "sha256": "1459e1fc51c0fb8baa2ebcbe2ff7ea4dcd86b5b46242e1a04cfdca2443087745",
+        "sha256_in_prefix": "1459e1fc51c0fb8baa2ebcbe2ff7ea4dcd86b5b46242e1a04cfdca2443087745",
+        "size_in_bytes": 301
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/util.py",
+        "path_type": "hardlink",
+        "sha256": "e8969c12a782b367396f51ab2cbd3a8f3526c7652272ab853571917a3abc0124",
+        "sha256_in_prefix": "e8969c12a782b367396f51ab2cbd3a8f3526c7652272ab853571917a3abc0124",
+        "size_in_bytes": 987
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/version.py",
+        "path_type": "hardlink",
+        "sha256": "630905dddb6ad4a1b3be62f789519cb40f0d36d1a52bfd1aaebcd99191958d4b",
+        "sha256_in_prefix": "630905dddb6ad4a1b3be62f789519cb40f0d36d1a52bfd1aaebcd99191958d4b",
+        "size_in_bytes": 47
+      },
+      {
+        "_path": "Lib/site-packages/flask_limiter/wrappers.py",
+        "path_type": "hardlink",
+        "sha256": "6dfa57652128d0fde822dde017136faef774a2a506e9ea8acffb8320cb293ef4",
+        "sha256_in_prefix": "6dfa57652128d0fde822dde017136faef774a2a506e9ea8acffb8320cb293ef4",
+        "size_in_bytes": 5465
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "flask-limiter",
+  "sha256": "87380371cf91bc3b2f2d5e0eb098c068d874cdbff8df73fee19d039ada0e98aa",
+  "size": 70524,
+  "subdir": "win-64",
+  "timestamp": 1745338575000,
+  "url": "https://repo.anaconda.com/pkgs/main/win-64/flask-limiter-3.12-py312haa95532_0.conda",
+  "version": "3.12"
+}

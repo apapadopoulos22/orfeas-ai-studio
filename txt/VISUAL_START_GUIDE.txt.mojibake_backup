@@ -1,0 +1,308 @@
+
++==============================================================================Ã¢â€¢â€”
+|                                                                              |
+|                  [TARGET] HOW TO START ORFEAS - VISUAL GUIDE [TARGET]                     |
+|                                                                              |
++==============================================================================ï¿½
+
+
+## [LAUNCH] EASIEST METHOD - ONE CLICK!
+
+```
+Step 1: Navigate to project folder
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+[FOLDER] C:\Users\johng\Documents\Erevus\orfeas\
+
+You should see these files:
+  ðŸ“„ orfeas-studio.html
+  [FOLDER] backend/
+  [FOLDER] Hunyuan3D-2.1/
+  [LAUNCH] START ORFEAS.bat          ï¿½ DOUBLE-CLICK THIS!
+  ðŸ“„ START_ORFEAS_AUTO.ps1
+  ðŸ“„ START_ORFEAS_AUTO.bat
+  ðŸ“„ AUTO_STARTUP_GUIDE.md
+  ðŸ“„ AUTO_STARTUP_SUCCESS.md
+```
+
+```
+Step 2: Double-click the rocket file
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+  [LAUNCH] START ORFEAS.bat          ï¿½ DOUBLE-CLICK!
+```
+
+```
+Step 3: Watch the magic happen!
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+Window 1 (Startup Script):
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½
+â”‚ ORFEAS AI Studio - Auto Startup                        â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ [1/5] Checking Python installation...                 â”‚
+â”‚ [OK] Python found: Python 3.11.9                       â”‚
+â”‚                                                         â”‚
+â”‚ [2/5] Checking backend directory...                    â”‚
+â”‚ [OK] Backend directory found: backend\main.py          â”‚
+â”‚                                                         â”‚
+â”‚ [3/5] Checking frontend...                             â”‚
+â”‚ [OK] Frontend HTML found: orfeas-studio.html           â”‚
+â”‚                                                         â”‚
+â”‚ [4/5] Starting backend server...                       â”‚
+â”‚ [INFO] Opening backend server in new window...         â”‚
+â”‚ [OK] Backend server started (PID: 23472)               â”‚
+â”‚                                                         â”‚
+â”‚ [5/5] Waiting for backend to initialize...             â”‚
+â”‚ [INFO] Please wait 5 seconds...                        â”‚
+â”‚ [OK] Backend server is running on http://127.0.0.1:5002â”‚
+â”‚                                                         â”‚
+â”‚ ====================================================   â”‚
+â”‚   STARTUP COMPLETE!                                    â”‚
+â”‚ ====================================================   â”‚
+â”‚                                                         â”‚
+â”‚ Open frontend in browser? (Y/N):                       â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+
+Window 2 (Backend Server - Automatically Opened):
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½
+â”‚ ORFEAS Backend Server                                   â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ ===================================================    â”‚
+â”‚    ORFEAS AI STUDIO - Backend Server                   â”‚
+â”‚    Automated 3D Generation with Local GPU              â”‚
+â”‚    Preview Fix - Complete Solution                     â”‚
+â”‚ ===================================================    â”‚
+â”‚                                                         â”‚
+â”‚ [INFO] Python detected successfully                    â”‚
+â”‚ [INFO] Starting ORFEAS Backend Server...               â”‚
+â”‚ [INFO] All dependencies satisfied                      â”‚
+â”‚                                                         â”‚
+â”‚ [INFO] Checking GPU availability...                    â”‚
+â”‚ CUDA Available: True                                    â”‚
+â”‚ GPU Count: 1                                            â”‚
+â”‚                                                         â”‚
+â”‚ [INFO] Starting Flask server on http://127.0.0.1:5002  â”‚
+â”‚ [INFO] WebSocket support enabled                       â”‚
+â”‚ [INFO] CORS enabled for frontend integration           â”‚
+â”‚ [INFO] Preview endpoints ready                         â”‚
+â”‚                                                         â”‚
+â”‚  * Running on http://127.0.0.1:5002                    â”‚
+â”‚  * Debug mode: on                                      â”‚
+â”‚                                                         â”‚
+â”‚ [READY] Server is running and accepting connections    â”‚
+â”‚ ï¿½ï¿½  Keep this window open! Closing will stop server    â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+```
+
+```
+Step 4: Answer the prompt
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+Open frontend in browser? (Y/N): Y  ï¿½ Type Y and press Enter
+```
+
+```
+Step 5: Frontend opens automatically!
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+Your default browser opens with:
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½
+â”‚ ORFEAS STUDIO - Creative Workspace                      â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â”“ â”‚
+â”‚ â”ƒ [AI] ORFEAS 3D Generator - Hunyuan AI Engine        â”ƒ â”‚
+â”‚ â”—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â”› â”‚
+â”‚                                                         â”‚
+â”‚ â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½       â”‚
+â”‚ â”‚ ðŸ“¥ Input            â”‚  â”‚ ðŸ“¤ 3D Preview       â”‚       â”‚
+â”‚ â”‚                     â”‚  â”‚                     â”‚       â”‚
+â”‚ â”‚ â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½ â”‚  â”‚ â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½ â”‚       â”‚
+â”‚ â”‚ â”‚ [PICTURE] Drop image    â”‚ â”‚  â”‚ â”‚ ï¿½ 3D preview   â”‚ â”‚       â”‚
+â”‚ â”‚ â”‚ or click to     â”‚ â”‚  â”‚ â”‚ will appear     â”‚ â”‚       â”‚
+â”‚ â”‚ â”‚ browse          â”‚ â”‚  â”‚ â”‚ here            â”‚ â”‚       â”‚
+â”‚ â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚  â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚       â”‚
+â”‚ â”‚                     â”‚  â”‚                     â”‚       â”‚
+â”‚ â”‚ [[LAUNCH] Generate 3D]    â”‚  â”‚ [ðŸ“¥ Download STL]   â”‚       â”‚
+â”‚ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜       â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+[OK] Connected to ORFEAS Backend
+[OK] Preview endpoints ready
+[OK] Ready to upload images!
+```
+
+```
+Step 6: YOU'RE DONE! ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+[OK] Backend server running (check 2nd window)
+[OK] Frontend open in browser
+[OK] Preview functionality working
+[OK] Ready to generate 3D models!
+
+Now you can:
+  1. Upload an image (click drop zone)
+  2. See instant preview (using /api/preview/<filename>)
+  3. Generate 3D model (click Generate button)
+  4. Download STL file
+```
+
+
+## [TARGET] ALTERNATIVE: PowerShell Script Method
+
+```
+Step 1: Find PowerShell script
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+[FOLDER] C:\Users\johng\Documents\Erevus\orfeas\
+
+  ðŸ“„ START_ORFEAS_AUTO.ps1     ï¿½ This file
+```
+
+```
+Step 2: Right-click the file
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+  ðŸ“„ START_ORFEAS_AUTO.ps1
+  â”‚
+  â”œâ”€â–º Right-click
+  â””â”€â–º Select "Run with PowerShell"
+```
+
+```
+Step 3: Same result as Method 1!
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+All checks run, backend starts, frontend opens!
+```
+
+
+## [STOP] HOW TO STOP
+
+```
+Method 1: Close Backend Window
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ï¿½
+â”‚ ORFEAS Backend Server                               [X] â”‚ ï¿½ Click X
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ * Running on http://127.0.0.1:5002                     â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+Server stops immediately.
+```
+
+```
+Method 2: Press Ctrl+C
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+Click in backend window and press: Ctrl + C
+
+Server stops gracefully with:
+[INFO] Server stopped gracefully
+```
+
+
+## [STATS] WHAT EACH FILE DOES
+
+```
+[LAUNCH] START ORFEAS.bat
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+â€¢ One-click launcher
+â€¢ Calls PowerShell script automatically
+â€¢ Easiest method (just double-click!)
+
+
+START_ORFEAS_AUTO.ps1
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+â€¢ PowerShell version with colors
+â€¢ Checks Python, backend, frontend
+â€¢ Starts server in new window
+â€¢ Verifies server health
+â€¢ Offers to open frontend
+
+
+START_ORFEAS_AUTO.bat
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+â€¢ Windows CMD batch file
+â€¢ No PowerShell needed
+â€¢ Same features as PS1 version
+â€¢ Universal Windows compatibility
+
+
+backend/start_backend.bat
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+â€¢ Manual backend starter
+â€¢ Can be used standalone
+â€¢ Fixed to run main.py (not app.py)
+â€¢ Updated for preview endpoints
+```
+
+
+## [OK] VERIFICATION CHECKLIST
+
+```
+After starting, verify everything works:
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+[OK] Backend window is open and showing "Running on http://127.0.0.1:5002"
+[OK] Frontend loaded in browser showing ORFEAS Studio interface
+[OK] Browser console (F12) shows "Connected to ORFEAS Backend"
+[OK] No errors in backend window
+[OK] Upload area visible in frontend
+
+Test by:
+  1. Open browser to: http://127.0.0.1:5002/api/health
+     Should show: {"status":"running","gpu_available":true}
+
+  2. Click upload area in frontend
+  3. Select any PNG/JPG image
+  4. See preview appear immediately ï¿½ THIS IS THE FIX!
+```
+
+
+## [CONFIG] TROUBLESHOOTING
+
+```
+Problem: "Python is not installed"
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+Solution:
+1. Install Python from: https://www.python.org/downloads/
+2. Check "Add Python to PATH" during installation
+3. Restart computer
+4. Try again
+```
+
+```
+Problem: Backend window closes immediately
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+Solution:
+1. Open CMD manually: cd backend
+2. Run: python main.py
+3. Check error messages
+4. Usually: missing packages
+5. Run: pip install -r requirements.txt
+```
+
+```
+Problem: Port 5002 already in use
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+Solution:
+1. Find process: netstat -ano | findstr :5002
+2. Kill process: taskkill /PID <pid> /F
+3. Or change port in backend/main.py
+```
+
+
++==============================================================================Ã¢â€¢â€”
+|                                                                              |
+|                     [OK] READY TO START! [OK]                                     |
+|                                                                              |
+|              Double-click: [LAUNCH] START ORFEAS.bat                               |
+|                                                                              |
+|              Everything starts automatically! ï¿½                             |
+|                                                                              |
++==============================================================================ï¿½
+

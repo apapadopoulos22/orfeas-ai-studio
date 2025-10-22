@@ -1,0 +1,417 @@
+"""
+ORFEAS AI 2D'Üí3D Studio - AI Agent Authentication (PHASE 1 - TASK 2.1)
+========================================================================
+ORFEAS AI Project
+
+Phase 1, Task 2.1: Secure Agent Authentication System
+Target: HMAC-based API key authentication for AI agents
+
+Implementation Status: üöß IN PROGRESS
+Start Date: October 17, 2025
+Expected Completion: October 24, 2025 (Day 7)
+
+SUCCESS CRITERIA:
+- HMAC SHA-256 signature verification
+- Per-agent API key management
+- Operation-level permissions
+- Rate limiting per agent
+- Audit logging for all requests
+"""
+
+import os
+import hmac
+import hashlib
+import logging
+import time
+from functools import wraps
+from typing import Dict, Optional, List, Set
+from datetime import datetime, timedelta
+from flask import request, jsonify
+
+logger = logging.getLogger(__name__)
+
+
+# ==============================================================================
+# AGENT CONFIGURATION
+# ==============================================================================
+
+class AgentConfig:
+    """Configuration for a single AI agent"""
+
+    def __init__(
+        self,
+        agent_id: str,
+        api_key: str,
+        secret: str,
+        max_requests_per_minute: int = 100,
+        max_concurrent_jobs: int = 10,
+        allowed_operations: Optional[List[str]] = None,
+        ip_whitelist: Optional[List[str]] = None
+    ):
+        self.agent_id = agent_id
+        self.api_key = api_key
+        self.secret = secret
+        self.max_requests_per_minute = max_requests_per_minute
+        self.max_concurrent_jobs = max_concurrent_jobs
+        self.allowed_operations = allowed_operations or ['generate_3d', 'batch_generate', 'query_status']
+        self.ip_whitelist = ip_whitelist or []  # Empty = allow all IPs
+
+        # Runtime tracking
+        self.request_history: List[float] = []
+        self.active_jobs: Set[str] = set()
+        self.total_requests = 0
+        self.failed_auth_attempts = 0
+
+
+# ==============================================================================
+# AGENT REGISTRY
+# ==============================================================================
+
+class AgentRegistry:
+    """
+    Registry of authorized AI agents
+
+    [ORFEAS] SECURITY: Each agent has unique credentials and permissions
+    """
+
+    def __init__(self):
+        self.agents: Dict[str, AgentConfig] = {}
+        self._load_agents_from_env()
+        logger.info(f"[ORFEAS] Agent registry initialized with {len(self.agents)} agents")
+
+    def _load_agents_from_env(self):
+        """Load agent configurations from environment variables"""
+
+        # Example agent configurations
+        # In production, load from secure secret manager (e.g., AWS Secrets Manager, Azure Key Vault)
+
+        # Agent 1: ORFEAS Development Agent
+        AGENT_ORFEAS_secret = os.getenv('AGENT_ORFEAS_SECRET', 'dev_secret_orfeas_001')
+        self.register_agent(AgentConfig(
+            agent_id='AGENT_ORFEAS_001',
+            api_key='orfeas_dev_key',
+            secret=AGENT_ORFEAS_secret,
+            max_requests_per_minute=100,
+            max_concurrent_jobs=10,
+            allowed_operations=['generate_3d', 'batch_generate', 'query_status', 'admin']
+        ))
+
+        # Agent 2: Production Worker Agent
+        agent_worker_secret = os.getenv('AGENT_WORKER_SECRET', 'dev_secret_worker_002')
+        self.register_agent(AgentConfig(
+            agent_id='agent_worker_002',
+            api_key='worker_prod_key',
+            secret=agent_worker_secret,
+            max_requests_per_minute=50,
+            max_concurrent_jobs=5,
+            allowed_operations=['generate_3d', 'query_status']
+        ))
+
+        # Agent 3: Testing Agent
+        agent_test_secret = os.getenv('AGENT_TEST_SECRET', 'test_secret_123')
+        self.register_agent(AgentConfig(
+            agent_id='agent_test_001',
+            api_key='test_key_001',
+            secret=agent_test_secret,
+            max_requests_per_minute=10,
+            max_concurrent_jobs=2,
+            allowed_operations=['generate_3d']
+        ))
+
+    def register_agent(self, config: AgentConfig):
+        """Register a new agent"""
+        self.agents[config.api_key] = config
+        logger.info(f"[ORFEAS] Registered agent: {config.agent_id}")
+
+    def get_agent(self, api_key: str) -> Optional[AgentConfig]:
+        """Get agent configuration by API key"""
+        return self.agents.get(api_key)
+
+    def get_all_agents(self) -> List[AgentConfig]:
+        """Get all registered agents"""
+        return list(self.agents.values())
+
+
+# Global agent registry
+_agent_registry = AgentRegistry()
+
+
+def get_agent_registry() -> AgentRegistry:
+    """Get global agent registry singleton"""
+    return _agent_registry
+
+
+# ==============================================================================
+# HMAC SIGNATURE VERIFICATION
+# ==============================================================================
+
+def generate_hmac_signature(secret: str, request_body: bytes) -> str:
+    """
+    Generate HMAC-SHA256 signature for request body
+
+    Args:
+        secret: Agent's secret key
+        request_body: Raw request body bytes
+
+    Returns:
+        Hex-encoded HMAC signature
+    """
+    return hmac.new(
+        secret.encode('utf-8'),
+        request_body,
+        hashlib.sha256
+    ).hexdigest()
+
+
+def verify_hmac_signature(secret: str, request_body: bytes, provided_signature: str) -> bool:
+    """
+    Verify HMAC signature matches expected value
+
+    Args:
+        secret: Agent's secret key
+        request_body: Raw request body bytes
+        provided_signature: Signature from request header
+
+    Returns:
+        True if signature is valid, False otherwise
+    """
+    expected_signature = generate_hmac_signature(secret, request_body)
+    return hmac.compare_digest(expected_signature, provided_signature)
+
+
+# ==============================================================================
+# RATE LIMITING
+# ==============================================================================
+
+class AgentRateLimiter:
+    """
+    Rate limiter for agent requests
+
+    Uses sliding window algorithm for accurate rate limiting
+    """
+
+    def __init__(self):
+        self.registry = get_agent_registry()
+
+    def check_rate_limit(self, agent_config: AgentConfig) -> bool:
+        """
+        Check if agent has exceeded rate limit
+
+        Args:
+            agent_config: Agent configuration
+
+        Returns:
+            True if within limits, False if exceeded
+        """
+        current_time = time.time()
+        window_start = current_time - 60  # 1 minute window
+
+        # Clean old requests
+        agent_config.request_history = [
+            timestamp for timestamp in agent_config.request_history
+            if timestamp > window_start
+        ]
+
+        # Check limit
+        if len(agent_config.request_history) >= agent_config.max_requests_per_minute:
+            logger.warning(
+                f"[ORFEAS] Rate limit exceeded for {agent_config.agent_id}: "
+                f"{len(agent_config.request_history)}/{agent_config.max_requests_per_minute}"
+            )
+            return False
+
+        # Add current request
+        agent_config.request_history.append(current_time)
+        agent_config.total_requests += 1
+
+        return True
+
+
+# Global rate limiter
+_agent_rate_limiter = AgentRateLimiter()
+
+
+def get_agent_rate_limiter() -> AgentRateLimiter:
+    """Get global agent rate limiter singleton"""
+    return _agent_rate_limiter
+
+
+# ==============================================================================
+# AUTHENTICATION DECORATOR
+# ==============================================================================
+
+def require_agent_token(allowed_operations: Optional[List[str]] = None):
+    """
+    Decorator to require valid agent API key and signature
+
+    Usage:
+        @app.route('/api/agent/generate-3d')
+        @require_agent_token(allowed_operations=['generate_3d'])
+        def agent_generate_3d():
+            # Access agent config via request.agent_config
+            agent_id = request.agent_config.agent_id
+            ...
+
+    Args:
+        allowed_operations: List of operations this endpoint requires
+
+    Returns:
+        Decorated function with authentication
+    """
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Get API key from header
+            api_key = request.headers.get('X-Agent-API-Key')
+            if not api_key:
+                logger.warning("[ORFEAS] Missing API key in request")
+                return jsonify({
+                    'error': 'Missing API key',
+                    'message': 'Include X-Agent-API-Key header'
+                }), 401
+
+            # Get signature from header
+            signature = request.headers.get('X-Agent-Signature')
+            if not signature:
+                logger.warning("[ORFEAS] Missing signature in request")
+                return jsonify({
+                    'error': 'Missing signature',
+                    'message': 'Include X-Agent-Signature header with HMAC-SHA256 signature'
+                }), 401
+
+            # Get agent configuration
+            registry = get_agent_registry()
+            agent_config = registry.get_agent(api_key)
+
+            if not agent_config:
+                logger.warning(f"[ORFEAS] Invalid API key: {api_key[:10]}...")
+                return jsonify({
+                    'error': 'Invalid API key',
+                    'message': 'API key not recognized'
+                }), 401
+
+            # Verify HMAC signature
+            request_body = request.get_data()
+            if not verify_hmac_signature(agent_config.secret, request_body, signature):
+                agent_config.failed_auth_attempts += 1
+                logger.error(
+                    f"[ORFEAS] Invalid signature for agent {agent_config.agent_id} "
+                    f"(failures: {agent_config.failed_auth_attempts})"
+                )
+                return jsonify({
+                    'error': 'Invalid signature',
+                    'message': 'HMAC signature verification failed'
+                }), 401
+
+            # Check IP whitelist (if configured)
+            if agent_config.ip_whitelist:
+                client_ip = request.remote_addr
+                if client_ip not in agent_config.ip_whitelist:
+                    logger.warning(f"[ORFEAS] IP not whitelisted: {client_ip} for {agent_config.agent_id}")
+                    return jsonify({
+                        'error': 'IP not authorized',
+                        'message': f'IP {client_ip} not in whitelist'
+                    }), 403
+
+            # Check operation permission
+            if allowed_operations:
+                endpoint_operation = request.endpoint.split('_')[-1] if request.endpoint else 'unknown'
+                if endpoint_operation not in agent_config.allowed_operations:
+                    logger.warning(
+                        f"[ORFEAS] Operation not permitted: {endpoint_operation} "
+                        f"for {agent_config.agent_id}"
+                    )
+                    return jsonify({
+                        'error': 'Operation not permitted',
+                        'message': f'Agent not authorized for operation: {endpoint_operation}'
+                    }), 403
+
+            # Check rate limit
+            rate_limiter = get_agent_rate_limiter()
+            if not rate_limiter.check_rate_limit(agent_config):
+                return jsonify({
+                    'error': 'Rate limit exceeded',
+                    'message': f'Limit: {agent_config.max_requests_per_minute} requests/minute',
+                    'retry_after': 60
+                }), 429
+
+            # Attach agent config to request for use in endpoint
+            request.agent_config = agent_config
+
+            # Log successful authentication
+            logger.info(
+                f"[ORFEAS] Agent authenticated: {agent_config.agent_id} "
+                f"(requests: {agent_config.total_requests})"
+            )
+
+            # Call original function
+            return f(*args, **kwargs)
+
+        return decorated_function
+    return decorator
+
+
+# ==============================================================================
+# AGENT METRICS
+# ==============================================================================
+
+def get_agent_metrics() -> Dict:
+    """
+    Get metrics for all agents
+
+    Returns:
+        Dict with agent statistics
+    """
+    registry = get_agent_registry()
+
+    metrics = {
+        'timestamp': datetime.now().isoformat(),
+        'total_agents': len(registry.get_all_agents()),
+        'agents': []
+    }
+
+    for agent in registry.get_all_agents():
+        metrics['agents'].append({
+            'agent_id': agent.agent_id,
+            'total_requests': agent.total_requests,
+            'failed_auth_attempts': agent.failed_auth_attempts,
+            'active_jobs': len(agent.active_jobs),
+            'max_concurrent_jobs': agent.max_concurrent_jobs,
+            'requests_per_minute_limit': agent.max_requests_per_minute,
+            'current_rate': len(agent.request_history)
+        })
+
+    return metrics
+
+
+# ==============================================================================
+# USAGE EXAMPLE
+# ==============================================================================
+
+if __name__ == "__main__":
+    """
+    Example usage of agent authentication
+    """
+    print("[ORFEAS] Agent Authentication System - Phase 1 Task 2.1")
+    print("[ORFEAS] HMAC-SHA256 signature-based authentication")
+    print()
+
+    # Example: Generate signature for a request
+    agent_secret = "test_secret_123"
+    request_body = b'{"prompt": "3d model of a chair", "format": "stl"}'
+
+    signature = generate_hmac_signature(agent_secret, request_body)
+    print(f"Example Request Body: {request_body.decode()}")
+    print(f"Generated Signature: {signature}")
+    print()
+
+    # Verification
+    is_valid = verify_hmac_signature(agent_secret, request_body, signature)
+    print(f"Signature Verification: {'✓ VALID' if is_valid else '✗ INVALID'}")
+    print()
+
+    print("NEXT STEPS:")
+    print("1. Integrate with backend/main.py Flask routes")
+    print("2. Create /api/agent/* endpoints using @require_agent_token decorator")
+    print("3. Test authentication with curl/Python requests")
+    print("4. Write integration tests for auth flow")

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> EMERGENCY INTERVAL STOP</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 40px;
+            text-align: center;
+        }
+        .emergency-box {
+            background: #ff0000;
+            color: #fff;
+            padding: 30px;
+            border: 5px solid #ff6666;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 0 30px rgba(255,0,0,0.5);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 10px #fff;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+            box-shadow: 0 0 20px rgba(0,255,0,0.5);
+        }
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.1);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 5px;
+        }
+        .code {
+            background: #000;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="emergency-box">
+        <h1> EMERGENCY INTERVAL STOP </h1>
+        <p><strong>ORFEAS PROTOCOL - INTERVAL CLEANUP</strong></p>
+
+        <div class="status" id="status">
+            Click button below to stop ALL intervals in test page
+        </div>
+
+        <button onclick="emergencyStop()"> STOP ALL INTERVALS NOW</button>
+
+        <div style="margin-top: 30px; color: #fff;">
+            <h3>MANUAL METHOD:</h3>
+            <p>1. Go to test page (test_phase3_optimizations.html)</p>
+            <p>2. Open Console (F12)</p>
+            <p>3. Type this command:</p>
+            <div class="code">intervalManager.clearAll()</div>
+            <p>4. Press ENTER</p>
+        </div>
+
+        <div style="margin-top: 20px; color: #ffff00;">
+            <p><strong>OR</strong></p>
+            <p>Click "Clear All Intervals" button in test page</p>
+        </div>
+    </div>
+
+    <script>
+        function emergencyStop() {
+            const statusDiv = document.getElementById('status');
+
+            try {
+                // Try to access the test page window
+                const testWindow = window.opener || window.parent;
+
+                if (testWindow && testWindow.intervalManager) {
+                    const before = testWindow.intervalManager.getStatus();
+                    testWindow.intervalManager.clearAll();
+                    const after = testWindow.intervalManager.getStatus();
+
+                    statusDiv.innerHTML = `
+                        <strong> SUCCESS!</strong><br><br>
+                        Intervals before: ${before.intervals}<br>
+                        Timeouts before: ${before.timeouts}<br>
+                        Total before: ${before.total}<br><br>
+                        <strong style="color: #00ff00;">All timers cleared!</strong><br>
+                        Total now: ${after.total}
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <strong> CANNOT ACCESS TEST PAGE</strong><br><br>
+                        Please use MANUAL METHOD:<br>
+                        1. Go to test page<br>
+                        2. Open Console (F12)<br>
+                        3. Type: intervalManager.clearAll()<br>
+                        4. Press ENTER
+                    `;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <strong> ERROR</strong><br><br>
+                    ${error.message}<br><br>
+                    Please use MANUAL METHOD:<br>
+                    1. Go to test page<br>
+                    2. Click "Clear All Intervals" button<br>
+                    OR<br>
+                    Open Console and type: intervalManager.clearAll()
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

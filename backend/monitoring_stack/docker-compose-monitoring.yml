@@ -1,0 +1,167 @@
+# ============================================================================
+# ORFEAS AI 2Dâ†’3D Studio - Monitoring Stack
+# ============================================================================
+# Author: ORFEAS Protocol - Monitoring Master
+# Date: October 14, 2025
+# Purpose: Complete monitoring infrastructure with Prometheus & Grafana
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # Prometheus - Metrics Collection & Storage
+  # ==========================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: orfeas-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus-rules.yml:/etc/prometheus/rules.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring
+    labels:
+      - "monitoring.type=metrics"
+      - "monitoring.service=prometheus"
+
+  # ==========================================================================
+  # Grafana - Metrics Visualization & Dashboards
+  # ==========================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: orfeas-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=orfeas_monitoring_2025
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ./grafana-dashboard.json:/etc/grafana/provisioning/dashboards/orfeas-dashboard.json:ro
+      - ./grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+    labels:
+      - "monitoring.type=visualization"
+      - "monitoring.service=grafana"
+
+  # ==========================================================================
+  # Node Exporter - System Metrics (Optional)
+  # ==========================================================================
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: orfeas-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - monitoring
+    labels:
+      - "monitoring.type=exporter"
+      - "monitoring.service=node-exporter"
+
+  # ==========================================================================
+  # Alertmanager - Alert Management (Optional)
+  # ==========================================================================
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: orfeas-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    networks:
+      - monitoring
+    labels:
+      - "monitoring.type=alerts"
+      - "monitoring.service=alertmanager"
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+  monitoring:
+    driver: bridge
+    name: orfeas-monitoring
+
+# ============================================================================
+# Persistent Volumes
+# ============================================================================
+volumes:
+  prometheus-data:
+    name: orfeas-prometheus-data
+  grafana-data:
+    name: orfeas-grafana-data
+  alertmanager-data:
+    name: orfeas-alertmanager-data
+
+# ============================================================================
+# USAGE INSTRUCTIONS
+# ============================================================================
+#
+# Start monitoring stack:
+#   docker-compose -f docker-compose-monitoring.yml up -d
+#
+# Stop monitoring stack:
+#   docker-compose -f docker-compose-monitoring.yml down
+#
+# View logs:
+#   docker-compose -f docker-compose-monitoring.yml logs -f
+#
+# Restart services:
+#   docker-compose -f docker-compose-monitoring.yml restart
+#
+# Remove all data (WARNING: deletes metrics history):
+#   docker-compose -f docker-compose-monitoring.yml down -v
+#
+# ============================================================================
+# ACCESS URLS
+# ============================================================================
+#
+# Prometheus:    http://localhost:9090
+# Grafana:       http://localhost:3001  (admin/orfeas_monitoring_2025)
+# Alertmanager:  http://localhost:9093
+# Node Exporter: http://localhost:9100/metrics
+# ORFEAS Metrics: http://localhost:5000/metrics
+#
+# ============================================================================
+# GRAFANA SETUP
+# ============================================================================
+#
+# 1. Access Grafana at http://localhost:3001
+# 2. Login with admin/orfeas_monitoring_2025
+# 3. Dashboard will be auto-provisioned
+# 4. If not, import grafana-dashboard.json manually
+#
+# ============================================================================

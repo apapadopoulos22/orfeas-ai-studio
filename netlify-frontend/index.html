@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORFEAS MAKERS PORTAL - Cloud Edition</title>
+    <meta name="description" content="ORFEAS Makers Portal - AI-Powered 3D Generation Platform">
+    <meta name="keywords" content="3D, AI, STL, modeling, makers, ORFEAS">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>üöÄ</text></svg>">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .connection-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #2ed573;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero-section {
+            max-width: 900px;
+            margin-bottom: 4rem;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .cloud-badge {
+            background: linear-gradient(45deg, #00d4ff, #5b8def);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .server-config {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .config-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .server-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .server-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 0.8rem;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .server-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .server-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .test-btn {
+            background: linear-gradient(45deg, #2ed573, #1dd1a1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.4);
+        }
+
+        .test-btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1001;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #2ed573;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            border-left-color: #ff4757;
+        }
+
+        .notification.warning {
+            border-left-color: #ffa502;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.2);
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .deployment-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .server-input-group {
+                flex-direction: column;
+            }
+
+            .connection-indicator {
+                top: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse-scale 2s infinite;
+        }
+
+        @keyframes pulse-scale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Connection Status Indicator -->
+    <div class="connection-indicator" id="connectionStatus">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Connecting...</span>
+    </div>
+
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <span>üöÄ</span>
+                ORFEAS MAKERS CLOUD
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#studio">Studio</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-section animate-fade-in">
+            <div class="cloud-badge"> CLOUD EDITION - NETLIFY POWERED</div>
+            <h1 class="hero-title pulse">ORFEAS MAKERS PORTAL</h1>
+            <p class="hero-subtitle">
+                Cloud-powered 3D generation platform connecting to your local AI engine.<br>
+                Transform 2D images to 3D models anywhere, anytime.
+            </p>
+
+            <!-- Server Configuration Panel -->
+            <div class="server-config">
+                <div class="config-title">
+                    <span>üîß</span>
+                    Local Server Configuration
+                </div>
+                <div class="server-input-group">
+                    <input
+                        type="text"
+                        id="serverUrl"
+                        class="server-input"
+                        placeholder="http://192.168.1.57:5002"
+                        value="http://192.168.1.57:5002"
+                    />
+                    <button class="test-btn" id="testConnection" onclick="testServerConnection()">
+                        Test Connection
+                    </button>
+                </div>
+                <div style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 0.5rem;">
+                    Enter your local ORFEAS server URL and test the connection
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary" id="launchStudio" onclick="launchStudio()">Launch 3D Studio</a>
+                <a href="#features" class="btn btn-secondary">Explore Features</a>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="feature-card animate-fade-in">
+                <span class="feature-icon"></span>
+                <h3 class="feature-title">Cloud Frontend</h3>
+                <p class="feature-description">
+                    Access your ORFEAS 3D generation tools from anywhere with our cloud-hosted frontend, powered by Netlify's global CDN.
+                </p>
+            </div>
+
+            <div class="feature-card animate-fade-in">
+                <span class="feature-icon">üîó</span>
+                <h3 class="feature-title">Local Server Connection</h3>
+                <p class="feature-description">
+                    Connect securely to your local ORFEAS AI engine while enjoying the benefits of a cloud-hosted interface.
+                </p>
+            </div>
+
+            <div class="feature-card animate-fade-in">
+                <span class="feature-icon">'ö°</span>
+                <h3 class="feature-title">High Performance</h3>
+                <p class="feature-description">
+                    Optimized for speed with CDN delivery, while your heavy AI processing runs on your powerful local machine.
+                </p>
+            </div>
+
+            <div class="feature-card animate-fade-in">
+                <span class="feature-icon"></span>
+                <h3 class="feature-title">Secure & Private</h3>
+                <p class="feature-description">
+                    Your AI models and processing stay on your local machine. Only the web interface is hosted in the cloud.
+                </p>
+            </div>
+
+            <div class="feature-card animate-fade-in">
+                <span class="feature-icon"></span>
+                <h3 class="feature-title">Cross-Platform</h3>
+                <p class="feature-description">
+                    Access from any device, any browser. The cloud frontend works seamlessly across all platforms and devices.
+                </p>
+            </div>
+
+            <div class="feature-card animate-fade-in">
+                <span class="feature-icon"></span>
+                <h3 class="feature-title">Auto-Updates</h3>
+                <p class="feature-description">
+                    Always get the latest features and improvements automatically deployed from our continuous integration pipeline.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 ORFEAS MAKERS PORTAL - Cloud Edition. All rights reserved.</p>
+            <div class="deployment-info">
+                <strong>üåê Deployment Info:</strong><br>
+                Frontend: Netlify CDN • Backend: Local Machine<br>
+                Build: <span id="buildTime"></span> • Version: 1.0.0-cloud
+            </div>
+            <p style="margin-top: 1rem;">Crafted with passion for innovation and creativity</p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuration - Update after deployment
+        let serverUrl = 'http://192.168.1.57:5002';  // Your local network IP
+        let isConnected = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set build time
+            document.getElementById('buildTime').textContent = new Date().toISOString();
+
+            // Load saved server URL
+            const savedUrl = localStorage.getItem('orfeas_server_url');
+            if (savedUrl) {
+                document.getElementById('serverUrl').value = savedUrl;
+                serverUrl = savedUrl;
+            }
+
+            // Auto-test connection on load
+            setTimeout(() => {
+                testServerConnection();
+            }, 1000);
+
+            // Set up periodic connection check
+            setInterval(checkConnection, 30000); // Check every 30 seconds
+        });
+
+        // Server connection testing
+        async function testServerConnection() {
+            const urlInput = document.getElementById('serverUrl');
+            const testBtn = document.getElementById('testConnection');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            const url = urlInput.value.trim();
+            if (!url) {
+                showNotification('Please enter a server URL', 'warning');
+                return;
+            }
+
+            // Update UI
+            testBtn.disabled = true;
+            testBtn.textContent = 'Testing...';
+            statusText.textContent = 'Testing connection...';
+            statusDot.classList.remove('connected');
+
+            try {
+                // Test connection to health endpoint
+                const healthUrl = `${url}/api/health`;
+                console.log('Testing connection to:', healthUrl);
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+                const response = await fetch(healthUrl, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Connection successful
+                    isConnected = true;
+                    serverUrl = url;
+                    localStorage.setItem('orfeas_server_url', url);
+
+                    statusDot.classList.add('connected');
+                    statusText.textContent = `Connected to ${data.server || 'ORFEAS'}`;
+
+                    showNotification(`'úÖ Connected to ORFEAS server successfully!\nServer: ${data.server || 'Unknown'}\nStatus: ${data.status || 'Active'}`, 'success');
+
+                    // Enable studio launch
+                    document.getElementById('launchStudio').style.opacity = '1';
+                    document.getElementById('launchStudio').style.cursor = 'pointer';
+
+                } else {
+                    throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                }
+
+            } catch (error) {
+                console.error('Connection test failed:', error);
+
+                isConnected = false;
+                statusText.textContent = 'Connection failed';
+                statusDot.classList.remove('connected');
+
+                let errorMessage = ''ùå Connection failed: ';
+                if (error.name === 'AbortError') {
+                    errorMessage += 'Connection timeout (10s)';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage += 'Server not reachable. Check if ORFEAS server is running and CORS is enabled.';
+                } else {
+                    errorMessage += error.message;
+                }
+
+                showNotification(errorMessage, 'error');
+
+                // Disable studio launch
+                document.getElementById('launchStudio').style.opacity = '0.5';
+                document.getElementById('launchStudio').style.cursor = 'not-allowed';
+            }
+
+            // Reset UI
+            testBtn.disabled = false;
+            testBtn.textContent = 'Test Connection';
+        }
+
+        // Periodic connection check
+        async function checkConnection() {
+            if (!serverUrl) return;
+
+            try {
+                const response = await fetch(`${serverUrl}/api/health`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    signal: AbortSignal.timeout(5000)
+                });
+
+                if (response.ok) {
+                    if (!isConnected) {
+                        // Reconnected
+                        isConnected = true;
+                        document.getElementById('statusDot').classList.add('connected');
+                        document.getElementById('statusText').textContent = 'Connected';
+                        showNotification(''úÖ Reconnected to ORFEAS server', 'success');
+                    }
+                } else {
+                    throw new Error('Health check failed');
+                }
+
+            } catch (error) {
+                if (isConnected) {
+                    // Lost connection
+                    isConnected = false;
+                    document.getElementById('statusDot').classList.remove('connected');
+                    document.getElementById('statusText').textContent = 'Connection lost';
+                    showNotification(' Lost connection to ORFEAS server', 'warning');
+                }
+            }
+        }
+
+        // Launch studio
+        function launchStudio() {
+            if (!isConnected) {
+                showNotification(''ùå Please connect to your ORFEAS server first', 'error');
+                return;
+            }
+
+            showNotification('üöÄ Launching ORFEAS 3D Studio...', 'success');
+
+            // Create the studio URL with server configuration
+            const studioUrl = `studio.html?server=${encodeURIComponent(serverUrl)}`;
+
+            // Open studio in new tab/window
+            window.open(studioUrl, '_blank');
+        }
+
+        // Update server URL on input change
+        document.getElementById('serverUrl').addEventListener('input', function() {
+            const newUrl = this.value.trim();
+            if (newUrl !== serverUrl) {
+                isConnected = false;
+                document.getElementById('statusDot').classList.remove('connected');
+                document.getElementById('statusText').textContent = 'URL changed - test connection';
+            }
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existing = document.querySelectorAll('.notification');
+            existing.forEach(notif => notif.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease-out';
+            observer.observe(card);
+        });
+
+        // Interactive hover effects for feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Handle Enter key in server URL input
+        document.getElementById('serverUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testServerConnection();
+            }
+        });
+
+        // Add PWA-like features
+        if ('serviceWorker' in navigator) {
+            console.log('Service Worker support detected');
+        }
+
+        // Console welcome message
+        console.log('%cüöÄ ORFEAS MAKERS PORTAL - Cloud Edition', 'color: #667eea; font-size: 20px; font-weight: bold;');
+        console.log('%cFrontend: Netlify CDN', 'color: #00d4ff; font-weight: bold;');
+        console.log('%cBackend: Local Machine', 'color: #2ed573; font-weight: bold;');
+        console.log('%cBuild Time:', new Date().toISOString());
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "generated_at": "2025-10-17T06:33:18.853054",
+  "summary": {
+    "total_pipelines": 1,
+    "avg_duration": 168.3320083618164,
+    "min_duration": 168.3320083618164,
+    "max_duration": 168.3320083618164,
+    "stage_breakdown": {
+      "image_loading": {
+        "avg_duration": 0.011535882949829102,
+        "min_duration": 0.011535882949829102,
+        "max_duration": 0.011535882949829102,
+        "count": 1
+      },
+      "image_preprocessing": {
+        "avg_duration": 0.4725496768951416,
+        "min_duration": 0.4725496768951416,
+        "max_duration": 0.4725496768951416,
+        "count": 1
+      },
+      "shape_generation": {
+        "avg_duration": 167.46414351463318,
+        "min_duration": 167.46414351463318,
+        "max_duration": 167.46414351463318,
+        "count": 1
+      }
+    },
+    "bottlenecks": [
+      {
+        "stage": "shape_generation",
+        "avg_percent": 99.48443266635432,
+        "avg_duration_seconds": 167.46414351463318,
+        "occurrences": 1,
+        "severity": "critical"
+      }
+    ],
+    "timestamp": "2025-10-17T06:33:18.853054"
+  },
+  "recommendations": [
+    "\ud83d\udd34 CRITICAL: 'shape_generation' takes 99.5% (167.46s) - optimize this stage first",
+    "   \u2192 Enable mixed precision (FP16) for faster inference",
+    "   \u2192 Reduce inference steps (50 \u2192 30-40) if quality permits",
+    "   \u2192 Consider model quantization (INT8)",
+    "\u23f1\ufe0f Average duration 168.3s exceeds target (60s)",
+    "   \u2192 Target 45% improvement to reach <60s goal"
+  ],
+  "recent_pipelines": [
+    {
+      "id": "optimized_test",
+      "duration": 168.3320083618164,
+      "timestamp": 1760682798.8474126,
+      "stages": [
+        {
+          "name": "image_loading",
+          "duration": 0.011535882949829102,
+          "percent": 0.00685305371336961
+        },
+        {
+          "name": "image_preprocessing",
+          "duration": 0.4725496768951416,
+          "percent": 0.2807247899516729
+        },
+        {
+          "name": "shape_generation",
+          "duration": 167.46414351463318,
+          "percent": 99.48443266635432
+        }
+      ]
+    }
+  ]
+}

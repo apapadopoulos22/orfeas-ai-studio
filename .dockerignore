@@ -1,0 +1,100 @@
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║ ⚔️ THERION ORFEAS - DOCKER IGNORE CONFIGURATION ⚔️                         ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+Hunyuan3D-2.1/venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.benchmarks/
+tests/
+test_*.py
+*_test.py
+TEST_*.ps1
+
+# Documentation
+md/
+txt/
+*.md
+README.md
+LICENSE
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+logs/
+
+# Large model files (mount as volumes instead)
+models/*.safetensors
+models/*.ckpt
+models/*.pth
+ComfyUI/
+
+# Temporary files
+temp/
+.temp/
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Archive
+ARCHIVE/
+
+# Deployment scripts
+*.ps1
+*.bat
+*.sh
+
+# HTML test files
+test-*.html
+*-test.html
+
+# Outputs (mount as volume)
+outputs/
+uploads/
+
+# Next.js
+frontend-nextjs/
+netlify-frontend/
+netlify-deploy-folder/
+
+# Cloudflare
+cloudflared.exe
+ORFEAS-*.zip
+
+# Environment files
+.env
+.env.local
+.env.production

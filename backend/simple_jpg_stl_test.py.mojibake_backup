@@ -1,0 +1,261 @@
+#!/usr/bin/env python3
+"""
+Simple JPG to STL Test - Import, Convert, Preview, Save, Check Integrity
+"""
+
+import requests
+import time
+import struct
+from pathlib import Path
+from PIL import Image, ImageDraw
+import json
+
+def create_simple_test_jpg() -> None:
+    """Create a simple test JPG"""
+    print("[IMAGE] Creating test JPG image...")
+
+    # Simple landscape with clear depth
+    img = Image.new('RGB', (150, 150), 'lightblue')
+    draw = ImageDraw.Draw(img)
+
+    # Sky
+    draw.rectangle([0, 0, 150, 50], fill='lightblue')
+
+    # Mountains (far - dark)
+    draw.polygon([(0, 50), (50, 30), (100, 45), (150, 35), (150, 70), (0, 70)],
+                fill='darkgray')
+
+    # Hills (medium - gray)
+    draw.polygon([(0, 70), (30, 60), (80, 65), (120, 55), (150, 60), (150, 90), (0, 90)],
+                fill='gray')
+
+    # Foreground (close - light)
+    draw.polygon([(0, 90), (40, 85), (90, 90), (150, 85), (150, 150), (0, 150)],
+                fill='lightgray')
+
+    # Add some objects for depth reference
+    draw.ellipse([20, 100, 35, 115], fill='white')  # Close rock
+    draw.ellipse([100, 110, 110, 120], fill='darkgray')  # Far rock
+
+    test_path = Path("simple_test.jpg")
+    img.save(test_path, "JPEG", quality=90)
+    print(f"   [OK] Created: {test_path}")
+    return test_path
+
+def test_full_workflow() -> int:
+    """Test complete workflow: JPG 'ÃœÃ­ STL 'ÃœÃ­ Preview 'ÃœÃ­ Save 'ÃœÃ­ Verify"""
+
+    print("ðŸ”„ TESTING COMPLETE JPG TO STL WORKFLOW")
+    print("=" * 50)
+
+    server_url = "http://localhost:5002"
+
+    try:
+        # Wait for server to be ready
+        print("[WAIT] Waiting for server to be ready...")
+        for attempt in range(10):
+            try:
+                response = requests.get(f"{server_url}/api/health", timeout=3)
+                if response.status_code == 200:
+                    print("   [OK] Server ready!")
+                    break
+            except:
+                print(f"   [WAIT] Attempt {attempt+1}/10...")
+                time.sleep(3)
+        else:
+            print("   [FAIL] Server not responding")
+            return False
+
+        # 1. Create and upload JPG
+        print("\n1. ï£¿Ã¼Ã¬Â§ Creating and uploading test JPG...")
+        test_jpg = create_simple_test_jpg()
+
+        with open(test_jpg, 'rb') as f:
+            files = {'image': (test_jpg.name, f, 'image/jpeg')}
+            response = requests.post(f"{server_url}/api/upload-image", files=files)
+
+        if response.status_code != 200:
+            print(f"   [FAIL] Upload failed: {response.status_code}")
+            return False
+
+        upload_data = response.json()
+        job_id = upload_data.get('job_id')
+        print(f"   [OK] Uploaded! Job ID: {job_id}")
+
+        # 2. Generate STL
+        print("\n2. ï£¿Ã¼Ã¨â‰  Generating STL...")
+        payload = {
+            'job_id': job_id,
+            'format': 'stl',
+            'quality': 'medium',
+            'method': 'auto',
+            'dimensions': {'width': 60, 'height': 60, 'depth': 20}
+        }
+
+        response = requests.post(
+            f"{server_url}/api/generate-3d",
+            json=payload,
+            headers={'Content-Type': 'application/json'}
+        )
+
+        if response.status_code != 200:
+            print(f"   [FAIL] Generation failed: {response.status_code}")
+            return False
+
+        print("   [OK] STL generation started")
+
+        # 3. Monitor progress
+        print("\n3. [TIMER] Monitoring progress...")
+        start_time = time.time()
+
+        while time.time() - start_time < 120:  # 2 minute timeout
+            try:
+                response = requests.get(f"{server_url}/job-status/{job_id}")
+
+                if response.status_code == 200:
+                    data = response.json()
+                    status = data.get('status')
+                    progress = data.get('progress', 0)
+                    step = data.get('step', 'Processing')
+
+                    print(f"   [STATS] {progress}% - {step}")
+
+                    if status == 'completed':
+                        print("   ï£¿Ã¼Ã©Ã¢ Conversion completed!")
+                        conversion_result = data
+                        break
+                    elif status == 'failed':
+                        print(f"   [FAIL] Failed: {data.get('error', 'Unknown')}")
+                        return False
+            except Exception as e:
+                print(f"   [WARN] Status check error: {e}")
+
+            time.sleep(3)
+        else:
+            print("   'Ã¨âˆž Timeout waiting for completion")
+            return False
+
+        # 4. Test preview
+        print("\n4. ðŸŽ¬ Testing preview...")
+        try:
+            response = requests.get(f"{server_url}/studio")
+            if response.status_code == 200 and 'three.min.js' in response.text:
+                print("   [OK] Preview interface accessible")
+                preview_ok = True
+            else:
+                print("   [WARN] Preview interface issues")
+                preview_ok = False
+        except:
+            print("   [FAIL] Preview test failed")
+            preview_ok = False
+
+        # 5. Download and save STL
+        print("\n5. ï£¿Ã¼Ã­Ã¦ Downloading STL...")
+        try:
+            response = requests.get(f"{server_url}/api/download/{job_id}/model.stl")
+
+            if response.status_code == 200:
+                stl_path = Path("downloaded_model.stl")
+                with open(stl_path, 'wb') as f:
+                    f.write(response.content)
+                print(f"   [OK] Saved: {stl_path} ({len(response.content)} bytes)")
+            else:
+                print(f"   [FAIL] Download failed: {response.status_code}")
+                return False
+        except Exception as e:
+            print(f"   [FAIL] Download error: {e}")
+            return False
+
+        # 6. Check STL integrity
+        print("\n6. [SEARCH] Checking STL integrity...")
+
+        file_size = stl_path.stat().st_size
+        print(f"   ï£¿Ã¼Ã¬Ã¨ File size: {file_size} bytes")
+
+        if file_size < 84:
+            print("   [FAIL] File too small")
+            return False
+
+        # Parse STL header and triangle count
+        with open(stl_path, 'rb') as f:
+            header = f.read(80)
+            triangle_bytes = f.read(4)
+
+            if len(triangle_bytes) == 4:
+                triangle_count = struct.unpack('<I', triangle_bytes)[0]
+                print(f"   ï£¿Ã¼Ã¬Ãª Triangles: {triangle_count:,}")
+
+                if triangle_count > 0:
+                    # Read first triangle to verify it's not empty
+                    normal = struct.unpack('<3f', f.read(12))
+                    v1 = struct.unpack('<3f', f.read(12))
+                    v2 = struct.unpack('<3f', f.read(12))
+                    v3 = struct.unpack('<3f', f.read(12))
+
+                    # Check if triangle has actual coordinates
+                    if any(abs(coord) > 0.001 for coord in v1 + v2 + v3):
+                        print("   [OK] STL contains valid geometry")
+                        integrity_ok = True
+                    else:
+                        print("   [WARN] STL may contain empty triangles")
+                        integrity_ok = False
+                else:
+                    print("   [FAIL] No triangles found")
+                    integrity_ok = False
+            else:
+                print("   [FAIL] Invalid STL format")
+                integrity_ok = False
+
+        # 7. Final results
+        print(f"\n" + "="*50)
+        print("[STATS] WORKFLOW TEST RESULTS")
+        print("="*50)
+
+        triangles = conversion_result.get('triangles', 0)
+        method_used = conversion_result.get('method_used', 'unknown')
+        generation_time = time.time() - start_time
+
+        print(f"[OK] Test Summary:")
+        print(f"   Job ID: {job_id}")
+        print(f"   Method: {method_used}")
+        print(f"   Triangles: {triangles:,}")
+        print(f"   Generation Time: {generation_time:.1f}s")
+        print(f"   File Size: {file_size/1024:.1f} KB")
+
+        print(f"\nï£¿Ã¼Ã¬Ã£ Component Status:")
+        print(f"   [OK] JPG Creation: SUCCESS")
+        print(f"   [OK] Image Upload: SUCCESS")
+        print(f"   [OK] STL Generation: SUCCESS")
+        print(f"   {'[OK]' if preview_ok else '[WARN]'} Preview: {'SUCCESS' if preview_ok else 'ISSUES'}")
+        print(f"   [OK] STL Download: SUCCESS")
+        print(f"   {'[OK]' if integrity_ok else '[WARN]'} STL Integrity: {'VALID' if integrity_ok else 'BASIC'}")
+
+        # Overall score
+        components = [True, True, True, preview_ok, True, integrity_ok]
+        success_rate = sum(components) / len(components) * 100
+
+        print(f"\n[TROPHY] SUCCESS RATE: {success_rate:.1f}%")
+
+        if success_rate >= 85:
+            print("ï£¿Ã¼Ã©Ã¢ EXCELLENT! Complete workflow working perfectly!")
+        elif success_rate >= 70:
+            print("[OK] GOOD! Core functionality working well")
+        else:
+            print("[WARN] BASIC! Some issues detected")
+
+        return success_rate >= 70
+
+    except Exception as e:
+        print(f"[FAIL] Workflow test failed: {e}")
+        return False
+
+    finally:
+        # Cleanup
+        for cleanup_file in ["simple_test.jpg", "downloaded_model.stl"]:
+            cleanup_path = Path(cleanup_file)
+            if cleanup_path.exists():
+                cleanup_path.unlink()
+
+if __name__ == "__main__":
+    success = test_full_workflow()
+    print(f"\n{'ï£¿Ã¼Ã©Ã¢ WORKFLOW TEST PASSED!' if success else '[WARN] WORKFLOW NEEDS ATTENTION'}")

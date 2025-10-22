@@ -1,0 +1,578 @@
+"""
+ORFEAS AI 2DÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢3D Studio - Agent API Endpoints
+=============================================
+ORFEAS AI Project
+
+Flask Blueprint for AI Agent Integration
+
+Features:
+- HMAC-authenticated agent endpoints
+- Batch processing for agents
+- Job status tracking
+- Rate limiting per agent
+- Operation-level permissions
+"""
+
+import os
+import sys
+import logging
+import time
+from pathlib import Path
+from typing import Dict, Any, List, Optional
+from datetime import datetime
+
+from flask import Blueprint, request, jsonify, send_file
+from werkzeug.utils import secure_filename
+
+# Import authentication system
+try:
+    from agent_auth import require_agent_token, get_agent_registry, AgentConfig
+except ImportError:
+    # Fallback if agent_auth not available
+    def require_agent_token(operation: str = "generate"):
+        def decorator(f):
+            return f
+        return decorator
+
+    logging.warning("[ORFEAS] agent_auth not available - authentication disabled!")
+
+# Import core systems
+try:
+    from hunyuan_integration import get_3d_processor
+    from batch_processor import get_async_queue
+    from validation import FileUploadValidator
+    from gpu_manager import get_gpu_manager
+except ImportError as e:
+    logging.error(f"[ORFEAS] Failed to import required modules: {e}")
+
+logger = logging.getLogger(__name__)
+
+# Create Flask Blueprint
+agent_bp = Blueprint('agent', __name__, url_prefix='/api/agent')
+
+# Initialize core systems (lazy loaded)
+_processor = None
+_async_queue = None
+_validator = None
+_gpu_manager = None
+
+
+def get_processor():
+    """Get cached 3D processor instance"""
+    global _processor
+    if _processor is None:
+        _processor = get_3d_processor()
+    return _processor
+
+
+def get_queue():
+    """Get cached async job queue"""
+    global _async_queue
+    if _async_queue is None:
+        _async_queue = get_async_queue()
+    return _async_queue
+
+
+def get_validator():
+    """Get cached file validator"""
+    global _validator
+    if _validator is None:
+        _validator = FileUploadValidator()
+    return _validator
+
+
+def get_gpu_mgr():
+    """Get cached GPU manager"""
+    global _gpu_manager
+    if _gpu_manager is None:
+        _gpu_manager = get_gpu_manager()
+    return _gpu_manager
+
+
+# ============================================================================
+# ENDPOINT 1: Single 3D Generation
+# ============================================================================
+
+@agent_bp.route('/generate-3d', methods=['POST'])
+@require_agent_token(operation='generate')
+def agent_generate_3d():
+    """
+    AI Agent Endpoint: Generate single 3D model from image
+
+    Authentication: Requires valid HMAC signature
+    Rate Limit: 100 requests/minute per agent
+
+    Request Body (multipart/form-data):
+        - image: Binary image file (required)
+        - format: Output format (stl, obj, glb) (default: stl)
+        - quality: Quality 1-10 (default: 7)
+        - steps: Inference steps 10-100 (default: 50)
+        - async: Process asynchronously (default: false)
+
+    Response (Success):
+        {
+            "success": true,
+            "job_id": "uuid-string",
+            "status": "completed" | "processing",
+            "result_url": "/api/agent/download/<job_id>",
+            "processing_time": 45.2,
+            "metadata": {...}
+        }
+
+    Response (Error):
+        {
+            "success": false,
+            "error": "Error message",
+            "code": "ERROR_CODE"
+        }
+    """
+    try:
+        logger.info("[ORFEAS] Agent API: Single 3D generation request")
+
+        # Extract parameters
+        format_type = request.form.get('format', 'stl').lower()
+        quality = int(request.form.get('quality', 7))
+        steps = int(request.form.get('steps', 50))
+        is_async = request.form.get('async', 'false').lower() == 'true'
+
+        # Validate parameters
+        if format_type not in ['stl', 'obj', 'glb', 'ply']:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid format. Must be stl, obj, glb, or ply',
+                'code': 'INVALID_FORMAT'
+            }), 400
+
+        if not (1 <= quality <= 10):
+            return jsonify({
+                'success': False,
+                'error': 'Quality must be between 1 and 10',
+                'code': 'INVALID_QUALITY'
+            }), 400
+
+        if not (10 <= steps <= 100):
+            return jsonify({
+                'success': False,
+                'error': 'Steps must be between 10 and 100',
+                'code': 'INVALID_STEPS'
+            }), 400
+
+        # Validate image file
+        if 'image' not in request.files:
+            return jsonify({
+                'success': False,
+                'error': 'No image file provided',
+                'code': 'MISSING_IMAGE'
+            }), 400
+
+        image_file = request.files['image']
+
+        if image_file.filename == '':
+            return jsonify({
+                'success': False,
+                'error': 'Empty filename',
+                'code': 'EMPTY_FILENAME'
+            }), 400
+
+        # Validate with security checks
+        validator = get_validator()
+        try:
+            validated_image = validator.validate_image(image_file)
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Image validation failed: {str(e)}',
+                'code': 'VALIDATION_FAILED'
+            }), 400
+
+        # Check GPU availability
+        gpu_mgr = get_gpu_mgr()
+        if not gpu_mgr.can_process_job(estimated_vram=6000):
+            return jsonify({
+                'success': False,
+                'error': 'GPU resources unavailable. Please try again later.',
+                'code': 'GPU_BUSY'
+            }), 503
+
+        # Process asynchronously or synchronously
+        if is_async:
+            # Queue job for background processing
+            queue = get_queue()
+            job = queue.submit_job(
+                job_type='agent_3d_generation',
+                image=validated_image,
+                format=format_type,
+                quality=quality,
+                steps=steps,
+                agent_id=request.agent_id  # Added by authentication decorator
+            )
+
+            logger.info(f"[ORFEAS] Agent job queued: {job.id}")
+
+            return jsonify({
+                'success': True,
+                'job_id': job.id,
+                'status': 'processing',
+                'status_url': f'/api/agent/status/{job.id}',
+                'message': 'Job queued for processing'
+            }), 202
+
+        else:
+            # Process synchronously (blocking)
+            start_time = time.time()
+
+            processor = get_processor()
+
+            with gpu_mgr.allocate_job(f"agent_{request.agent_id}"):
+                # Generate 3D model
+                if hasattr(processor, 'generate_shape_batch'):
+                    # Use batch method even for single image (more efficient)
+                    meshes = processor.generate_shape_batch(
+                        images=[validated_image],
+                        num_inference_steps=steps
+                    )
+                    mesh = meshes[0] if meshes else None
+                else:
+                    # Fallback to single generation
+                    mesh = processor.shapegen_pipeline(
+                        image=validated_image,
+                        num_inference_steps=steps
+                    )
+
+                # Cleanup GPU
+                gpu_mgr.cleanup_after_job()
+
+            processing_time = time.time() - start_time
+
+            if mesh is None:
+                return jsonify({
+                    'success': False,
+                    'error': 'Generation failed',
+                    'code': 'GENERATION_FAILED'
+                }), 500
+
+            # Save mesh to temporary file
+            output_dir = Path('outputs/agent')
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            output_filename = f"agent_{request.agent_id}_{timestamp}.{format_type}"
+            output_path = output_dir / output_filename
+
+            mesh.export(str(output_path))
+
+            logger.info(f"[ORFEAS] Agent generation complete: {processing_time:.2f}s")
+
+            return jsonify({
+                'success': True,
+                'job_id': output_filename.replace(f'.{format_type}', ''),
+                'status': 'completed',
+                'download_url': f'/api/agent/download/{output_filename}',
+                'processing_time': round(processing_time, 2),
+                'metadata': {
+                    'format': format_type,
+                    'quality': quality,
+                    'steps': steps,
+                    'triangles': len(mesh.triangles) if hasattr(mesh, 'triangles') else 'unknown'
+                }
+            }), 200
+
+    except Exception as e:
+        logger.error(f"[ORFEAS] Agent generation failed: {e}")
+        import traceback
+        traceback.print_exc()
+
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'code': 'INTERNAL_ERROR'
+        }), 500
+
+
+# ============================================================================
+# ENDPOINT 2: Batch 3D Generation
+# ============================================================================
+
+@agent_bp.route('/batch', methods=['POST'])
+@require_agent_token(operation='batch')
+def agent_batch_generate():
+    """
+    AI Agent Endpoint: Generate multiple 3D models in batch
+
+    Authentication: Requires valid HMAC signature
+    Rate Limit: 10 batch requests/minute per agent
+
+    Request Body (multipart/form-data):
+        - images[]: Multiple image files (2-10 images)
+        - format: Output format (stl, obj, glb) (default: stl)
+        - quality: Quality 1-10 (default: 7)
+        - steps: Inference steps 10-100 (default: 50)
+
+    Response:
+        {
+            "success": true,
+            "batch_id": "uuid-string",
+            "status": "processing",
+            "total_images": 4,
+            "status_url": "/api/agent/status/<batch_id>"
+        }
+    """
+    try:
+        logger.info("[ORFEAS] Agent API: Batch generation request")
+
+        # Extract parameters
+        format_type = request.form.get('format', 'stl').lower()
+        quality = int(request.form.get('quality', 7))
+        steps = int(request.form.get('steps', 50))
+
+        # Get all uploaded images
+        images = []
+        for key in request.files:
+            if key.startswith('images'):
+                images.append(request.files[key])
+
+        if not images:
+            return jsonify({
+                'success': False,
+                'error': 'No images provided',
+                'code': 'MISSING_IMAGES'
+            }), 400
+
+        if len(images) > 10:
+            return jsonify({
+                'success': False,
+                'error': 'Maximum 10 images per batch',
+                'code': 'TOO_MANY_IMAGES'
+            }), 400
+
+        # Validate all images
+        validator = get_validator()
+        validated_images = []
+
+        for idx, img_file in enumerate(images):
+            try:
+                validated_img = validator.validate_image(img_file)
+                validated_images.append(validated_img)
+            except Exception as e:
+                return jsonify({
+                    'success': False,
+                    'error': f'Image {idx+1} validation failed: {str(e)}',
+                    'code': 'VALIDATION_FAILED'
+                }), 400
+
+        # Queue batch job
+        queue = get_queue()
+        batch_job = queue.submit_job(
+            job_type='agent_batch_generation',
+            images=validated_images,
+            format=format_type,
+            quality=quality,
+            steps=steps,
+            agent_id=request.agent_id,
+            batch_size=len(validated_images)
+        )
+
+        logger.info(f"[ORFEAS] Agent batch job queued: {batch_job.id} ({len(validated_images)} images)")
+
+        return jsonify({
+            'success': True,
+            'batch_id': batch_job.id,
+            'status': 'processing',
+            'total_images': len(validated_images),
+            'status_url': f'/api/agent/status/{batch_job.id}',
+            'estimated_time': len(validated_images) * 60  # ~60s per image estimate
+        }), 202
+
+    except Exception as e:
+        logger.error(f"[ORFEAS] Agent batch generation failed: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'code': 'INTERNAL_ERROR'
+        }), 500
+
+
+# ============================================================================
+# ENDPOINT 3: Job Status
+# ============================================================================
+
+@agent_bp.route('/status/<job_id>', methods=['GET'])
+@require_agent_token(operation='status')
+def agent_job_status(job_id: str):
+    """
+    AI Agent Endpoint: Check job processing status
+
+    Authentication: Requires valid HMAC signature
+
+    Response:
+        {
+            "success": true,
+            "job_id": "uuid-string",
+            "status": "queued" | "processing" | "completed" | "failed",
+            "progress": 45,
+            "current_step": "shape_generation",
+            "eta_seconds": 30,
+            "result_url": "/api/agent/download/<job_id>" (if completed)
+        }
+    """
+    try:
+        queue = get_queue()
+        status = queue.get_job_status(job_id)
+
+        if status is None:
+            return jsonify({
+                'success': False,
+                'error': 'Job not found',
+                'code': 'JOB_NOT_FOUND'
+            }), 404
+
+        response = {
+            'success': True,
+            'job_id': job_id,
+            'status': status.get('status', 'unknown'),
+            'progress': status.get('progress', 0),
+            'message': status.get('message', '')
+        }
+
+        if status.get('status') == 'completed':
+            response['result_url'] = f'/api/agent/download/{job_id}'
+            response['processing_time'] = status.get('processing_time', 0)
+
+        if status.get('status') == 'processing':
+            response['current_step'] = status.get('current_step', '')
+            response['eta_seconds'] = status.get('eta_seconds', None)
+
+        if status.get('status') == 'failed':
+            response['error'] = status.get('error', 'Unknown error')
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        logger.error(f"[ORFEAS] Status check failed: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'code': 'INTERNAL_ERROR'
+        }), 500
+
+
+# ============================================================================
+# ENDPOINT 4: Download Result
+# ============================================================================
+
+@agent_bp.route('/download/<filename>', methods=['GET'])
+@require_agent_token(operation='download')
+def agent_download_result(filename: str):
+    """
+    AI Agent Endpoint: Download generated 3D model
+
+    Authentication: Requires valid HMAC signature
+
+    Response: Binary file (STL/OBJ/GLB)
+    """
+    try:
+        # Secure filename
+        safe_filename = secure_filename(filename)
+
+        # Check if file exists
+        output_path = Path('outputs/agent') / safe_filename
+
+        if not output_path.exists():
+            return jsonify({
+                'success': False,
+                'error': 'File not found',
+                'code': 'FILE_NOT_FOUND'
+            }), 404
+
+        logger.info(f"[ORFEAS] Agent downloading: {safe_filename}")
+
+        return send_file(
+            str(output_path),
+            as_attachment=True,
+            download_name=safe_filename
+        )
+
+    except Exception as e:
+        logger.error(f"[ORFEAS] Download failed: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'code': 'DOWNLOAD_FAILED'
+        }), 500
+
+
+# ============================================================================
+# ENDPOINT 5: Agent Health Check
+# ============================================================================
+
+@agent_bp.route('/health', methods=['GET'])
+def agent_health():
+    """
+    Public endpoint: Check agent API health
+
+    No authentication required
+
+    Response:
+        {
+            "status": "healthy",
+            "gpu_available": true,
+            "queue_size": 3,
+            "active_jobs": 2
+        }
+    """
+    try:
+        gpu_mgr = get_gpu_mgr()
+        gpu_stats = gpu_mgr.get_gpu_stats()
+
+        queue = get_queue()
+        queue_stats = queue.get_queue_stats() if hasattr(queue, 'get_queue_stats') else {}
+
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': datetime.now().isoformat(),
+            'gpu_available': gpu_stats.get('available', False),
+            'gpu_memory_free': gpu_stats.get('free_memory_mb', 0),
+            'queue_size': queue_stats.get('queued', 0),
+            'active_jobs': queue_stats.get('processing', 0)
+        }), 200
+
+    except Exception as e:
+        logger.error(f"[ORFEAS] Health check failed: {e}")
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e)
+        }), 500
+
+
+# ============================================================================
+# HELPER: Register Blueprint
+# ============================================================================
+
+def register_agent_api(app):
+    """
+    Register agent API blueprint with Flask app
+
+    Usage in main.py:
+        from agent_api import register_agent_api
+        register_agent_api(app)
+    """
+    app.register_blueprint(agent_bp)
+    logger.info("[ORFEAS] Agent API blueprint registered")
+    logger.info("[ORFEAS] Endpoints:")
+    logger.info("[ORFEAS]   POST   /api/agent/generate-3d")
+    logger.info("[ORFEAS]   POST   /api/agent/batch")
+    logger.info("[ORFEAS]   GET    /api/agent/status/<job_id>")
+    logger.info("[ORFEAS]   GET    /api/agent/download/<filename>")
+    logger.info("[ORFEAS]   GET    /api/agent/health")
+
+
+if __name__ == "__main__":
+    # Standalone test
+    print("="*80)
+    print("ORFEAS Agent API - Standalone Test")
+    print("="*80)
+    print("\nThis module provides AI agent endpoints.")
+    print("Import and register with Flask app:")
+    print("\n    from agent_api import register_agent_api")
+    print("    register_agent_api(app)")
+    print("\n" + "="*80)

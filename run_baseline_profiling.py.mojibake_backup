@@ -1,0 +1,306 @@
+"""
+ORFEAS Phase 2.3.2 - Baseline Profiling Script
+===============================================
+Runs 3D generation with full profiling to establish performance baseline
+
+This script:
+1. Generates test images if needed
+2. Runs 2-3 generations with profiling enabled
+3. Collects performance data
+4. Identifies bottlenecks
+5. Generates optimization recommendations
+"""
+
+import sys
+import os
+from pathlib import Path
+import logging
+import time
+from typing import Any, List, Tuple
+
+# Add backend to path
+backend_path = Path(__file__).parent / 'backend'
+sys.path.insert(0, str(backend_path))
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+def create_test_images() -> None:
+    """Create test images for profiling"""
+    print("\n" + "=" * 80)
+    print("STEP 1: Creating Test Images")
+    print("=" * 80)
+
+    test_images_dir = Path('temp/test_images')
+    test_images_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create 2 simple test images
+    from PIL import Image, ImageDraw
+
+    images_created = []
+
+    for i in range(2):
+        img_path = test_images_dir / f'baseline_test_{i+1}.png'
+
+        if img_path.exists():
+            print(f"'ÃºÃ¬ Test image exists: {img_path}")
+            images_created.append(img_path)
+            continue
+
+        # Create 512x512 test image with simple shapes
+        img = Image.new('RGB', (512, 512), color='white')
+        draw = ImageDraw.Draw(img)
+
+        # Draw different shapes for variety
+        if i == 0:
+            # Circle
+            draw.ellipse([156, 156, 356, 356], fill='blue', outline='black', width=3)
+        else:
+            # Rectangle
+            draw.rectangle([156, 156, 356, 356], fill='red', outline='black', width=3)
+
+        img.save(str(img_path))
+        print(f"'ÃºÃ¬ Created test image: {img_path}")
+        images_created.append(img_path)
+
+    print(f"\n'ÃºÃ– Test images ready: {len(images_created)}")
+    return images_created
+
+
+def run_baseline_generation(image_path: str, output_dir: Any, job_num: Any) -> None:
+    """Run single generation with profiling"""
+    print(f"\n{'=' * 80}")
+    print(f"GENERATION {job_num}: {image_path.name}")
+    print("=" * 80)
+
+    from hunyuan_integration import get_3d_processor
+    from performance_profiler import get_performance_profiler
+
+    processor = get_3d_processor()
+    profiler = get_performance_profiler()
+
+    if not processor or not processor.model_loaded:
+        print("âš ï¸�  Models not loaded - cannot run baseline profiling")
+        return None
+
+    # Prepare output path
+    output_path = output_dir / f'baseline_{job_num}.stl'
+
+    # Generate with profiling
+    start_time = time.time()
+
+    success = processor.image_to_3d_generation(
+        image_path=image_path,
+        output_path=output_path,
+        format='stl',
+        job_id=f'baseline_{job_num}'
+    )
+
+    duration = time.time() - start_time
+
+    if success:
+        print(f"'ÃºÃ– Generation successful: {duration:.2f}s")
+        return duration
+    else:
+        print(f"'Ã¹Ã¥ Generation failed")
+        return None
+
+
+def analyze_results() -> Tuple:
+    """Analyze profiling results and generate report"""
+    print("\n" + "=" * 80)
+    print("ANALYSIS: Performance Profiling Results")
+    print("=" * 80)
+
+    from performance_profiler import get_performance_profiler
+    from gpu_optimizer import get_gpu_optimizer
+
+    profiler = get_performance_profiler()
+    optimizer = get_gpu_optimizer()
+
+    # Get performance summary
+    summary = profiler.get_performance_summary()
+
+    print("\n1. Overall Performance:")
+    print(f"   Total Pipelines: {summary['total_pipelines']}")
+    print(f"   Average Duration: {summary['avg_duration']:.2f}s")
+    print(f"   Min Duration: {summary['min_duration']:.2f}s")
+    print(f"   Max Duration: {summary['max_duration']:.2f}s")
+
+    # Stage breakdown
+    print("\n2. Stage Breakdown:")
+    stage_breakdown = summary.get('stage_breakdown', {})
+    for stage_name, stats in stage_breakdown.items():
+        avg_duration = stats['avg_duration']
+        print(f"   {stage_name:25s}: {avg_duration:6.2f}s (avg)")
+
+    # Bottlenecks
+    print("\n3. Identified Bottlenecks:")
+    bottlenecks = summary.get('bottlenecks', [])
+    if bottlenecks:
+        for i, bottleneck in enumerate(bottlenecks, 1):
+            severity = bottleneck['severity'].upper()
+            stage = bottleneck['stage']
+            percent = bottleneck['avg_percent']
+            duration = bottleneck['avg_duration_seconds']
+            print(f"   {i}. [{severity}] {stage}")
+            print(f"      Takes {percent:.1f}% of total time ({duration:.2f}s)")
+    else:
+        print("   No major bottlenecks detected")
+
+    # Recommendations
+    print("\n4. Optimization Recommendations:")
+    recommendations = profiler.get_optimization_recommendations()
+    for i, rec in enumerate(recommendations, 1):
+        print(f"   {i}. {rec}")
+
+    # GPU Status
+    print("\n5. GPU Status:")
+    profile = optimizer.get_current_memory_profile()
+    print(f"   GPU Utilization: {profile.utilization_percent:.1f}%")
+    print(f"   Used Memory: {profile.used_mb:.0f}MB / {profile.total_mb:.0f}MB")
+
+    gpu_recommendations = optimizer.get_optimization_recommendations()
+    if gpu_recommendations:
+        print("\n6. GPU Recommendations:")
+        for i, rec in enumerate(gpu_recommendations, 1):
+            print(f"   {i}. {rec}")
+
+    # Export reports
+    print("\n7. Exporting Reports:")
+    perf_report_path = 'baseline_performance_report.json'
+    profiler.export_report(perf_report_path)
+    print(f"   'ÃºÃ¬ Performance report: {perf_report_path}")
+
+    gpu_report_path = 'baseline_gpu_report.json'
+    optimizer.export_performance_report(gpu_report_path)
+    print(f"   'ÃºÃ¬ GPU report: {gpu_report_path}")
+
+    return summary, bottlenecks
+
+
+def generate_optimization_plan(bottlenecks: List, summary: Any) -> None:
+    """Generate actionable optimization plan"""
+    print("\n" + "=" * 80)
+    print("OPTIMIZATION PLAN")
+    print("=" * 80)
+
+    avg_duration = summary['avg_duration']
+    target_duration = 60.0
+    improvement_needed = ((avg_duration - target_duration) / avg_duration) * 100
+
+    print(f"\nCurrent Performance: {avg_duration:.2f}s per image")
+    print(f"Target Performance:  {target_duration:.2f}s per image")
+    print(f"Improvement Needed:  {improvement_needed:.1f}%")
+
+    print("\nRecommended Actions:")
+
+    if not bottlenecks:
+        print("1. No critical bottlenecks - system well-optimized")
+        return
+
+    # Priority 1: Critical bottlenecks
+    critical_bottlenecks = [b for b in bottlenecks if b['severity'] == 'critical']
+    if critical_bottlenecks:
+        print("\nðŸ”´ PRIORITY 1: Critical Bottlenecks")
+        for bottleneck in critical_bottlenecks:
+            stage = bottleneck['stage']
+            print(f"\n   Stage: {stage}")
+
+            if 'shape_generation' in stage.lower():
+                print("   Actions:")
+                print("   â€¢ Enable FP16 mixed precision (20-30% faster)")
+                print("   â€¢ Reduce inference steps: 50 â†’ 40 (10-15% faster)")
+                print("   â€¢ Consider model quantization (INT8)")
+
+            elif 'preprocessing' in stage.lower():
+                print("   Actions:")
+                print("   â€¢ Optimize background removal algorithm")
+                print("   â€¢ Use PIL-SIMD for faster image operations")
+                print("   â€¢ Cache preprocessed images")
+
+            elif 'texture' in stage.lower():
+                print("   Actions:")
+                print("   â€¢ Reduce texture resolution for non-critical cases")
+                print("   â€¢ Enable texture compression")
+                print("   â€¢ Optimize texture synthesis parameters")
+
+            elif 'export' in stage.lower():
+                print("   Actions:")
+                print("   â€¢ Use binary STL format (faster than ASCII)")
+                print("   â€¢ Optimize mesh decimation")
+                print("   â€¢ Reduce file I/O overhead")
+
+    # Priority 2: High bottlenecks
+    high_bottlenecks = [b for b in bottlenecks if b['severity'] == 'high']
+    if high_bottlenecks:
+        print("\nï£¿Ã¼Ã¼Â° PRIORITY 2: High Impact Bottlenecks")
+        for bottleneck in high_bottlenecks:
+            print(f"   â€¢ Optimize {bottleneck['stage']} (saves ~{bottleneck['avg_duration_seconds']:.1f}s)")
+
+    print("\n" + "=" * 80)
+    print("Next Step: Implement optimizations starting with Priority 1")
+    print("=" * 80)
+
+
+def main() -> int:
+    """Run baseline profiling"""
+    print("\n" + "=" * 80)
+    print("ORFEAS PHASE 2.3.2 - BASELINE PROFILING")
+    print("=" * 80)
+
+    try:
+        # Step 1: Create test images
+        test_images = create_test_images()
+
+        # Step 2: Prepare output directory
+        output_dir = Path('outputs/baseline_profiling')
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Step 3: Run generations with profiling
+        print("\n" + "=" * 80)
+        print("STEP 2: Running Baseline Generations")
+        print("=" * 80)
+
+        durations = []
+        for i, img_path in enumerate(test_images, 1):
+            duration = run_baseline_generation(img_path, output_dir, i)
+            if duration:
+                durations.append(duration)
+
+        if not durations:
+            print("\n'Ã¹Ã¥ No successful generations - cannot profile")
+            return 1
+
+        print(f"\n'ÃºÃ– Completed {len(durations)} generations")
+        print(f"   Average: {sum(durations)/len(durations):.2f}s")
+
+        # Step 4: Analyze results
+        summary, bottlenecks = analyze_results()
+
+        # Step 5: Generate optimization plan
+        generate_optimization_plan(bottlenecks, summary)
+
+        print("\n" + "=" * 80)
+        print("'ÃºÃ– BASELINE PROFILING COMPLETE")
+        print("=" * 80)
+        print("\nReports generated:")
+        print("  â€¢ baseline_performance_report.json")
+        print("  â€¢ baseline_gpu_report.json")
+        print("\nNext: Review reports and implement optimizations")
+        print("=" * 80 + "\n")
+
+        return 0
+
+    except Exception as e:
+        logger.error(f"Baseline profiling failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

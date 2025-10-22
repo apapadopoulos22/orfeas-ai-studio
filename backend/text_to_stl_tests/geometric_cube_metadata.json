@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "job_id": "cb0f9ff2-afed-4256-9c7f-a5f5e1efcd8c",
+  "file_path": "text_to_stl_tests\\geometric_cube_1760299954.stl",
+  "file_size": 252484,
+  "file_hash": "e0f50fbb7cb7d176e7942e61a981b10a02064f2ce6172bda2e8f33d06869eef3",
+  "triangles": 5048,
+  "bounding_box": {
+    "min": [
+      -0.9961407780647278,
+      -0.9988372921943665,
+      -0.8230422139167786
+    ],
+    "max": [
+      0.9689149260520935,
+      0.9947721362113953,
+      0.15538038313388824
+    ],
+    "dimensions": [
+      1.9650557041168213,
+      1.9936094284057617,
+      0.9784225970506668
+    ],
+    "volume_estimate": 3.833022946918626
+  },
+  "prompt": "A simple red geometric cube with clean edges and flat surfaces",
+  "dimensions": {
+    "width": 50,
+    "height": 50,
+    "depth": 50
+  },
+  "timestamp": 1760299954.7667096,
+  "test_date": "2025-10-12 23:12:34"
+}

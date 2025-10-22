@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ORFEAS API Documentation</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700">
+    <style>
+      body { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+      .topbar { background: #1e90ff; color: white; padding: 20px; text-align: center; }
+      .topbar h1 { margin: 0; font-size: 28px; }
+      .swagger-ui { max-width: 1400px; margin: 0 auto; }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.52.0/swagger-ui.css">
+  </head>
+  <body>
+    <div class="topbar">
+      <h1>🚀 ORFEAS AI 2D→3D Studio API Documentation</h1>
+      <p>Professional AI-powered 3D model generation platform</p>
+    </div>
+    <div class="swagger-ui" id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3.52.0/swagger-ui.js"></script>
+    <script>
+      const ui = SwaggerUIBundle({
+        url: "./OPENAPI_SPECIFICATION.json",
+        dom_id: '#swagger-ui',
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+        layout: "BaseLayout"
+      })
+    </script>
+  </body>
+</html>

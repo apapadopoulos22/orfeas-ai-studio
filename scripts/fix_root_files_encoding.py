@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""
+Fix encoding issues in specific root-level Python files
+"""
+import os
+import ftfy
+import unicodedata
+import shutil
+
+def fix_file_encoding(filepath: str) -> int:
+    """Fix encoding in a single file"""
+    print(f"\nProcessing: {filepath}")
+
+    if not os.path.exists(filepath):
+        print(f"   File not found, skipping")
+        return False
+
+    # Create backup
+    backup_path = f"{filepath}.encoding.bak"
+    if not os.path.exists(backup_path):
+        shutil.copy2(filepath, backup_path)
+        print(f"   Backup created: {backup_path}")
+
+    # Read file
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+            content = f.read()
+    except Exception as e:
+        print(f"   Could not read file: {e}")
+        return False
+
+    # Check if file has encoding issues
+    if '' not in content and not any(x in content for x in ['Ã', 'â€', 'Å', 'é', 'è']):
+        print(f"   File is clean, no encoding issues detected")
+        return False
+
+    print(f"   Encoding issues detected, fixing...")
+
+    # Apply fixes
+    # 1. Fix mojibake with ftfy
+    fixed_content = ftfy.fix_text(content)
+
+    # 2. Normalize Unicode
+    fixed_content = unicodedata.normalize('NFC', fixed_content)
+
+    # 3. Replace any remaining replacement characters with best guess
+    # Common patterns for these specific files (emoji/symbols)
+    replacements = {
+        "'úÖ": "",  # Checkmark
+        "'ùå": "",  # X mark
+        "üåç": "", # Globe (Universal Access)
+    }
+
+    for bad, good in replacements.items():
+        if bad in fixed_content:
+            fixed_content = fixed_content.replace(bad, good)
+            print(f"    Replaced '{bad}' with '{good}'")
+
+    # Write fixed content
+    try:
+        with open(filepath, 'w', encoding='utf-8', newline='') as f:
+            f.write(fixed_content)
+        print(f"   File fixed successfully")
+        return True
+    except Exception as e:
+        print(f"   Could not write file: {e}")
+        return False
+
+def main() -> None:
+    """Fix encoding in specific root-level files"""
+    print("=" * 60)
+    print("    TARGETED ROOT FILE ENCODING FIX")
+    print("=" * 60)
+
+    # Files identified as having encoding issues
+    files_to_fix = [
+        'run_baseline_profiling.py',
+        'orfeas_service.py',
+        'verify_encoding.py'
+    ]
+
+    print(f"\nFiles to check: {len(files_to_fix)}")
+
+    fixed_count = 0
+
+    for filepath in files_to_fix:
+        if fix_file_encoding(filepath):
+            fixed_count += 1
+
+    print("\n" + "=" * 60)
+    print("SUMMARY:")
+    print(f"  Files checked: {len(files_to_fix)}")
+    print(f"  Files fixed: {fixed_count}")
+    print("=" * 60)
+
+if __name__ == "__main__":
+    main()

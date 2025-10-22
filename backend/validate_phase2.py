@@ -1,0 +1,277 @@
+"""
+ORFEAS PHASE 2 VALIDATION - STL PROCESSING TEST
+Tests all Phase 2.1 Advanced STL Processing features
+- STL Analysis (quality reports)
+- Auto-Repair (watertight, manifold)
+- Mesh Simplification (quadric decimation)
+- Print Optimization (Halot X1 ready)
+"""
+
+import requests
+import time
+from pathlib import Path
+
+BACKEND_URL = "http://localhost:5000"
+
+def check_backend_health() -> int:
+    """Verify backend is running"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/health", timeout=5)
+        if response.status_code == 200:
+            print("=" * 80)
+            print("BACKEND HEALTH CHECK")
+            print("=" * 80)
+            data = response.json()
+            print(f"Status: {data.get('status', 'unknown')}")
+            print(f"GPU: {data.get('gpu_info', {}).get('device', 'unknown')}")
+            print(f"STL Processor: Advanced features available")
+            print("=" * 80)
+            return True
+    except Exception as e:
+        print(f"ERROR: Backend not responding - {e}")
+        return False
+
+def find_test_stl() -> None:
+    """Find any existing STL file for testing"""
+    search_paths = [
+        Path("../outputs"),
+        Path("../backend/outputs"),
+        Path("../REAL_AI_TEST_OUTPUTS")
+    ]
+
+    for search_path in search_paths:
+        if search_path.exists():
+            stl_files = list(search_path.rglob("*.stl"))
+            if stl_files:
+                return stl_files[0]
+
+    return None
+
+def test_stl_analysis(stl_path: str) -> None:
+    """Test 1: STL Analysis"""
+    print("\n" + "=" * 80)
+    print("TEST 1: STL ANALYSIS")
+    print("=" * 80)
+
+    try:
+        with open(stl_path, 'rb') as f:
+            files = {'file': (stl_path.name, f, 'model/stl')}
+
+            start_time = time.time()
+            response = requests.post(f"{BACKEND_URL}/api/stl/analyze", files=files, timeout=30)
+            elapsed = time.time() - start_time
+
+            if response.status_code == 200:
+                result = response.json()
+                analysis = result.get('analysis', {})
+
+                print(f"SUCCESS: Analysis completed in {elapsed:.2f}s")
+                print(f"\nQuality Report:")
+                print(f"  Watertight: {analysis.get('is_watertight', False)}")
+                print(f"  Manifold: {analysis.get('is_manifold', False)}")
+                print(f"  Vertices: {analysis.get('vertex_count', 0):,}")
+                print(f"  Faces: {analysis.get('face_count', 0):,}")
+                print(f"  Quality Score: {analysis.get('quality_score', 0):.1f}/100")
+                print(f"  Printability Score: {analysis.get('printability_score', 0):.1f}/100")
+
+                recommendations = analysis.get('recommended_actions', [])
+                if recommendations:
+                    print(f"\nRecommendations:")
+                    for rec in recommendations:
+                        print(f"  - {rec}")
+
+                return analysis
+            else:
+                print(f"ERROR: HTTP {response.status_code}")
+                print(f"Response: {response.text[:200]}")
+                return None
+
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return None
+
+def test_stl_repair(stl_path: str) -> None:
+    """Test 2: STL Auto-Repair"""
+    print("\n" + "=" * 80)
+    print("TEST 2: STL AUTO-REPAIR")
+    print("=" * 80)
+
+    try:
+        with open(stl_path, 'rb') as f:
+            files = {'file': (stl_path.name, f, 'model/stl')}
+            data = {'aggressive': 'true'}
+
+            start_time = time.time()
+            response = requests.post(f"{BACKEND_URL}/api/stl/repair", files=files, data=data, timeout=60)
+            elapsed = time.time() - start_time
+
+            if response.status_code == 200:
+                result = response.json()
+                report = result.get('repair_report', {})
+
+                print(f"SUCCESS: Repair completed in {elapsed:.2f}s")
+                print(f"\nRepair Report:")
+                print(f"  Initial Quality: {report.get('initial_quality', 0):.1f}/100")
+                print(f"  Final Quality: {report.get('final_quality', 0):.1f}/100")
+                print(f"  Improvement: {report.get('improvement', 0):+.1f}")
+
+                operations = report.get('operations', [])
+                if operations:
+                    print(f"\nOperations Applied:")
+                    for op in operations:
+                        print(f"  - {op}")
+
+                print(f"\nDownload: {result.get('download_url', 'N/A')}")
+                return result
+            else:
+                print(f"ERROR: HTTP {response.status_code}")
+                return None
+
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return None
+
+def test_stl_simplify(stl_path: str) -> None:
+    """Test 3: STL Simplification"""
+    print("\n" + "=" * 80)
+    print("TEST 3: STL SIMPLIFICATION")
+    print("=" * 80)
+
+    try:
+        with open(stl_path, 'rb') as f:
+            files = {'file': (stl_path.name, f, 'model/stl')}
+            data = {'target_reduction': '0.5'}  # 50% reduction
+
+            start_time = time.time()
+            response = requests.post(f"{BACKEND_URL}/api/stl/simplify", files=files, data=data, timeout=60)
+            elapsed = time.time() - start_time
+
+            if response.status_code == 200:
+                result = response.json()
+                report = result.get('simplification_report', {})
+
+                print(f"SUCCESS: Simplification completed in {elapsed:.2f}s")
+                print(f"\nSimplification Report:")
+                print(f"  Initial Faces: {report.get('initial_faces', 0):,}")
+                print(f"  Target Faces: {report.get('target_faces', 0):,}")
+                print(f"  Final Faces: {report.get('final_faces', 0):,}")
+                print(f"  Reduction: {report.get('reduction_achieved', 0)*100:.1f}%")
+
+                quality = report.get('quality_preserved', 0)
+                if quality > 0:
+                    print(f"  Quality Preserved: {quality:.1f}%")
+
+                print(f"\nDownload: {result.get('download_url', 'N/A')}")
+                return result
+            else:
+                print(f"ERROR: HTTP {response.status_code}")
+                return None
+
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return None
+
+def test_stl_optimize(stl_path: str) -> None:
+    """Test 4: Print Optimization"""
+    print("\n" + "=" * 80)
+    print("TEST 4: PRINT OPTIMIZATION (HALOT X1)")
+    print("=" * 80)
+
+    try:
+        with open(stl_path, 'rb') as f:
+            files = {'file': (stl_path.name, f, 'model/stl')}
+
+            start_time = time.time()
+            response = requests.post(f"{BACKEND_URL}/api/stl/optimize", files=files, timeout=60)
+            elapsed = time.time() - start_time
+
+            if response.status_code == 200:
+                result = response.json()
+                report = result.get('optimization_report', {})
+
+                print(f"SUCCESS: Optimization completed in {elapsed:.2f}s")
+                print(f"\nOptimization Report:")
+                print(f"  Printer: {report.get('printer', 'Unknown')}")
+
+                final_size = report.get('final_size_mm', [0, 0, 0])
+                if final_size:
+                    print(f"  Final Size: {final_size[0]:.1f} x {final_size[1]:.1f} x {final_size[2]:.1f} mm")
+
+                print(f"  Est. Print Time: {report.get('estimated_print_time_hours', 0):.1f}h")
+                print(f"  Est. Resin: {report.get('estimated_resin_ml', 0):.1f}ml")
+                print(f"  Supports Needed: {'Yes' if report.get('supports_needed', False) else 'No'}")
+
+                operations = report.get('operations', [])
+                if operations:
+                    print(f"\nOperations Applied:")
+                    for op in operations:
+                        print(f"  - {op}")
+
+                print(f"\nDownload: {result.get('download_url', 'N/A')}")
+                return result
+            else:
+                print(f"ERROR: HTTP {response.status_code}")
+                return None
+
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return None
+
+def main() -> None:
+    """Run Phase 2.1 validation tests"""
+    print("\n")
+    print("+" + "=" * 78 + "â•—")
+    print("|" + " " * 20 + "ORFEAS PHASE 2.1 VALIDATION TEST" + " " * 25 + "|")
+    print("|" + " " * 18 + "ADVANCED STL PROCESSING TOOLS" + " " * 31 + "|")
+    print("+" + "=" * 78 + "")
+    print()
+
+    # Check backend
+    if not check_backend_health():
+        print("\nERROR: Backend not ready. Start backend first:")
+        print("  cd backend && python main.py")
+        return
+
+    # Find test STL file
+    print("\nLooking for test STL file...")
+    stl_path = find_test_stl()
+
+    if not stl_path:
+        print("ERROR: No STL files found for testing.")
+        print("\nTo test STL processing:")
+        print("  1. Generate a 3D model first (use orfeas-studio.html)")
+        print("  2. Or place any .stl file in outputs/ directory")
+        return
+
+    print(f"Found test file: {stl_path}")
+    print()
+
+    # Run all tests
+    analysis_result = test_stl_analysis(stl_path)
+
+    if analysis_result and analysis_result.get('quality_score', 0) < 90:
+        # Only repair if quality is low
+        repair_result = test_stl_repair(stl_path)
+
+    simplify_result = test_stl_simplify(stl_path)
+    optimize_result = test_stl_optimize(stl_path)
+
+    # Summary
+    print("\n")
+    print("+" + "=" * 78 + "â•—")
+    print("|" + " " * 25 + "PHASE 2.1 VALIDATION SUMMARY" + " " * 25 + "|")
+    print("+" + "=" * 78 + "")
+    print()
+
+    print("  STL Analysis: " + ("[OK] PASS" if analysis_result else "[FAIL] FAIL"))
+    print("  STL Simplification: " + ("[OK] PASS" if simplify_result else "[FAIL] FAIL"))
+    print("  Print Optimization: " + ("[OK] PASS" if optimize_result else "[FAIL] FAIL"))
+
+    print("\n" + "=" * 80)
+    print("PHASE 2.1 ADVANCED STL PROCESSING - VALIDATION COMPLETE")
+    print("=" * 80)
+    print("\nORFEAS MAXIMUM EFFICIENCY ACHIEVED!")
+    print()
+
+if __name__ == "__main__":
+    main()

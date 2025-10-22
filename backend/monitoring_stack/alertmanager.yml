@@ -1,0 +1,91 @@
+# ============================================================================
+# ORFEAS AI 2Dâ†’3D Studio - Alertmanager Configuration
+# ============================================================================
+# Author: ORFEAS Protocol - Monitoring Master
+# Date: October 14, 2025
+# Purpose: Alert routing and notification configuration
+# ============================================================================
+
+global:
+  resolve_timeout: 5m
+
+# Route configuration
+route:
+  group_by: ['alertname', 'component']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default'
+
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      continue: false
+
+    # Warning alerts - delayed notification
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      continue: false
+
+# Receivers (notification channels)
+receivers:
+  - name: 'default'
+    # Default receiver (logs only)
+
+  - name: 'critical-alerts'
+    # Add webhook, email, or Slack configuration here
+    # Example webhook:
+    # webhook_configs:
+    #   - url: 'http://localhost:5000/alerts/critical'
+    #     send_resolved: true
+
+  - name: 'warning-alerts'
+    # Add webhook, email, or Slack configuration here
+    # Example webhook:
+    # webhook_configs:
+    #   - url: 'http://localhost:5000/alerts/warning'
+    #     send_resolved: true
+
+# Inhibit rules
+inhibit_rules:
+  # Inhibit warning if critical is firing for same alert
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'component']
+
+# ============================================================================
+# NOTIFICATION SETUP EXAMPLES
+# ============================================================================
+#
+# Email notifications:
+#   receivers:
+#     - name: 'email-alerts'
+#       email_configs:
+#         - to: 'alerts@example.com'
+#           from: 'orfeas@example.com'
+#           smarthost: 'smtp.gmail.com:587'
+#           auth_username: 'your-email@gmail.com'
+#           auth_password: 'your-app-password'
+#
+# Slack notifications:
+#   receivers:
+#     - name: 'slack-alerts'
+#       slack_configs:
+#         - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+#           channel: '#alerts'
+#           title: 'ORFEAS Alert: {{ .GroupLabels.alertname }}'
+#           text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+#
+# Discord notifications:
+#   receivers:
+#     - name: 'discord-alerts'
+#       webhook_configs:
+#         - url: 'YOUR_DISCORD_WEBHOOK_URL'
+#           send_resolved: true
+#
+# ============================================================================

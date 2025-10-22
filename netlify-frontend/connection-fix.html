@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORFEAS - Mixed Content Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        .status { padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center; font-weight: bold; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .btn { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 10px; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #0056b3; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-success { background: #28a745; }
+        input { padding: 10px; margin: 10px; border: 1px solid #ddd; border-radius: 5px; width: 300px; }
+        .solution-box { background: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #007bff; border-radius: 5px; }
+        .code { background: #343a40; color: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; margin: 10px 0; }
+        .step { margin: 15px 0; padding: 10px; background: #e9ecef; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>üîß ORFEAS Connection Fix</h1>
+
+        <div id="protocolWarning"></div>
+        <div id="connectionStatus"></div>
+
+        <div class="solution-box">
+            <h3>üöÄ Quick Solutions</h3>
+
+            <div class="step">
+                <h4>Option 1: Download ngrok (Recommended)</h4>
+                <p>Get HTTPS tunnel for your local server:</p>
+                <a href="https://ngrok.com/download" target="_blank" class="btn">Download ngrok</a>
+                <div class="code">
+# After installing ngrok:
+ngrok http 5002
+# Copy the https://xxx.ngrok.io URL
+                </div>
+            </div>
+
+            <div class="step">
+                <h4>Option 2: Use Local Network Access</h4>
+                <p>Access from same WiFi network (no HTTPS needed):</p>
+                <div>
+                    <input type="text" id="networkUrl" value="http://192.168.1.57:5002" placeholder="http://your-ip:5002">
+                    <button class="btn" onclick="testNetworkConnection()">Test Network IP</button>
+                </div>
+                <div id="networkResult"></div>
+            </div>
+
+            <div class="step">
+                <h4>Option 3: Download Local Version</h4>
+                <p>Run ORFEAS directly on your machine:</p>
+                <a href="#" onclick="downloadLocal()" class="btn btn-success">Download Local Portal</a>
+            </div>
+        </div>
+
+        <div class="solution-box">
+            <h3>üìã Current Issue Analysis</h3>
+            <div id="issueAnalysis">
+                <p>üîç Analyzing connection issue...</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button class="btn btn-warning" onclick="showAdvancedOptions()">Show Advanced Options</button>
+        </div>
+
+        <div id="advancedOptions" style="display: none;">
+            <div class="solution-box">
+                <h3> Advanced Solutions</h3>
+
+                <div class="step">
+                    <h4>Manual Server Start</h4>
+                    <div class="code">
+cd "C:\Users\johng\Documents\Erevus\orfeas\backend"
+C:\Users\johng\anaconda3\python.exe powerful_3d_server.py
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>Firewall Configuration</h4>
+                    <p>Allow port 5002 through Windows Firewall:</p>
+                    <div class="code">
+# Run as Administrator:
+netsh advfirewall firewall add rule name="ORFEAS Server" dir=in action=allow protocol=TCP localport=5002
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>Alternative Ports</h4>
+                    <input type="text" id="altPort" value="8080" placeholder="Alternative port">
+                    <button class="btn" onclick="testAlternativePort()">Test Port</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check protocol and show appropriate warnings
+        function analyzeIssue() {
+            const isHTTPS = location.protocol === 'https:';
+            const isNetlify = location.hostname.includes('netlify');
+
+            let analysis = '';
+
+            if (isHTTPS && isNetlify) {
+                document.getElementById('protocolWarning').innerHTML = `
+                    <div class="status warning">
+                         HTTPS → HTTP Issue Detected<br>
+                        You're on Netlify (HTTPS) trying to connect to local HTTP server.<br>
+                        This is blocked by browser security. Solutions below üëá
+                    </div>
+                `;
+
+                analysis = `
+                    <div class="error">
+                        <strong>Root Cause:</strong> Mixed Content Security Policy<br>
+                        <strong>Browser:</strong> Blocks HTTP requests from HTTPS sites<br>
+                        <strong>Solution:</strong> Need HTTPS tunnel (ngrok) or local access
+                    </div>
+                `;
+            } else {
+                document.getElementById('protocolWarning').innerHTML = `
+                    <div class="status info">
+                        ℹ Protocol: ${location.protocol} | Host: ${location.hostname}<br>
+                        Local development detected - should work with HTTP server
+                    </div>
+                `;
+
+                analysis = `
+                    <div class="success">
+                        <strong>Environment:</strong> Local development<br>
+                        <strong>Protocol:</strong> ${location.protocol}<br>
+                        <strong>Expected:</strong> Direct connection should work
+                    </div>
+                `;
+            }
+
+            document.getElementById('issueAnalysis').innerHTML = analysis;
+        }
+
+        function testNetworkConnection() {
+            const url = document.getElementById('networkUrl').value;
+            const result = document.getElementById('networkResult');
+
+            result.innerHTML = '<div class="status info"> Testing network connection...</div>';
+
+            fetch(url + '/api/health', {
+                method: 'GET',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                result.innerHTML = `
+                    <div class="status success">
+                        'úÖ Network Connection Successful!<br>
+                        Server: ${data.server}<br>
+                        <a href="studio.html?server=${encodeURIComponent(url)}" class="btn">Open 3D Studio</a>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                result.innerHTML = `
+                    <div class="status error">
+                        'ùå Network connection failed: ${error.message}<br>
+                        Try ngrok or local download instead
+                    </div>
+                `;
+            });
+        }
+
+        function testAlternativePort() {
+            const port = document.getElementById('altPort').value;
+            const url = `http://localhost:${port}`;
+
+            fetch(url + '/api/health')
+            .then(response => response.json())
+            .then(data => {
+                alert(`'úÖ Port ${port} working! Server: ${data.server}`);
+            })
+            .catch(error => {
+                alert(`'ùå Port ${port} not responding: ${error.message}`);
+            });
+        }
+
+        function showAdvancedOptions() {
+            const div = document.getElementById('advancedOptions');
+            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function downloadLocal() {
+            alert('Download instructions:\n\n1. Save the ORFEAS-Simple-Deploy.zip to your computer\n2. Extract the files\n3. Open index.html in your browser\n4. It will connect to http://localhost:5002 directly');
+        }        // Auto-analyze on load
+        window.addEventListener('load', analyzeIssue);
+    </script>
+</body>
+</html>

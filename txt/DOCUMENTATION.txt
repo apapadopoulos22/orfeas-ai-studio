@@ -1,0 +1,50 @@
+#  ORFEAS Documentation
+
+**All documentation files (.md) are located in the `md\` directory.**
+
+---
+
+## [LAUNCH] Quick Start
+
+**Start ORFEAS:**
+```powershell
+.\START_ORFEAS_AUTO.ps1
+```
+
+---
+
+##  Documentation
+
+**Main Documentation:** `md\README.md`
+
+**Latest Reports:**
+- `md\SESSION_6_COMPLETE_SUCCESS.md` - Port fix validation
+- `md\PORT_FIX_SUCCESS_REPORT.md` - Configuration fixes
+
+**View all docs:**
+```powershell
+explorer md\
+```
+
+---
+
+## [FOLDER] Project Structure
+
+```
+ORFEAS/
+ START_ORFEAS_AUTO.ps1     PRIMARY STARTUP
+ orfeas-studio.html        (Frontend UI)
+ frontend_server.py        (Frontend server)
+ orfeas_service.py         (Universal service)
+ md\                        ALL DOCUMENTATION HERE
+    README.md
+    SESSION_6_COMPLETE_SUCCESS.md
+    [other .md files]
+ backend\                  (Python backend)
+ frontend-nextjs\          (Next.js frontend)
+ Hunyuan3D-2.1\           (AI models)
+```
+
+---
+
+**For full documentation, see `md\README.md`**

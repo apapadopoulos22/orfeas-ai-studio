@@ -1,0 +1,21 @@
+{
+  "gpu_acceleration": {
+    "enabled": true,
+    "device": "cpu",
+    "memory_fraction": 0.9,
+    "allow_growth": true,
+    "mixed_precision": true
+  },
+  "pytorch_settings": {
+    "backends_cudnn_benchmark": true,
+    "backends_cudnn_deterministic": false,
+    "cuda_launch_blocking": false
+  },
+  "environment_variables": {
+    "CUDA_VISIBLE_DEVICES": "0",
+    "PYTORCH_CUDA_ALLOC_CONF": "max_split_size_mb:512",
+    "TORCH_CUDNN_V8_API_ENABLED": "1",
+    "TRANSFORMERS_CACHE": "C:\\Users\\johng\\Documents\\Erevus\\orfeas\\models\\transformers",
+    "HF_HOME": "C:\\Users\\johng\\Documents\\Erevus\\orfeas\\models\\huggingface"
+  }
+}

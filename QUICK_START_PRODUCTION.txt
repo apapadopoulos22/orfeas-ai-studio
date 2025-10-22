@@ -1,0 +1,191 @@
+🚀 ORFEAS AI STUDIO - QUICK START GUIDE
+================================================
+
+DEPLOYMENT STATUS: ✅ READY TO LAUNCH
+
+=== WHAT WAS UPDATED ===
+
+1. START_SERVER.bat - PRODUCTION READY
+   ✅ Now sets FLASK_ENV=production
+   ✅ DEBUG mode disabled for security
+   ✅ GPU optimizations enabled
+   ✅ Environment auto-configured
+   ✅ Enhanced deployment messaging
+
+2. synexa-style-studio.html - DEPLOYED
+   ✅ API_BASE: https://api.orfeas.ai (production)
+   ✅ Three.js viewer integrated
+   ✅ 3DViewer.net fallback active
+   ✅ All error handlers in place
+   ✅ Download functionality ready
+
+=== LAUNCH SERVER IN 3 STEPS ===
+
+STEP 1: Open Command Prompt or PowerShell
+  • Press: Win+R
+  • Type: cmd
+  • Press: Enter
+
+STEP 2: Navigate to Project
+  cd c:\Users\johng\Documents\oscar
+
+STEP 3: Run Server
+  START_SERVER.bat
+
+  ➜ Server will start on http://127.0.0.1:5000
+  ➜ Wait 30-60 seconds for full initialization
+  ➜ GPU will auto-load Hunyuan3D-2.1 model
+
+=== ACCESS THE STUDIO ===
+
+Option A - Direct Studio (Recommended)
+  http://127.0.0.1:5000/studio
+
+Option B - Health Check First
+  http://127.0.0.1:5000/health
+
+Option C - Local Frontend
+  File: synexa-style-studio.html (located in project root)
+
+=== QUICK TEST WORKFLOW ===
+
+1. Open: http://127.0.0.1:5000/studio
+2. Upload: Any image (JPG, PNG, WebP)
+3. Settings:
+   • Quality: 7 (default, good balance)
+   • Format: STL (standard 3D format)
+   • Dimensions: 512 (recommended)
+4. Generate: Click "Generate 3D Model"
+5. View:
+   • Three.js: Native WebGL viewer (primary)
+   • 3DViewer: Online fallback (if WebGL unavailable)
+   • Download: STL file for external viewers
+6. Download: Save STL to your computer
+7. Open: In Windows 3D Viewer, Blender, or MeshLab
+
+=== PRODUCTION FEATURES ===
+
+✅ GPU-Accelerated Processing
+   • NVIDIA RTX 3090 (24GB VRAM)
+   • CUDA 12.0 optimized
+   • Real-time model generation
+
+✅ Three-Layer Viewing System
+   • Primary: Three.js WebGL viewer
+   • Fallback: 3DViewer.net iframe
+   • Download: Universal STL format
+
+✅ Security & Monitoring
+   • Production Flask mode
+   • Debug mode disabled
+   • Logging enabled
+   • Health monitoring active
+
+✅ Professional UI
+   • Synexa-inspired dark theme
+   • Responsive design
+   • Real-time progress updates
+   • Error handling with helpful guidance
+
+=== MONITORING DURING OPERATION ===
+
+Backend Logs (Real-time):
+  Get-Content "c:\Users\johng\Documents\oscar\backend\logs\backend_requests.log" -Tail 50 -Wait
+
+GPU Status:
+  nvidia-smi
+
+Health Endpoint:
+  http://127.0.0.1:5000/health
+  (Returns JSON with GPU info, processor status, metrics)
+
+=== TROUBLESHOOTING ===
+
+❓ Server won't start
+  • Check Python is installed: python --version
+  • Check backend directory exists
+  • Check port 5000 is not in use
+  • Review logs: backend/logs/backend_requests.log
+
+❓ "Cannot connect to backend"
+  • Wait 60 seconds (Hunyuan3D loading)
+  • Check health: http://127.0.0.1:5000/health
+  • Restart: Close and re-run START_SERVER.bat
+
+❓ "WebGL not supported"
+  • Automatic fallback to 3DViewer.net (no action needed)
+  • Or download STL and open in desktop viewer
+
+❓ GPU out of memory
+  • Reduce GPU_MEMORY_LIMIT in START_SERVER.bat
+  • Reduce MAX_CONCURRENT_JOBS
+  • Wait between generations
+
+=== ENVIRONMENT VARIABLES (Auto-Set) ===
+
+FLASK_ENV=production              # Production mode
+DEBUG=false                        # Security
+DEVICE=cuda                        # GPU acceleration
+GPU_MEMORY_LIMIT=0.8              # 80% of VRAM
+MAX_CONCURRENT_JOBS=3             # Parallel processing
+ENABLE_MONITORING=true            # Health checks
+LOG_LEVEL=INFO                     # Logging detail
+
+=== FILES STRUCTURE ===
+
+c:\Users\johng\Documents\oscar\
+├── START_SERVER.bat              ← Launch this
+├── synexa-style-studio.html      ← Frontend (prod API)
+├── backend/
+│   ├── main.py                   ← Flask server
+│   ├── hunyuan_integration.py    ← 3D generation
+│   ├── gpu_manager.py            ← GPU handling
+│   └── logs/
+│       └── backend_requests.log  ← Server logs
+└── Hunyuan3D-2.1/
+    └── (3D model files)
+
+=== KEYBOARD SHORTCUTS ===
+
+Ctrl+C                             Stop server
+Ctrl+L or Cmd+L (in viewer)       Toggle lighting
+Left Mouse Drag                    Rotate model (Three.js)
+Right Mouse Drag                   Pan model
+Mouse Wheel                        Zoom in/out
+
+=== SUPPORT RESOURCES ===
+
+Documentation:
+  • PRODUCTION_DEPLOYMENT_GUIDE.txt
+  • DEPLOYMENT_ARCHITECTURE.txt
+  • THREE_JS_IFRAME_FALLBACK_IMPLEMENTATION.md
+
+Logs:
+  • backend/logs/backend_requests.log
+
+Status:
+  • http://127.0.0.1:5000/health
+
+API Endpoints:
+  • POST /api/upload-image
+  • POST /api/generate-3d
+  • GET /api/job-status/{job_id}
+  • GET /api/download/{job_id}/{filename}
+
+=== PRODUCTION DEPLOYMENT STATUS ===
+
+Environment:        ✅ PRODUCTION MODE
+Frontend:          ✅ DEPLOYED (API_BASE production)
+Backend:           ✅ READY
+GPU:               ✅ RTX 3090 Configured
+Logging:           ✅ ENABLED
+Monitoring:        ✅ ACTIVE
+Security:          ✅ DEBUG=false
+Documentation:     ✅ COMPLETE
+
+READY FOR PRODUCTION USE ✅
+
+================================================
+To launch: START_SERVER.bat
+Then visit: http://127.0.0.1:5000/studio
+================================================

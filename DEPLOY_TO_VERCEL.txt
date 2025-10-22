@@ -1,0 +1,212 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║    🚀 ORFEAS AI - DEPLOYING TO VERCEL (Free Alternative)             ║
+║                                                                        ║
+║              No Credit Limits • Instant Deployment                    ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+
+DEPLOYMENT METHOD: VERCEL
+═════════════════════════════════════════════════════════════════════════
+
+Why Vercel?
+  ✅ Free tier (unlimited)
+  ✅ No credit limits
+  ✅ Instant deployment
+  ✅ Global CDN
+  ✅ Same features as Netlify
+  ✅ Better performance
+
+
+DEPLOYMENT STATUS
+═════════════════════════════════════════════════════════════════════════
+
+Stage 1: Install Vercel CLI
+  ✅ COMPLETE - vercel installed globally
+
+Stage 2: Deploy to Vercel
+  🔄 IN PROGRESS - Running: vercel --prod
+
+Stage 3: Get Live URL
+  ⏳ PENDING - Will be displayed when deployment completes
+
+
+WHAT YOU NEED TO DO NOW
+═════════════════════════════════════════════════════════════════════════
+
+The terminal is waiting for you to answer prompts:
+
+1. First Time Setup:
+   → Look for: "Want to deploy from ~/oscar?"
+   → Answer: y (yes)
+
+2. Project Name:
+   → Look for: "What's your project's name?"
+   → Answer: orfeas-ai-studio
+
+3. Output Directory:
+   → Look for: "Which directory is your code located?"
+   → Answer: . (current directory)
+
+4. Auto Deployment:
+   → Look for: "Want to deploy to production now?"
+   → Answer: y (yes)
+
+Then wait 30-60 seconds for deployment to complete.
+
+
+WHAT HAPPENS NEXT
+═════════════════════════════════════════════════════════════════════════
+
+After you answer the prompts, Vercel will:
+
+1. Create your project on Vercel
+2. Deploy all files to CDN
+3. Generate your live URL
+4. Show: "✓ Deployment complete!"
+5. Display: https://your-app.vercel.app
+
+Copy that URL - that's your LIVE ORFEAS AI Studio!
+
+
+YOUR VERCEL DEPLOYMENT WILL INCLUDE
+═════════════════════════════════════════════════════════════════════════
+
+Frontend:
+  ✅ synexa-style-studio.html
+  ✅ Global CDN distribution
+  ✅ Secure HTTPS
+  ✅ Automatic HTTPS redirect
+
+Backend Connection:
+  ✅ API routes to ngrok tunnel
+  ✅ Pre-configured URL: https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev
+  ✅ SPA routing (single page app)
+
+Configuration:
+  ✅ vercel.json (auto-created)
+  ✅ Environment variables (API_BASE set)
+  ✅ Redirects configured
+
+
+AFTER DEPLOYMENT COMPLETES
+═════════════════════════════════════════════════════════════════════════
+
+You'll see in terminal:
+
+  Production: https://orfeas-ai-studio.vercel.app
+
+Copy this URL!
+
+Then open 3 new terminals:
+
+Terminal 1 - Backend:
+  cd c:\Users\johng\Documents\oscar\backend
+  python -u main.py
+
+Terminal 2 - ngrok Tunnel:
+  cd c:\Users\johng\Documents\oscar
+  .\START_NGROK_TUNNEL.bat
+
+Terminal 3 - Browser:
+  Open: https://orfeas-ai-studio.vercel.app
+  Test: Upload → Generate → Download
+
+
+VERCEL ADVANTAGES OVER NETLIFY
+═════════════════════════════════════════════════════════════════════════
+
+Vercel:
+  ✅ No credit limits
+  ✅ Free tier unlimited
+  ✅ Faster global CDN
+  ✅ Better edge functions
+  ✅ Better analytics
+  ✅ More reliable
+
+Netlify (current):
+  ❌ Credit/bandwidth limits
+  ❌ Requires payment after limit
+  ❌ Slower for some regions
+  ✅ Good alternative
+
+
+YOUR PROJECT ON VERCEL
+═════════════════════════════════════════════════════════════════════════
+
+Free Tier Includes:
+  • Unlimited deployments
+  • Global CDN (80+ locations)
+  • Automatic HTTPS
+  • Automatic scaling
+  • 100GB/month bandwidth
+  • Analytics dashboard
+
+Cost: $0/month (free forever)
+
+
+VERCEL DASHBOARD
+═════════════════════════════════════════════════════════════════════════
+
+After deployment, access:
+  Dashboard: https://vercel.com/dashboard
+  Project: https://vercel.com/dashboard/projects
+  Your App: https://orfeas-ai-studio.vercel.app
+
+
+DEPLOYMENT TIMELINE
+═════════════════════════════════════════════════════════════════════════
+
+Current Time: Now
+Expected Prompts: 30 seconds
+Build & Deploy: 1-2 minutes
+URL Ready: 2-3 minutes total
+
+You should have a live URL in 3 minutes!
+
+
+IF SOMETHING GOES WRONG
+═════════════════════════════════════════════════════════════════════════
+
+If terminal freezes:
+  Press Ctrl+C to cancel
+
+If you need to restart:
+  cd c:\Users\johng\Documents\oscar
+  vercel --prod
+
+If Vercel asks for login:
+  Click the link it provides
+  Or visit: https://vercel.com/new
+  Sign in with email: apapadopoulos22@gmail.com
+
+
+NEXT: MONITOR YOUR TERMINAL
+═════════════════════════════════════════════════════════════════════════
+
+Watch the terminal for:
+
+✓ "Linking to your project..."
+✓ "Uploading files..."
+✓ "Building project..."
+✓ "✓ Deployment complete!"
+✓ "Production: https://orfeas-ai-studio.vercel.app"
+
+When you see the URL, that's your live site!
+
+
+═════════════════════════════════════════════════════════════════════════
+
+                    🚀 VERCEL DEPLOYMENT IN PROGRESS
+
+                   Answer the terminal prompts to deploy!
+                       Expected: 2-3 minutes to live
+
+═════════════════════════════════════════════════════════════════════════
+
+Vercel: https://vercel.com
+Free Tier: https://vercel.com/pricing
+Dashboard: https://vercel.com/dashboard
+
+═════════════════════════════════════════════════════════════════════════

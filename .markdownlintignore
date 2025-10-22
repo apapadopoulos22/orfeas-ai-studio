@@ -1,0 +1,16 @@
+# Third-party, generated, build, and large vendor docs (excluded from repo-wide scans)
+
+docs/
+Hunyuan3D-2.1/
+Hunyuan3D-2.1-SOURCE/
+ComfyUI/
+frontend-nextjs/
+netlify-frontend/
+netlify-deploy-folder/
+htmlcov/
+logs/
+monitoring/
+icons/
+node_modules/
+.git/
+coverage/

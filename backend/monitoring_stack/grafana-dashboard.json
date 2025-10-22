@@ -1,0 +1,895 @@
+{
+  "dashboard": {
+    "title": "ORFEAS AI 2D'√ú√≠3D Studio - Production Monitoring",
+    "tags": [
+      "orfeas",
+      "ai",
+      "3d-generation",
+      "production"
+    ],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "1h",
+        "6h",
+        "12h",
+        "24h",
+        "7d",
+        "30d"
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Health Overview",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "app_uptime_seconds",
+            "legendFormat": "Uptime"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "unit": "s"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Total Requests",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[5m]))",
+            "legendFormat": "Requests/sec"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "unit": "reqps"
+        }
+      },
+      {
+        "id": 3,
+        "title": "Error Rate",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(errors_total[5m]))",
+            "legendFormat": "Errors/sec"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 0.1,
+                "color": "yellow"
+              },
+              {
+                "value": 1,
+                "color": "red"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Active Jobs",
+        "type": "stat",
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum(active_jobs)",
+            "legendFormat": "Active Jobs"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "unit": "short"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Request Rate by Endpoint",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 4
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[5m])) by (endpoint)",
+            "legendFormat": "{{endpoint}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "reqps",
+            "label": "Requests/sec"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Request Duration (P95)",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 4
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95 Latency"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50 Latency"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "s",
+            "label": "Duration"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "AI Generations Over Time",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 12
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(text_to_image_generations_total[5m])) by (status)",
+            "legendFormat": "Text'√ú√≠Image ({{status}})"
+          },
+          {
+            "expr": "sum(rate(model_3d_generations_total[5m])) by (status)",
+            "legendFormat": "3D Model ({{status}})"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "ops",
+            "label": "Generations/sec"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Generation Duration",
+        "type": "graph",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 12
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(text_to_image_duration_seconds_bucket[5m]))",
+            "legendFormat": "Text'√ú√≠Image (P95)"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(model_3d_duration_seconds_bucket[5m]))",
+            "legendFormat": "3D Model (P95)"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "s",
+            "label": "Duration"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "CPU Usage",
+        "type": "graph",
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 20
+        },
+        "targets": [
+          {
+            "expr": "avg(cpu_usage_percent)",
+            "legendFormat": "Average CPU"
+          },
+          {
+            "expr": "max(cpu_usage_percent)",
+            "legendFormat": "Max CPU"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "CPU %",
+            "max": 100,
+            "min": 0
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 20
+        },
+        "targets": [
+          {
+            "expr": "memory_usage_bytes{type='used'} / memory_usage_bytes{type='total'} * 100",
+            "legendFormat": "Memory Used %"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Memory %",
+            "max": 100,
+            "min": 0
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "GPU Usage",
+        "type": "graph",
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 20
+        },
+        "targets": [
+          {
+            "expr": "gpu_usage_percent",
+            "legendFormat": "GPU {{gpu_id}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "GPU %",
+            "max": 100,
+            "min": 0
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Success vs Failure Rate",
+        "type": "piechart",
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 26
+        },
+        "targets": [
+          {
+            "expr": "sum(successful_generations_total)",
+            "legendFormat": "Success"
+          },
+          {
+            "expr": "sum(failed_generations_total)",
+            "legendFormat": "Failure"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Generation Quality Scores",
+        "type": "heatmap",
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 26
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(generation_quality_score_bucket[5m])) by (le)",
+            "format": "heatmap",
+            "legendFormat": "{{le}}"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Rate Limit Rejections",
+        "type": "graph",
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 26
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(rate_limit_rejections_total[5m])) by (endpoint)",
+            "legendFormat": "{{endpoint}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "ops",
+            "label": "Rejections/sec"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "üéØ Current Overall Quality Score",
+        "type": "gauge",
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 32
+        },
+        "targets": [
+          {
+            "expr": "quality_overall_score * 100",
+            "legendFormat": "Quality %"
+          }
+        ],
+        "options": {
+          "orientation": "auto",
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true,
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 55,
+                "color": "orange"
+              },
+              {
+                "value": 70,
+                "color": "yellow"
+              },
+              {
+                "value": 80,
+                "color": "green"
+              },
+              {
+                "value": 95,
+                "color": "blue"
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "description": "Real-time overall quality score (0-100%). Blue=A+, Green=B+/A, Yellow=C/B-, Orange=D, Red=F"
+      },
+      {
+        "id": 16,
+        "title": "Ô£ø√º√¨√§ Quality Scores by Stage",
+        "type": "stat",
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 32
+        },
+        "targets": [
+          {
+            "expr": "quality_bg_removal_score * 100",
+            "legendFormat": "Background Removal"
+          },
+          {
+            "expr": "quality_shape_score * 100",
+            "legendFormat": "Shape Generation"
+          },
+          {
+            "expr": "quality_texture_score * 100",
+            "legendFormat": "Texture Coherence"
+          },
+          {
+            "expr": "quality_final_score * 100",
+            "legendFormat": "Final Mesh"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "value",
+          "unit": "percent",
+          "orientation": "horizontal",
+          "textMode": "value_and_name",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 70,
+                "color": "yellow"
+              },
+              {
+                "value": 80,
+                "color": "green"
+              },
+              {
+                "value": 95,
+                "color": "blue"
+              }
+            ]
+          }
+        },
+        "description": "Quality scores for each validation stage"
+      },
+      {
+        "id": 17,
+        "title": "Ô£ø√º√Æ√ü Auto-Repairs Performed",
+        "type": "stat",
+        "gridPos": {
+          "h": 3,
+          "w": 6,
+          "x": 12,
+          "y": 32
+        },
+        "targets": [
+          {
+            "expr": "sum(quality_auto_repairs_total)",
+            "legendFormat": "Total Repairs"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "background",
+          "unit": "short",
+          "textMode": "value"
+        },
+        "description": "Total automatic mesh repairs performed (non-manifold geometry fixes)"
+      },
+      {
+        "id": 18,
+        "title": "'√∫√ñ Manifold & Printable Rates",
+        "type": "stat",
+        "gridPos": {
+          "h": 3,
+          "w": 6,
+          "x": 12,
+          "y": 35
+        },
+        "targets": [
+          {
+            "expr": "quality_manifold_rate",
+            "legendFormat": "Manifold %"
+          },
+          {
+            "expr": "quality_printable_rate",
+            "legendFormat": "Printable %"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "value",
+          "unit": "percent",
+          "orientation": "horizontal",
+          "textMode": "value_and_name",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 50,
+                "color": "yellow"
+              },
+              {
+                "value": 80,
+                "color": "green"
+              },
+              {
+                "value": 95,
+                "color": "blue"
+              }
+            ]
+          }
+        },
+        "description": "Percentage of watertight (manifold) and 3D-printable meshes generated"
+      },
+      {
+        "id": 19,
+        "title": "Ô£ø√º√¨√† Quality Score Trend (Last Hour)",
+        "type": "graph",
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 18,
+          "y": 32
+        },
+        "targets": [
+          {
+            "expr": "quality_bg_removal_score * 100",
+            "legendFormat": "Background Removal"
+          },
+          {
+            "expr": "quality_shape_score * 100",
+            "legendFormat": "Shape Generation"
+          },
+          {
+            "expr": "quality_texture_score * 100",
+            "legendFormat": "Texture Coherence"
+          },
+          {
+            "expr": "quality_final_score * 100",
+            "legendFormat": "Final Mesh"
+          },
+          {
+            "expr": "quality_overall_score * 100",
+            "legendFormat": "Overall (weighted)"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "percent",
+            "label": "Quality %",
+            "max": 100,
+            "min": 0
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "linewidth": 2,
+        "fill": 1,
+        "fillGradient": 2,
+        "description": "Real-time quality score trends for all validation stages"
+      },
+      {
+        "id": 20,
+        "title": "Ô£ø√º√¨√§ Quality Distribution Histogram",
+        "type": "heatmap",
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 38
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(quality_score_distribution_bucket[5m])) by (stage, le)",
+            "format": "heatmap",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "dataFormat": "tsbuckets",
+        "yAxis": {
+          "format": "short",
+          "decimals": 2,
+          "logBase": 1
+        },
+        "xAxis": {
+          "show": true
+        },
+        "color": {
+          "mode": "spectrum",
+          "cardColor": "#b4ff00",
+          "colorScheme": "interpolateSpectral",
+          "exponent": 0.5,
+          "min": 0,
+          "max": null
+        },
+        "description": "Distribution of quality scores across all stages (darker = more common)"
+      },
+      {
+        "id": 21,
+        "title": "üèÜ Quality Grade Distribution",
+        "type": "piechart",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 38
+        },
+        "targets": [
+          {
+            "expr": "quality_grade_total{grade='A+'}",
+            "legendFormat": "A+ (95-100%)"
+          },
+          {
+            "expr": "quality_grade_total{grade='A'}",
+            "legendFormat": "A (90-94%)"
+          },
+          {
+            "expr": "quality_grade_total{grade='A-'}",
+            "legendFormat": "A- (85-89%)"
+          },
+          {
+            "expr": "quality_grade_total{grade='B+'}",
+            "legendFormat": "B+ (80-84%)"
+          },
+          {
+            "expr": "quality_grade_total{grade='B'}",
+            "legendFormat": "B (75-79%)"
+          },
+          {
+            "expr": "quality_grade_total{grade='B-'}",
+            "legendFormat": "B- (70-74%)"
+          },
+          {
+            "expr": "quality_grade_total{grade='C'}",
+            "legendFormat": "C (<70%)"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "pieType": "pie",
+          "displayLabels": [
+            "percent"
+          ],
+          "legendDisplayMode": "list"
+        },
+        "description": "Distribution of quality grades (A+ to C)"
+      },
+      {
+        "id": 22,
+        "title": "Ô£ø√º√Æ√ü Auto-Repair Breakdown",
+        "type": "bargauge",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 38
+        },
+        "targets": [
+          {
+            "expr": "quality_auto_repairs_total{repair_type='fill_holes'}",
+            "legendFormat": "Fill Holes"
+          },
+          {
+            "expr": "quality_auto_repairs_total{repair_type='fix_normals'}",
+            "legendFormat": "Fix Normals"
+          },
+          {
+            "expr": "quality_auto_repairs_total{repair_type='remove_degenerate_faces'}",
+            "legendFormat": "Remove Degenerate"
+          },
+          {
+            "expr": "quality_auto_repairs_total{repair_type='remove_duplicate_faces'}",
+            "legendFormat": "Remove Duplicates"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true,
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 10,
+                "color": "yellow"
+              },
+              {
+                "value": 50,
+                "color": "red"
+              }
+            ]
+          }
+        },
+        "description": "Breakdown of auto-repair operations by type"
+      },
+      {
+        "id": 23,
+        "title": "‚ö†Ô∏è Quality Validation Failures",
+        "type": "graph",
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 46
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(quality_validation_failures_total[5m])) by (stage)",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "ops",
+            "label": "Failures/sec"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "linewidth": 2,
+        "alert": {
+          "name": "High Quality Validation Failure Rate",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [
+                  5
+                ]
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "type": "avg"
+              }
+            }
+          ],
+          "executionErrorState": "alerting",
+          "frequency": "1m",
+          "handler": 1,
+          "message": "Quality validation failure rate exceeds 5/sec",
+          "noDataState": "no_data"
+        },
+        "description": "Rate of quality validation failures by stage (alerts if > 5/sec)"
+      },
+      {
+        "id": 24,
+        "title": "'√∫√ñ Quality Threshold Passes",
+        "type": "graph",
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 46
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(quality_threshold_passes_total{threshold='0.95'}[5m]))",
+            "legendFormat": "A+ Grade (‚â•95%)"
+          },
+          {
+            "expr": "sum(rate(quality_threshold_passes_total{threshold='0.90'}[5m]))",
+            "legendFormat": "A Grade (‚â•90%)"
+          },
+          {
+            "expr": "sum(rate(quality_threshold_passes_total{threshold='0.85'}[5m]))",
+            "legendFormat": "A- Grade (‚â•85%)"
+          },
+          {
+            "expr": "sum(rate(quality_threshold_passes_total{threshold='0.80'}[5m]))",
+            "legendFormat": "B+ Grade (‚â•80%)"
+          }
+        ],
+        "yaxes": [
+          {
+            "format": "ops",
+            "label": "Generations/sec"
+          },
+          {
+            "format": "short"
+          }
+        ],
+        "lines": true,
+        "linewidth": 2,
+        "fill": 1,
+        "stack": true,
+        "description": "Rate of generations passing each quality threshold"
+      }
+    ]
+  }
+}

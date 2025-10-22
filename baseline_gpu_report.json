@@ -1,0 +1,23 @@
+{
+  "device": "cuda",
+  "cuda_available": true,
+  "current_profile": {
+    "total_mb": 24575.375,
+    "used_mb": 4926.6689453125,
+    "free_mb": 18473.375,
+    "utilization_percent": 24.829733015264264
+  },
+  "memory_trends": {
+    "trend": "unknown",
+    "avg_utilization": 24.829733015264264,
+    "peak_utilization": 24.829733015264264,
+    "min_utilization": 24.829733015264264,
+    "stable": true,
+    "variance": 0.0
+  },
+  "batch_performance": {},
+  "recommendations": {
+    "target_utilization": 0.85,
+    "reduce_batch_size": false
+  }
+}

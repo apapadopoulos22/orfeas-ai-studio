@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[pre-commit] Markdown lint check starting..."
+
+# Collect staged Markdown files (added, copied, modified, renamed)
+mapfile -t STAGED_MD < <(git diff --cached --name-only --diff-filter=ACMR | grep -Ei '\\.md$' || true)
+
+if [ ${#STAGED_MD[@]} -eq 0 ]; then
+  echo "[markdownlint] No staged Markdown files to lint."
+  exit 0
+fi
+
+# Ensure npx is available; if not, fall back to global markdownlint
+run_markdownlint() {
+  local cmd=("npx" "--yes" "markdownlint-cli@0.41.0")
+  if command -v npx >/dev/null 2>&1; then
+    "${cmd[@]}" "$@"
+  elif command -v markdownlint >/dev/null 2>&1; then
+    markdownlint "$@"
+  else
+    echo "[markdownlint] Neither npx nor markdownlint found. Install Node.js (LTS) or markdownlint-cli."
+    exit 1
+  fi
+}
+
+# Auto-fix, then verify
+echo "[markdownlint] Applying auto-fixes (if any)..."
+run_markdownlint --fix "${STAGED_MD[@]}"
+
+# Restage any files modified by --fix
+git add -- "${STAGED_MD[@]}"
+
+echo "[markdownlint] Verifying..."
+run_markdownlint "${STAGED_MD[@]}"
+
+echo "[pre-commit] Markdown lint passed."
+exit 0

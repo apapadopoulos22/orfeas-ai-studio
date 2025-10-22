@@ -1,0 +1,27 @@
+name: UTF-8 Normalization
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check-utf8:
+    runs-on: ubuntu-latest
+    env:
+      ENCODING_AUTO_DETECTION: "false"
+      ENCODING_FALLBACK_CHAIN: "utf-8,latin-1,cp1252,ascii"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install minimal deps for encoding fixer
+        run: |
+          python -m pip install --upgrade pip
+          pip install chardet charset-normalizer langdetect ftfy
+      - name: Run encoding fixer in check mode
+        run: |
+          python -m backend.tools.encoding_fixer --root . --dry-run --check --summary-only

@@ -1,0 +1,262 @@
+version: '3.8'
+
+services:
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: orfeas-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/rules:/etc/prometheus/rules
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - orfeas-monitoring
+    depends_on:
+      - redis
+      - node-exporter
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: orfeas-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=orfeas_admin_2025
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,redis-datasource
+      - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - orfeas-monitoring
+    depends_on:
+      - prometheus
+
+  # Grafana Image Renderer for PDF reports
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    container_name: orfeas-renderer
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - ENABLE_METRICS=true
+    networks:
+      - orfeas-monitoring
+
+  # Node Exporter for system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: orfeas-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - orfeus-monitoring
+
+  # Redis for agent communication and metrics
+  redis:
+    image: redis:7-alpine
+    container_name: orfeas-redis-monitoring
+    restart: unless-stopped
+    ports:
+      - "6380:6379" # Different port to avoid conflicts
+    volumes:
+      - redis_monitoring_data:/data
+      - ./monitoring/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - orfeas-monitoring
+
+  # Redis Exporter for Redis metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: orfeas-redis-exporter
+    restart: unless-stopped
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+      - REDIS_EXPORTER_INCL_SYSTEM_METRICS=true
+    networks:
+      - orfeas-monitoring
+    depends_on:
+      - redis
+
+  # cAdvisor for container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: orfeas-cadvisor
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    networks:
+      - orfeas-monitoring
+
+  # Alertmanager for alert handling
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: orfeas-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    networks:
+      - orfeas-monitoring
+
+  # Pushgateway for batch job metrics
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: orfeas-pushgateway
+    restart: unless-stopped
+    ports:
+      - "9091:9091"
+    networks:
+      - orfeas-monitoring
+
+  # Jaeger for distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: orfeas-jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "14268:14268" # HTTP collector
+      - "6831:6831/udp" # UDP agent
+      - "6832:6832/udp" # UDP agent
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    networks:
+      - orfeas-monitoring
+
+  # Elasticsearch for logs (single node for development)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: orfeas-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - orfeas-monitoring
+
+  # Kibana for log visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: orfeas-kibana
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibana_password
+    networks:
+      - orfeas-monitoring
+    depends_on:
+      - elasticsearch
+
+  # Logstash for log processing
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: orfeas-logstash
+    restart: unless-stopped
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./monitoring/logstash/config:/usr/share/logstash/config
+      - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline
+    environment:
+      - LS_JAVA_OPTS=-Xmx1g -Xms1g
+    networks:
+      - orfeas-monitoring
+    depends_on:
+      - elasticsearch
+
+  # ORFEAS Agent Metrics Collector (custom service)
+  orfeas-metrics:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile.metrics
+    container_name: orfeas-agent-metrics
+    restart: unless-stopped
+    ports:
+      - "9200:9200" # Metrics endpoint
+    environment:
+      - ORFEAS_BACKEND_URL=http://backend:5000
+      - PROMETHEUS_GATEWAY_URL=http://pushgateway:9091
+      - REDIS_URL=redis://redis:6379
+      - METRICS_INTERVAL=30
+    volumes:
+      - ./backend:/app
+      - ./logs:/app/logs
+    networks:
+      - orfeas-monitoring
+    depends_on:
+      - prometheus
+      - redis
+      - pushgateway
+
+networks:
+  orfeas-monitoring:
+    driver: bridge
+    name: orfeas-monitoring-network
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  redis_monitoring_data:
+    driver: local
+  alertmanager_data:
+    driver: local
+  elasticsearch_data:
+    driver: local

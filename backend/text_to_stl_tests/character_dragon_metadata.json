@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "job_id": "d3210598-f22f-4722-851f-bcd0c748c3e3",
+  "file_path": "text_to_stl_tests\\character_dragon_1760300116.stl",
+  "file_size": 990084,
+  "file_hash": "3dc16a325aa414cf0973d64160e683829da6fb85d967f44d56b60bce51862c69",
+  "triangles": 19800,
+  "bounding_box": {
+    "min": [
+      -0.019113069400191307,
+      -0.02529139071702957,
+      -0.9956383109092712
+    ],
+    "max": [
+      0.015152305364608765,
+      0.023292073979973793,
+      0.9919319152832031
+    ],
+    "dimensions": [
+      0.03426537476480007,
+      0.048583464697003365,
+      1.9875702261924744
+    ],
+    "volume_estimate": 0.003308769025308622
+  },
+  "prompt": "A cute cartoon dragon figurine with wings and tail, suitable for 3D printing",
+  "dimensions": {
+    "width": 60,
+    "height": 70,
+    "depth": 35
+  },
+  "timestamp": 1760300116.6042721,
+  "test_date": "2025-10-12 23:15:16"
+}

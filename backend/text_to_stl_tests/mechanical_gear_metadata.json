@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "job_id": "398891bf-6ebe-49fd-ab58-461902939bdb",
+  "file_path": "text_to_stl_tests\\mechanical_gear_1760300197.stl",
+  "file_size": 289884,
+  "file_hash": "683ac909543ded0f59ee60b4805ed833bb2562f02b675b9252320b46c477dcd4",
+  "triangles": 5796,
+  "bounding_box": {
+    "min": [
+      -0.5851737260818481,
+      -0.9978249669075012,
+      -0.041848331689834595
+    ],
+    "max": [
+      0.5414901375770569,
+      0.025417884811758995,
+      0.0401839055120945
+    ],
+    "dimensions": [
+      1.126663863658905,
+      1.0232428517192602,
+      0.08203223720192909
+    ],
+    "volume_estimate": 0.09457092575416252
+  },
+  "prompt": "A detailed mechanical gear wheel with teeth and center hole",
+  "dimensions": {
+    "width": 45,
+    "height": 45,
+    "depth": 10
+  },
+  "timestamp": 1760300197.5594897,
+  "test_date": "2025-10-12 23:16:37"
+}

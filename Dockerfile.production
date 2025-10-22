@@ -1,0 +1,127 @@
+# =============================================================================
+# ORFEAS AI 2D→3D Studio - Production Dockerfile
+# =============================================================================
+# THERION AI Project - EREVUS Collective
+#
+# Multi-stage production build for optimized image size and security
+# CUDA-enabled for RTX 3090 GPU acceleration
+# Non-root user for security
+# Health checks built-in
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Stage 1: Builder - Compile dependencies and prepare environment
+# -----------------------------------------------------------------------------
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04 as builder
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 \
+    python3.11-dev \
+    python3-pip \
+    build-essential \
+    git \
+    wget \
+    curl \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN python3.11 -m pip install --upgrade pip setuptools wheel
+
+# Create working directory
+WORKDIR /build
+
+# Copy requirements files
+COPY backend/requirements.txt backend/requirements-production.txt ./
+
+# Install Python dependencies
+RUN python3.11 -m pip install --no-cache-dir -r requirements.txt && \
+    python3.11 -m pip install --no-cache-dir -r requirements-production.txt
+
+# -----------------------------------------------------------------------------
+# Stage 2: Runtime - Minimal production image
+# -----------------------------------------------------------------------------
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    FLASK_ENV=production \
+    TESTING=0 \
+    GPU_MEMORY_LIMIT=0.8 \
+    MAX_CONCURRENT_JOBS=3 \
+    LOG_LEVEL=INFO \
+    XFORMERS_DISABLED=1 \
+    CUDA_VISIBLE_DEVICES=0
+
+# Install minimal runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 \
+    python3-pip \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python packages from builder
+COPY --from=builder /usr/local/lib/python3.11/dist-packages /usr/local/lib/python3.11/dist-packages
+
+# Create non-root user for security
+RUN groupadd -r orfeas && useradd -r -g orfeas -s /bin/bash orfeas
+
+# Create application directory
+WORKDIR /app
+
+# Create necessary directories with proper permissions
+RUN mkdir -p \
+    /app/backend \
+    /app/logs \
+    /app/outputs \
+    /app/temp \
+    /app/models \
+    /root/.cache/huggingface \
+    /root/.cache/hy3dgen \
+    && chown -R orfeas:orfeas /app
+
+# Copy backend code
+COPY --chown=orfeas:orfeas backend/ /app/backend/
+
+# Copy Hunyuan3D-2.1 models (if present)
+COPY --chown=orfeas:orfeas Hunyuan3D-2.1/ /app/Hunyuan3D-2.1/
+
+# Copy Gunicorn configuration
+COPY --chown=orfeas:orfeas gunicorn.conf.py /app/
+
+# Expose port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# Switch to non-root user
+USER orfeas
+
+# Set working directory
+WORKDIR /app/backend
+
+# Default command: Run with Gunicorn
+CMD ["gunicorn", "--config", "/app/gunicorn.conf.py", "main:app"]

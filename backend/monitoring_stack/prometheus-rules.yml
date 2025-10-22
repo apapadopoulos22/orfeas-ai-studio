@@ -1,0 +1,242 @@
+# ============================================================================
+# ORFEAS AI 2Dâ†’3D Studio - Prometheus Alert Rules
+# ============================================================================
+# Author: ORFEAS Protocol - Monitoring Master
+# Date: October 14, 2025
+# Purpose: Alert rules for production monitoring
+# ============================================================================
+
+groups:
+  # ==========================================================================
+  # Application Health Alerts
+  # ==========================================================================
+  - name: application_health
+    interval: 30s
+    rules:
+      - alert: ApplicationDown
+        expr: up{job="orfeas-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "ORFEAS backend is down"
+          description: "The ORFEAS AI backend application has been down for more than 1 minute."
+
+      - alert: HighErrorRate
+        expr: sum(rate(errors_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors/sec (threshold: 0.1)"
+
+      - alert: CriticalErrorRate
+        expr: sum(rate(errors_total[5m])) > 1.0
+        for: 2m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "Critical error rate detected"
+          description: "Error rate is {{ $value }} errors/sec (threshold: 1.0)"
+
+  # ==========================================================================
+  # Performance Alerts
+  # ==========================================================================
+  - name: performance
+    interval: 30s
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: backend
+        annotations:
+          summary: "High request latency detected"
+          description: "P95 latency is {{ $value }}s (threshold: 5s)"
+
+      - alert: CriticalLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 30
+        for: 2m
+        labels:
+          severity: critical
+          component: backend
+        annotations:
+          summary: "Critical request latency detected"
+          description: "P95 latency is {{ $value }}s (threshold: 30s)"
+
+      - alert: SlowGenerations
+        expr: histogram_quantile(0.95, rate(model_3d_duration_seconds_bucket[5m])) > 600
+        for: 10m
+        labels:
+          severity: warning
+          component: generation
+        annotations:
+          summary: "3D generation is slow"
+          description: "P95 generation time is {{ $value }}s (threshold: 600s)"
+
+  # ==========================================================================
+  # Resource Usage Alerts
+  # ==========================================================================
+  - name: resource_usage
+    interval: 30s
+    rules:
+      - alert: HighCPUUsage
+        expr: avg(cpu_usage_percent) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}% (threshold: 80%)"
+
+      - alert: CriticalCPUUsage
+        expr: avg(cpu_usage_percent) > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Critical CPU usage"
+          description: "CPU usage is {{ $value }}% (threshold: 95%)"
+
+      - alert: HighMemoryUsage
+        expr: (memory_usage_bytes{type="used"} / memory_usage_bytes{type="total"}) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}% (threshold: 85%)"
+
+      - alert: CriticalMemoryUsage
+        expr: (memory_usage_bytes{type="used"} / memory_usage_bytes{type="total"}) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Critical memory usage"
+          description: "Memory usage is {{ $value }}% (threshold: 95%)"
+
+      - alert: HighGPUUsage
+        expr: avg(gpu_usage_percent) > 90
+        for: 10m
+        labels:
+          severity: warning
+          component: gpu
+        annotations:
+          summary: "High GPU usage"
+          description: "GPU usage is {{ $value }}% for more than 10 minutes"
+
+  # ==========================================================================
+  # Rate Limiting Alerts
+  # ==========================================================================
+  - name: rate_limiting
+    interval: 30s
+    rules:
+      - alert: HighRateLimitRejections
+        expr: sum(rate(rate_limit_rejections_total[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High rate of rate limit rejections"
+          description: "Rate limit rejection rate is {{ $value }}/sec"
+
+      - alert: PossibleDDoS
+        expr: sum(rate(rate_limit_rejections_total[1m])) > 10.0
+        for: 1m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Possible DDoS attack detected"
+          description: "Extremely high rate limit rejection rate: {{ $value }}/sec"
+
+  # ==========================================================================
+  # Generation Failure Alerts
+  # ==========================================================================
+  - name: generation_failures
+    interval: 30s
+    rules:
+      - alert: HighGenerationFailureRate
+        expr: (sum(rate(failed_generations_total[10m])) / (sum(rate(successful_generations_total[10m])) + sum(rate(failed_generations_total[10m])))) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          component: generation
+        annotations:
+          summary: "High generation failure rate"
+          description: "Generation failure rate is {{ $value | humanizePercentage }} (threshold: 20%)"
+
+      - alert: NoSuccessfulGenerations
+        expr: sum(rate(successful_generations_total[15m])) == 0 and sum(rate(text_to_image_generations_total[15m])) > 0
+        for: 10m
+        labels:
+          severity: critical
+          component: generation
+        annotations:
+          summary: "No successful generations"
+          description: "No successful generations in the last 15 minutes despite attempts"
+
+  # ==========================================================================
+  # Disk Space Alerts
+  # ==========================================================================
+  - name: disk_space
+    interval: 60s
+    rules:
+      - alert: LowDiskSpace
+        expr: (disk_usage_bytes{type="free"} / disk_usage_bytes{type="total"}) * 100 < 20
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Low disk space"
+          description: "Only {{ $value }}% disk space remaining (threshold: 20%)"
+
+      - alert: CriticalDiskSpace
+        expr: (disk_usage_bytes{type="free"} / disk_usage_bytes{type="total"}) * 100 < 10
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Critical disk space"
+          description: "Only {{ $value }}% disk space remaining (threshold: 10%)"
+
+# ============================================================================
+# ALERT SEVERITY LEVELS
+# ============================================================================
+#
+# critical: Immediate action required (paging)
+# warning:  Investigation needed (ticket/email)
+# info:     Informational (logging only)
+#
+# ============================================================================
+# ALERT THRESHOLDS
+# ============================================================================
+#
+# Performance:
+#   - High Latency: >5s for 5 minutes
+#   - Critical Latency: >30s for 2 minutes
+#
+# Resources:
+#   - CPU Warning: >80% for 5 minutes
+#   - CPU Critical: >95% for 2 minutes
+#   - Memory Warning: >85% for 5 minutes
+#   - Memory Critical: >95% for 2 minutes
+#
+# Error Rates:
+#   - Warning: >0.1 errors/sec for 5 minutes
+#   - Critical: >1.0 errors/sec for 2 minutes
+#
+# ============================================================================

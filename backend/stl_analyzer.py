@@ -1,0 +1,496 @@
+#!/usr/bin/env python3
+"""
+STL File Analysis and Integrity Validation Tool
+Comprehensive analysis of ORFEAS-generated STL files
+"""
+
+import os
+import struct
+from pathlib import Path
+import json
+import time
+from typing import Dict, List, Any
+import glob
+
+class STLAnalyzer:
+    def __init__(self):
+        self.analysis_results = []
+
+    def analyze_stl_file(self, file_path: Path) -> Dict[str, Any]:
+        """Analyze a single STL file comprehensively"""
+
+        result = {
+            'filename': file_path.name,
+            'filepath': str(file_path),
+            'file_size': file_path.stat().st_size if file_path.exists() else 0,
+            'format': 'unknown',
+            'triangles': 0,
+            'vertices': 0,
+            'valid': False,
+            'errors': [],
+            'warnings': [],
+            'properties': {},
+            'analysis_time': time.time()
+        }
+
+        if not file_path.exists():
+            result['errors'].append("File does not exist")
+            return result
+
+        try:
+            with open(file_path, 'rb') as f:
+                content = f.read()
+
+            # Determine STL format
+            if len(content) < 80:
+                result['errors'].append("File too small to be valid STL")
+                return result
+
+            # Check for ASCII STL
+            try:
+                content_str = content.decode('utf-8', errors='ignore')
+                if content_str.strip().startswith('solid ') and ('facet normal' in content_str[:2000]):
+                    result = self._analyze_ascii_stl(content, content_str, result)
+                else:
+                    result = self._analyze_binary_stl(content, result)
+            except:
+                result = self._analyze_binary_stl(content, result)
+
+            # Additional validations
+            result = self._validate_stl_geometry(result)
+            result = self._calculate_stl_properties(result, content)
+
+        except Exception as e:
+            result['errors'].append(f"Analysis failed: {str(e)}")
+
+        return result
+
+    def _analyze_ascii_stl(self, content: bytes, content_str: str, result: Dict) -> Dict:
+        """Analyze ASCII format STL"""
+        result['format'] = 'ASCII STL'
+
+        # Count triangles
+        facet_count = content_str.count('facet normal')
+        result['triangles'] = facet_count
+        result['vertices'] = facet_count * 3
+
+        # Check structure
+        if not content_str.strip().startswith('solid '):
+            result['errors'].append("Missing 'solid' header")
+        elif not content_str.strip().endswith('endsolid'):
+            if 'endsolid' not in content_str:
+                result['errors'].append("Missing 'endsolid' footer")
+            else:
+                result['warnings'].append("File doesn't end with 'endsolid'")
+
+        # Count vertices and normals
+        vertex_count = content_str.count('vertex')
+        normal_count = content_str.count('facet normal')
+
+        if vertex_count != facet_count * 3:
+            result['warnings'].append(f"Vertex count mismatch: expected {facet_count * 3}, found {vertex_count}")
+
+        # Basic validation
+        required_keywords = ['solid', 'facet normal', 'vertex', 'endsolid']
+        missing_keywords = [kw for kw in required_keywords if kw not in content_str]
+
+        if missing_keywords:
+            result['errors'].append(f"Missing keywords: {', '.join(missing_keywords)}")
+        else:
+            result['valid'] = True
+
+        result['properties'] = {
+            'vertex_count': vertex_count,
+            'normal_count': normal_count,
+            'lines': len(content_str.splitlines()),
+            'size_bytes': len(content)
+        }
+
+        return result
+
+    def _analyze_binary_stl(self, content: bytes, result: Dict) -> Dict:
+        """Analyze binary format STL"""
+        result['format'] = 'Binary STL'
+
+        if len(content) < 84:
+            result['errors'].append("File too small for binary STL (minimum 84 bytes)")
+            return result
+
+        try:
+            # Read header (80 bytes)
+            header = content[:80]
+
+            # Read triangle count (4 bytes, little-endian unsigned int)
+            triangle_count = struct.unpack('<I', content[80:84])[0]
+            result['triangles'] = triangle_count
+            result['vertices'] = triangle_count * 3
+
+            # Calculate expected file size
+            # Each triangle: 12 floats (48 bytes) + 1 uint16 (2 bytes) = 50 bytes
+            expected_size = 80 + 4 + (triangle_count * 50)
+            actual_size = len(content)
+
+            result['properties'] = {
+                'header': header.decode('utf-8', errors='ignore').strip('\x00'),
+                'expected_size': expected_size,
+                'actual_size': actual_size,
+                'size_difference': actual_size - expected_size
+            }
+
+            # Validate file size
+            if actual_size == expected_size:
+                result['valid'] = True
+            elif abs(actual_size - expected_size) <= 2:  # Allow small variance
+                result['valid'] = True
+                result['warnings'].append(f"Minor size variance: {abs(actual_size - expected_size)} bytes")
+            else:
+                result['errors'].append(f"Size mismatch: expected {expected_size}, got {actual_size}")
+
+            # Validate triangle data if not too large
+            if triangle_count > 0 and triangle_count < 100000:  # Reasonable limit
+                result = self._validate_binary_triangles(content, triangle_count, result)
+
+        except struct.error as e:
+            result['errors'].append(f"Binary structure error: {str(e)}")
+        except Exception as e:
+            result['errors'].append(f"Binary analysis failed: {str(e)}")
+
+        return result
+
+    def _validate_binary_triangles(self, content: bytes, triangle_count: int, result: Dict) -> Dict:
+        """Validate individual triangles in binary STL"""
+
+        valid_triangles = 0
+        degenerate_triangles = 0
+        invalid_normals = 0
+
+        try:
+            for i in range(min(triangle_count, 1000)):  # Sample first 1000 triangles
+                offset = 84 + (i * 50)
+                if offset + 50 > len(content):
+                    break
+
+                # Read triangle data (12 floats + 1 uint16)
+                triangle_data = struct.unpack('<12fH', content[offset:offset+50])
+
+                # Normal vector (first 3 floats)
+                normal = triangle_data[0:3]
+
+                # Vertices (next 9 floats, as 3 sets of 3)
+                v1 = triangle_data[3:6]
+                v2 = triangle_data[6:9]
+                v3 = triangle_data[9:12]
+
+                # Attribute byte count (should typically be 0)
+                attr_count = triangle_data[12]
+
+                # Check for degenerate triangles
+                if v1 == v2 or v2 == v3 or v1 == v3:
+                    degenerate_triangles += 1
+                else:
+                    valid_triangles += 1
+
+                # Check normal vector (should be unit length or zero)
+                normal_length = sum(n*n for n in normal) ** 0.5
+                if normal_length > 0 and abs(normal_length - 1.0) > 0.1:
+                    invalid_normals += 1
+
+        except Exception as e:
+            result['warnings'].append(f"Triangle validation incomplete: {str(e)}")
+
+        result['properties'].update({
+            'valid_triangles_sampled': valid_triangles,
+            'degenerate_triangles_sampled': degenerate_triangles,
+            'invalid_normals_sampled': invalid_normals,
+            'sample_size': min(triangle_count, 1000)
+        })
+
+        if degenerate_triangles > 0:
+            result['warnings'].append(f"Found {degenerate_triangles} degenerate triangles in sample")
+
+        return result
+
+    def _validate_stl_geometry(self, result: Dict) -> Dict:
+        """Validate STL geometry properties"""
+
+        triangles = result.get('triangles', 0)
+        file_size = result.get('file_size', 0)
+
+        # Reasonable limits
+        if triangles == 0:
+            result['errors'].append("No triangles found")
+        elif triangles > 10_000_000:  # 10M triangles
+            result['warnings'].append(f"Very large model: {triangles:,} triangles")
+        elif triangles < 4:  # Minimum for a tetrahedron
+            result['warnings'].append(f"Very simple model: {triangles} triangles")
+
+        # File size checks
+        if file_size > 500_000_000:  # 500MB
+            result['warnings'].append(f"Very large file: {file_size/1024/1024:.1f} MB")
+        elif file_size == 0:
+            result['errors'].append("Empty file")
+
+        return result
+
+    def _calculate_stl_properties(self, result: Dict, content: bytes) -> Dict:
+        """Calculate additional properties"""
+
+        try:
+            triangles = result.get('triangles', 0)
+            file_size = result.get('file_size', 0)
+
+            # Density calculations
+            if triangles > 0 and file_size > 0:
+                if result['format'] == 'Binary STL':
+                    # Binary STL: 50 bytes per triangle + 84 byte header
+                    expected_density = 50  # bytes per triangle
+                    actual_density = (file_size - 84) / triangles if triangles > 0 else 0
+                else:
+                    # ASCII STL: variable, but estimate
+                    actual_density = file_size / triangles if triangles > 0 else 0
+                    expected_density = 150  # rough estimate for ASCII
+
+                result['properties']['triangle_density'] = actual_density
+                result['properties']['expected_density'] = expected_density
+
+            # Complexity rating
+            if triangles < 100:
+                complexity = "Very Simple"
+            elif triangles < 1000:
+                complexity = "Simple"
+            elif triangles < 10000:
+                complexity = "Moderate"
+            elif triangles < 100000:
+                complexity = "Complex"
+            else:
+                complexity = "Very Complex"
+
+            result['properties']['complexity'] = complexity
+
+        except Exception as e:
+            result['warnings'].append(f"Property calculation failed: {str(e)}")
+
+        return result
+
+    def analyze_directory(self, directory: str) -> List[Dict]:
+        """Analyze all STL files in a directory"""
+
+        directory_path = Path(directory)
+        if not directory_path.exists():
+            print(f"[FAIL] Directory does not exist: {directory}")
+            return []
+
+        # Find all STL files
+        stl_files = list(directory_path.glob("**/*.stl"))
+
+        if not stl_files:
+            print(f"[WARN] No STL files found in: {directory}")
+            return []
+
+        print(f"[SEARCH] Found {len(stl_files)} STL files to analyze")
+        print("=" * 60)
+
+        results = []
+        for stl_file in stl_files:
+            print(f" Analyzing: {stl_file.name}")
+            result = self.analyze_stl_file(stl_file)
+            results.append(result)
+
+            # Print immediate results
+            status = "[OK] VALID" if result['valid'] else "[FAIL] INVALID"
+            print(f"   {status} | {result['format']} | {result['triangles']:,} triangles | {result['file_size']:,} bytes")
+
+            if result['errors']:
+                for error in result['errors']:
+                    print(f"   üö´ Error: {error}")
+            if result['warnings']:
+                for warning in result['warnings'][:2]:  # Show first 2 warnings
+                    print(f"   [WARN] Warning: {warning}")
+
+            print()
+
+        self.analysis_results.extend(results)
+        return results
+
+    def generate_comprehensive_report(self, results: List[Dict] = None) -> Dict:
+        """Generate comprehensive analysis report"""
+
+        if results is None:
+            results = self.analysis_results
+
+        if not results:
+            return {'error': 'No analysis results available'}
+
+        # Summary statistics
+        total_files = len(results)
+        valid_files = sum(1 for r in results if r['valid'])
+        invalid_files = total_files - valid_files
+
+        # Format distribution
+        format_counts = {}
+        for result in results:
+            fmt = result['format']
+            format_counts[fmt] = format_counts.get(fmt, 0) + 1
+
+        # Size and triangle statistics
+        file_sizes = [r['file_size'] for r in results if r['file_size'] > 0]
+        triangle_counts = [r['triangles'] for r in results if r['triangles'] > 0]
+
+        # Error analysis
+        all_errors = []
+        all_warnings = []
+        for result in results:
+            all_errors.extend(result.get('errors', []))
+            all_warnings.extend(result.get('warnings', []))
+
+        error_freq = {}
+        for error in all_errors:
+            error_freq[error] = error_freq.get(error, 0) + 1
+
+        warning_freq = {}
+        for warning in all_warnings:
+            warning_freq[warning] = warning_freq.get(warning, 0) + 1
+
+        # Complexity analysis
+        complexity_counts = {}
+        for result in results:
+            complexity = result.get('properties', {}).get('complexity', 'Unknown')
+            complexity_counts[complexity] = complexity_counts.get(complexity, 0) + 1
+
+        report = {
+            'analysis_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'summary': {
+                'total_files': total_files,
+                'valid_files': valid_files,
+                'invalid_files': invalid_files,
+                'success_rate': (valid_files / total_files * 100) if total_files > 0 else 0
+            },
+            'formats': format_counts,
+            'statistics': {
+                'total_triangles': sum(triangle_counts),
+                'average_triangles': sum(triangle_counts) / len(triangle_counts) if triangle_counts else 0,
+                'max_triangles': max(triangle_counts) if triangle_counts else 0,
+                'min_triangles': min(triangle_counts) if triangle_counts else 0,
+                'total_file_size_mb': sum(file_sizes) / (1024 * 1024) if file_sizes else 0,
+                'average_file_size_kb': (sum(file_sizes) / len(file_sizes)) / 1024 if file_sizes else 0
+            },
+            'complexity_distribution': complexity_counts,
+            'common_errors': dict(sorted(error_freq.items(), key=lambda x: x[1], reverse=True)[:10]),
+            'common_warnings': dict(sorted(warning_freq.items(), key=lambda x: x[1], reverse=True)[:10]),
+            'file_details': results
+        }
+
+        return report
+
+    def print_report(self, report: Dict):
+        """Print formatted analysis report"""
+
+        print("\n" + "="*80)
+        print("[TARGET] COMPREHENSIVE STL FILE ANALYSIS REPORT")
+        print("="*80)
+        print(f"üìÖ Analysis Date: {report['analysis_date']}")
+
+        # Summary
+        summary = report['summary']
+        print(f"\n[STATS] SUMMARY:")
+        print(f"   Total Files Analyzed: {summary['total_files']}")
+        print(f"   Valid STL Files: {summary['valid_files']} ({summary['success_rate']:.1f}%)")
+        print(f"   Invalid Files: {summary['invalid_files']}")
+
+        # Formats
+        if report['formats']:
+            print(f"\n[FOLDER] FILE FORMATS:")
+            for fmt, count in report['formats'].items():
+                percentage = (count / summary['total_files']) * 100
+                print(f"   {fmt}: {count} files ({percentage:.1f}%)")
+
+        # Statistics
+        stats = report['statistics']
+        print(f"\n[METRICS] STATISTICS:")
+        print(f"   Total Triangles: {stats['total_triangles']:,}")
+        print(f"   Average Triangles per File: {stats['average_triangles']:,.0f}")
+        print(f"   Triangle Range: {stats['min_triangles']:,} - {stats['max_triangles']:,}")
+        print(f"   Total File Size: {stats['total_file_size_mb']:.2f} MB")
+        print(f"   Average File Size: {stats['average_file_size_kb']:.1f} KB")
+
+        # Complexity
+        if report['complexity_distribution']:
+            print(f"\n[CONFIG] COMPLEXITY DISTRIBUTION:")
+            for complexity, count in report['complexity_distribution'].items():
+                percentage = (count / summary['total_files']) * 100
+                print(f"   {complexity}: {count} files ({percentage:.1f}%)")
+
+        # Errors
+        if report['common_errors']:
+            print(f"\nüö´ MOST COMMON ERRORS:")
+            for error, count in list(report['common_errors'].items())[:5]:
+                print(f"   {count}x: {error}")
+
+        # Warnings
+        if report['common_warnings']:
+            print(f"\n[WARN] MOST COMMON WARNINGS:")
+            for warning, count in list(report['common_warnings'].items())[:5]:
+                print(f"   {count}x: {warning}")
+
+        print("\n" + "="*80)
+
+def main():
+    """Main analysis function"""
+    print("[LAUNCH] STL FILE ANALYZER - ORFEAS Complex Shape Analysis")
+    print("=" * 60)
+
+    analyzer = STLAnalyzer()
+
+    # Analyze backend directory
+    backend_dir = Path(__file__).parent
+    print(f"[SEARCH] Analyzing STL files in: {backend_dir}")
+
+    results = analyzer.analyze_directory(backend_dir)
+
+    if results:
+        # Generate and display report
+        report = analyzer.generate_comprehensive_report(results)
+        analyzer.print_report(report)
+
+        # Save detailed report
+        report_file = Path(f"stl_analysis_report_{int(time.time())}.json")
+        with open(report_file, 'w') as f:
+            json.dump(report, f, indent=2, default=str)
+
+        print(f"\nüíæ Detailed report saved to: {report_file}")
+
+        # Highlight interesting files
+        print(f"\n[TARGET] NOTABLE FILES:")
+
+        # Largest file
+        largest = max(results, key=lambda x: x['file_size'])
+        print(f"   üìè Largest: {largest['filename']} ({largest['file_size']:,} bytes, {largest['triangles']:,} triangles)")
+
+        # Most complex
+        most_triangles = max(results, key=lambda x: x['triangles'])
+        print(f"   [CONFIG] Most Complex: {most_triangles['filename']} ({most_triangles['triangles']:,} triangles)")
+
+        # Find SLA-optimized files
+        sla_files = [r for r in results if 'SLA' in r['filename'] or 'sla' in r['filename']]
+        if sla_files:
+            print(f"    SLA-Optimized Files: {len(sla_files)} found")
+            for sla in sla_files[:3]:
+                print(f"      • {sla['filename']}: {sla['triangles']:,} triangles")
+
+        # Find text-to-STL files
+        text_stl_files = [r for r in results if 'text_to_stl' in r['filepath'] or any(word in r['filename'].lower() for word in ['dragon', 'gear', 'apple', 'cube'])]
+        if text_stl_files:
+            print(f"   'ú® Text-to-STL Generated: {len(text_stl_files)} found")
+            for text_stl in text_stl_files[:3]:
+                print(f"      • {text_stl['filename']}: {text_stl['triangles']:,} triangles")
+
+        print(f"\nüéâ Analysis completed successfully!")
+        print(f"   Analyzed {len(results)} STL files")
+        print(f"   {sum(1 for r in results if r['valid'])} valid, {sum(1 for r in results if not r['valid'])} invalid")
+        print(f"   Total geometry: {sum(r['triangles'] for r in results):,} triangles")
+
+    else:
+        print("[FAIL] No STL files found to analyze")
+
+if __name__ == "__main__":
+    main()

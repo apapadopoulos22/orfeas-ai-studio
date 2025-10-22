@@ -1,0 +1,614 @@
+openapi: 3.0.3
+info:
+  title: ORFEAS AI 2DÃ¢â€ â€™3D Studio API
+  description: |
+    Production-grade AI platform for automated 2D image Ã¢â€ â€™ 3D model conversion using Tencent's Hunyuan3D-2.1.
+
+    **Features:**
+    - Text-to-Image generation
+    - Image-to-3D model conversion
+    - STL mesh processing and optimization
+    - Batch processing support
+    - Real-time job status tracking
+
+    **Test Mode:**
+    Set `TESTING=1` environment variable to enable test mode. In test mode:
+    - AI models are not loaded (fast startup)
+    - Mock responses returned for generation endpoints
+    - Validation logic still active
+
+    **Rate Limiting:**
+    - Default: 100 requests per minute per IP
+    - Configurable via `RATE_LIMIT` environment variable
+
+  version: 1.0.0
+  contact:
+    name: ORFEAS AI
+    url: https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+  - url: http://localhost:8000
+    description: E2E test server
+
+tags:
+  - name: Health
+    description: Server health and status endpoints
+  - name: Image Upload
+    description: Upload images for 3D generation
+  - name: Text-to-Image
+    description: Generate images from text prompts
+  - name: 3D Generation
+    description: Generate 3D models from images
+  - name: Job Status
+    description: Track generation job progress
+  - name: File Operations
+    description: Download and preview files
+  - name: STL Processing
+    description: Analyze, repair, and optimize STL meshes
+  - name: Batch Operations
+    description: Batch 3D model generation
+  - name: Materials & Lighting
+    description: Material and lighting presets
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: Check if server is online and models are loaded
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [online, ready, healthy]
+                  models_ready:
+                    type: boolean
+                  uptime:
+                    type: number
+                    description: Server uptime in seconds
+                  test_mode:
+                    type: boolean
+                    description: Whether server is in test mode
+              example:
+                status: "online"
+                models_ready: true
+                uptime: 3600
+                test_mode: false
+
+  /api/models-info:
+    get:
+      tags: [Health]
+      summary: Get AI model information
+      description: Returns status and details of loaded AI models
+      operationId: getModelsInfo
+      responses:
+        "200":
+          description: Model information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  models_loaded:
+                    type: boolean
+                  shapegen_ready:
+                    type: boolean
+                  texgen_ready:
+                    type: boolean
+                  device:
+                    type: string
+                    enum: [cuda, cpu]
+              example:
+                models_loaded: true
+                shapegen_ready: true
+                texgen_ready: true
+                device: "cuda"
+
+  /api/upload-image:
+    post:
+      tags: [Image Upload]
+      summary: Upload image for 3D generation
+      description: |
+        Upload an image file to be converted to 3D model.
+
+        **Test Mode Behavior:**
+        - Returns mock job_id immediately
+        - No actual file validation (PIL check only)
+        - job_id format: UUID v4
+      operationId: uploadImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Image file (PNG, JPG, JPEG, GIF, BMP, TIFF, WEBP)
+      responses:
+        "200":
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadResponse"
+              example:
+                job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                preview_url: "/api/preview/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png"
+                status: "uploaded"
+                test_mode: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "415":
+          description: Unsupported file type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/text-to-image:
+    post:
+      tags: [Text-to-Image]
+      summary: Generate image from text prompt
+      description: |
+        Generate an image from a text description using AI.
+
+        **Test Mode Behavior:**
+        - Returns mock image URL immediately
+        - No actual generation occurs
+        - Validation still enforced (prompt required)
+      operationId: textToImage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt:
+                  type: string
+                  description: Text description of desired image
+                  minLength: 1
+                  maxLength: 1000
+                  example: "A red cube on a white background"
+                art_style:
+                  type: string
+                  enum: [realistic, anime, artistic, digital_art]
+                  default: realistic
+                  description: Art style for generation
+      responses:
+        "200":
+          description: Image generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerationResponse"
+              example:
+                job_id: "b2c3d4e5-f6g7-8901-bcde-f12345678901"
+                status: "completed"
+                image_url: "/api/preview/b2c3d4e5-f6g7-8901-bcde-f12345678901.png"
+                test_mode: true
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/generate-3d:
+    post:
+      tags: [3D Generation]
+      summary: Generate 3D model from uploaded image
+      description: |
+        Convert an uploaded image to a 3D model.
+
+        **Test Mode Behavior:**
+        - Returns mock completion immediately
+        - Validates job_id format (must be >10 chars)
+        - Rejects "invalid-job-id-12345" pattern
+        - Returns 400 for invalid job_ids
+      operationId: generate3D
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [job_id]
+              properties:
+                job_id:
+                  type: string
+                  format: uuid
+                  description: Job ID from upload-image response
+                format:
+                  type: string
+                  enum: [stl, obj, glb, ply]
+                  default: stl
+                  description: Output 3D format
+                quality:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  default: 7
+                  description: Generation quality (1=fast, 10=best)
+      responses:
+        "200":
+          description: 3D model generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerationResponse"
+              example:
+                job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                status: "completed"
+                format: "stl"
+                quality: 7
+                download_url: "/api/download/a1b2c3d4-e5f6-7890-abcd-ef1234567890/model.stl"
+                test_mode: true
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: Job ID not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/job-status/{job_id}:
+    get:
+      tags: [Job Status]
+      summary: Get job status
+      description: |
+        Check the status of a generation job.
+
+        **Test Mode Behavior:**
+        - Returns 404 for job_ids starting with "nonexistent"
+        - Returns 404 for job_ids <10 characters
+        - Returns mock "completed" status for valid IDs
+      operationId: getJobStatus
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Job ID to check
+      responses:
+        "200":
+          description: Job status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobStatus"
+              example:
+                job_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                status: "completed"
+                progress: 100
+                message: "3D generation complete"
+                test_mode: false
+        "404":
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/download/{job_id}/{filename}:
+    get:
+      tags: [File Operations]
+      summary: Download generated file
+      description: Download a generated 3D model file
+      operationId: downloadFile
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "model.stl"
+      responses:
+        "200":
+          description: File download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/preview/{filename}:
+    get:
+      tags: [File Operations]
+      summary: Preview uploaded image
+      description: Display uploaded image inline (not as download)
+      operationId: previewImage
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Image file
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/stl/analyze:
+    post:
+      tags: [STL Processing]
+      summary: Analyze STL mesh
+      description: Get detailed statistics about an STL file
+      operationId: analyzeSTL
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: STL file to analyze
+      responses:
+        "200":
+          description: STL analysis results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  triangle_count:
+                    type: integer
+                  surface_area:
+                    type: number
+                  volume:
+                    type: number
+                  bounds:
+                    type: object
+                  manifold:
+                    type: boolean
+              example:
+                triangle_count: 15000
+                surface_area: 250.5
+                volume: 125.3
+                manifold: true
+
+  /api/stl/repair:
+    post:
+      tags: [STL Processing]
+      summary: Repair STL mesh
+      description: Fix non-manifold geometry and mesh errors
+      operationId: repairSTL
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Repaired STL file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /api/stl/optimize:
+    post:
+      tags: [STL Processing]
+      summary: Optimize STL for 3D printing
+      description: Scale, add supports, and optimize mesh for printing
+      operationId: optimizeSTL
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                target_size_mm:
+                  type: number
+                  default: 100
+                  description: Target size in millimeters
+                wall_thickness_mm:
+                  type: number
+                  default: 2.0
+                  description: Minimum wall thickness
+                supports:
+                  type: boolean
+                  default: false
+                  description: Add support structures
+      responses:
+        "200":
+          description: Optimized STL file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /api/batch-generate:
+    post:
+      tags: [Batch Operations]
+      summary: Batch generate 3D models
+      description: Queue multiple images for 3D generation
+      operationId: batchGenerate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [job_ids]
+              properties:
+                job_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  minItems: 1
+                  maxItems: 10
+                format:
+                  type: string
+                  enum: [stl, obj, glb, ply]
+                  default: stl
+                quality:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  default: 7
+      responses:
+        "202":
+          description: Batch job accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  batch_id:
+                    type: string
+                    format: uuid
+                  job_count:
+                    type: integer
+                  status:
+                    type: string
+                    enum: [queued]
+
+components:
+  schemas:
+    UploadResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        preview_url:
+          type: string
+        status:
+          type: string
+          enum: [uploaded]
+        test_mode:
+          type: boolean
+
+    GenerationResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        format:
+          type: string
+        quality:
+          type: integer
+        download_url:
+          type: string
+        message:
+          type: string
+        test_mode:
+          type: boolean
+
+    JobStatus:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        message:
+          type: string
+        test_mode:
+          type: boolean
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Additional error details
+        code:
+          type: string
+          description: Error code
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Invalid input"
+            details: "Prompt is required"
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Resource not found"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication (optional, not currently implemented)
+
+security: [] # No authentication required currently

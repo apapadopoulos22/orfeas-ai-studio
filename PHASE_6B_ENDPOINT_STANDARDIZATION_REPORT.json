@@ -1,0 +1,1863 @@
+{
+  "timestamp": "2025-10-19T21:59:58.233922",
+  "frontend_endpoints": [
+    {
+      "path": "/api/log-error",
+      "source": "frontend"
+    },
+    {
+      "path": "/manifest.json",
+      "source": "frontend"
+    }
+  ],
+  "backend_endpoints": [
+    {
+      "path": "/metrics",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/test-simple",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/health",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/v1/gpu/stats",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/debug/flask-blueprints",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/performance/summary",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/performance/recommendations",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/gpu/status",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/ultra-performance/status",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/ultra-performance/config",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/ultra-performance/enable",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/ultra-performance/disable",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/agents/status",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/agents/submit-task",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/agents/intelligent-generation",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/agents/coordination/status",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/agents/communication/message-stats",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/models-info",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/upload-image",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/text-to-image",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/generate-3d",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/ultra-generate-3d",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/job-status/<job_id>",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/download/<job_id>/<filename>",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/preview/<filename>",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/preview-output/<job_id>/<filename>",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/stl/analyze",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/stl/repair",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/stl/optimize",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/stl/simplify",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/batch-generate",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/materials/presets",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/lighting/presets",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/materials/metadata",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/materials/export-mtl",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/camera/presets",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/camera/position",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/camera/animation/turntable",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/camera/animation/orbital",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/camera/preset/save",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/llm/generate",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/llm/code-generate",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/llm/orchestrate",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/llm/analyze-code",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/llm/debug-code",
+      "methods": [
+        "POST"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/llm/models",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    },
+    {
+      "path": "/api/llm/status",
+      "methods": [
+        "GET"
+      ],
+      "source": "main.py"
+    }
+  ],
+  "mismatches": {
+    "frontend_only": [
+      "/api/log-error",
+      "/manifest.json"
+    ],
+    "backend_only": [
+      "/api/ultra-generate-3d",
+      "/api/stl/repair",
+      "/api/download/<job_id>/<filename>",
+      "/api/performance/recommendations",
+      "/api/performance/summary",
+      "/api/llm/orchestrate",
+      "/api/llm/models",
+      "/api/gpu/status",
+      "/api/lighting/presets",
+      "/api/agents/coordination/status",
+      "/test-simple",
+      "/api/camera/preset/save",
+      "/debug/flask-blueprints",
+      "/api/ultra-performance/enable",
+      "/api/agents/communication/message-stats",
+      "/api/camera/position",
+      "/api/stl/simplify",
+      "/api/ultra-performance/config",
+      "/api/job-status/<job_id>",
+      "/api/stl/analyze",
+      "/api/agents/status",
+      "/api/materials/presets",
+      "/api/llm/debug-code",
+      "/api/stl/optimize",
+      "/api/llm/code-generate",
+      "/api/camera/presets",
+      "/api/v1/gpu/stats",
+      "/api/upload-image",
+      "/api/llm/status",
+      "/api/camera/animation/orbital",
+      "/api/ultra-performance/disable",
+      "/api/agents/submit-task",
+      "/api/preview-output/<job_id>/<filename>",
+      "/api/agents/intelligent-generation",
+      "/api/batch-generate",
+      "/api/models-info",
+      "/api/materials/metadata",
+      "/api/materials/export-mtl",
+      "/api/health",
+      "/api/camera/animation/turntable",
+      "/api/llm/generate",
+      "/metrics",
+      "/api/generate-3d",
+      "/api/llm/analyze-code",
+      "/api/text-to-image",
+      "/api/preview/<filename>",
+      "/api/ultra-performance/status"
+    ],
+    "matched": []
+  },
+  "standardized_spec": [],
+  "openapi_spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "ORFEAS AI 2D\u21923D Studio API",
+      "description": "Professional AI-powered 3D model generation platform",
+      "version": "2.0.0",
+      "contact": {
+        "name": "ORFEAS Development Team"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://localhost:5000",
+        "description": "Development server"
+      },
+      {
+        "url": "http://127.0.0.1:5000",
+        "description": "Localhost"
+      }
+    ],
+    "paths": {
+      "/api/agents/communication/message-stats": {
+        "get": {
+          "summary": "GET /api/agents/communication/message-stats",
+          "description": "Endpoint for /api/agents/communication/message-stats",
+          "tags": [
+            "agents"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/agents/coordination/status": {
+        "get": {
+          "summary": "GET /api/agents/coordination/status",
+          "description": "Endpoint for /api/agents/coordination/status",
+          "tags": [
+            "agents"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/agents/intelligent-generation": {
+        "post": {
+          "summary": "POST /api/agents/intelligent-generation",
+          "description": "Endpoint for /api/agents/intelligent-generation",
+          "tags": [
+            "agents"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/agents/status": {
+        "get": {
+          "summary": "GET /api/agents/status",
+          "description": "Endpoint for /api/agents/status",
+          "tags": [
+            "agents"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/agents/submit-task": {
+        "post": {
+          "summary": "POST /api/agents/submit-task",
+          "description": "Endpoint for /api/agents/submit-task",
+          "tags": [
+            "agents"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/batch-generate": {
+        "post": {
+          "summary": "POST /api/batch-generate",
+          "description": "Endpoint for /api/batch-generate",
+          "tags": [
+            "batch-generate"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/camera/animation/orbital": {
+        "post": {
+          "summary": "POST /api/camera/animation/orbital",
+          "description": "Endpoint for /api/camera/animation/orbital",
+          "tags": [
+            "camera"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/camera/animation/turntable": {
+        "post": {
+          "summary": "POST /api/camera/animation/turntable",
+          "description": "Endpoint for /api/camera/animation/turntable",
+          "tags": [
+            "camera"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/camera/position": {
+        "post": {
+          "summary": "POST /api/camera/position",
+          "description": "Endpoint for /api/camera/position",
+          "tags": [
+            "camera"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/camera/preset/save": {
+        "post": {
+          "summary": "POST /api/camera/preset/save",
+          "description": "Endpoint for /api/camera/preset/save",
+          "tags": [
+            "camera"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/camera/presets": {
+        "get": {
+          "summary": "GET /api/camera/presets",
+          "description": "Endpoint for /api/camera/presets",
+          "tags": [
+            "camera"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/download/<job_id>/<filename>": {
+        "get": {
+          "summary": "GET /api/download/<job_id>/<filename>",
+          "description": "Endpoint for /api/download/<job_id>/<filename>",
+          "tags": [
+            "download"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/generate-3d": {
+        "post": {
+          "summary": "POST /api/generate-3d",
+          "description": "Endpoint for /api/generate-3d",
+          "tags": [
+            "generate-3d"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/gpu/status": {
+        "get": {
+          "summary": "GET /api/gpu/status",
+          "description": "Endpoint for /api/gpu/status",
+          "tags": [
+            "gpu"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/health": {
+        "get": {
+          "summary": "GET /api/health",
+          "description": "Endpoint for /api/health",
+          "tags": [
+            "health"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/job-status/<job_id>": {
+        "get": {
+          "summary": "GET /api/job-status/<job_id>",
+          "description": "Endpoint for /api/job-status/<job_id>",
+          "tags": [
+            "job-status"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/lighting/presets": {
+        "get": {
+          "summary": "GET /api/lighting/presets",
+          "description": "Endpoint for /api/lighting/presets",
+          "tags": [
+            "lighting"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/llm/analyze-code": {
+        "post": {
+          "summary": "POST /api/llm/analyze-code",
+          "description": "Endpoint for /api/llm/analyze-code",
+          "tags": [
+            "llm"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/llm/code-generate": {
+        "post": {
+          "summary": "POST /api/llm/code-generate",
+          "description": "Endpoint for /api/llm/code-generate",
+          "tags": [
+            "llm"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/llm/debug-code": {
+        "post": {
+          "summary": "POST /api/llm/debug-code",
+          "description": "Endpoint for /api/llm/debug-code",
+          "tags": [
+            "llm"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/llm/generate": {
+        "post": {
+          "summary": "POST /api/llm/generate",
+          "description": "Endpoint for /api/llm/generate",
+          "tags": [
+            "llm"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/llm/models": {
+        "get": {
+          "summary": "GET /api/llm/models",
+          "description": "Endpoint for /api/llm/models",
+          "tags": [
+            "llm"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/llm/orchestrate": {
+        "post": {
+          "summary": "POST /api/llm/orchestrate",
+          "description": "Endpoint for /api/llm/orchestrate",
+          "tags": [
+            "llm"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/llm/status": {
+        "get": {
+          "summary": "GET /api/llm/status",
+          "description": "Endpoint for /api/llm/status",
+          "tags": [
+            "llm"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/materials/export-mtl": {
+        "post": {
+          "summary": "POST /api/materials/export-mtl",
+          "description": "Endpoint for /api/materials/export-mtl",
+          "tags": [
+            "materials"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/materials/metadata": {
+        "post": {
+          "summary": "POST /api/materials/metadata",
+          "description": "Endpoint for /api/materials/metadata",
+          "tags": [
+            "materials"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/materials/presets": {
+        "get": {
+          "summary": "GET /api/materials/presets",
+          "description": "Endpoint for /api/materials/presets",
+          "tags": [
+            "materials"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/models-info": {
+        "get": {
+          "summary": "GET /api/models-info",
+          "description": "Endpoint for /api/models-info",
+          "tags": [
+            "models-info"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/performance/recommendations": {
+        "get": {
+          "summary": "GET /api/performance/recommendations",
+          "description": "Endpoint for /api/performance/recommendations",
+          "tags": [
+            "performance"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/performance/summary": {
+        "get": {
+          "summary": "GET /api/performance/summary",
+          "description": "Endpoint for /api/performance/summary",
+          "tags": [
+            "performance"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/preview-output/<job_id>/<filename>": {
+        "get": {
+          "summary": "GET /api/preview-output/<job_id>/<filename>",
+          "description": "Endpoint for /api/preview-output/<job_id>/<filename>",
+          "tags": [
+            "preview-output"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/preview/<filename>": {
+        "get": {
+          "summary": "GET /api/preview/<filename>",
+          "description": "Endpoint for /api/preview/<filename>",
+          "tags": [
+            "preview"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/stl/analyze": {
+        "post": {
+          "summary": "POST /api/stl/analyze",
+          "description": "Endpoint for /api/stl/analyze",
+          "tags": [
+            "stl"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/stl/optimize": {
+        "post": {
+          "summary": "POST /api/stl/optimize",
+          "description": "Endpoint for /api/stl/optimize",
+          "tags": [
+            "stl"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/stl/repair": {
+        "post": {
+          "summary": "POST /api/stl/repair",
+          "description": "Endpoint for /api/stl/repair",
+          "tags": [
+            "stl"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/stl/simplify": {
+        "post": {
+          "summary": "POST /api/stl/simplify",
+          "description": "Endpoint for /api/stl/simplify",
+          "tags": [
+            "stl"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/text-to-image": {
+        "post": {
+          "summary": "POST /api/text-to-image",
+          "description": "Endpoint for /api/text-to-image",
+          "tags": [
+            "text-to-image"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/ultra-generate-3d": {
+        "post": {
+          "summary": "POST /api/ultra-generate-3d",
+          "description": "Endpoint for /api/ultra-generate-3d",
+          "tags": [
+            "ultra-generate-3d"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/ultra-performance/config": {
+        "get": {
+          "summary": "GET /api/ultra-performance/config",
+          "description": "Endpoint for /api/ultra-performance/config",
+          "tags": [
+            "ultra-performance"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        },
+        "post": {
+          "summary": "POST /api/ultra-performance/config",
+          "description": "Endpoint for /api/ultra-performance/config",
+          "tags": [
+            "ultra-performance"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/ultra-performance/disable": {
+        "post": {
+          "summary": "POST /api/ultra-performance/disable",
+          "description": "Endpoint for /api/ultra-performance/disable",
+          "tags": [
+            "ultra-performance"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/ultra-performance/enable": {
+        "post": {
+          "summary": "POST /api/ultra-performance/enable",
+          "description": "Endpoint for /api/ultra-performance/enable",
+          "tags": [
+            "ultra-performance"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/ultra-performance/status": {
+        "get": {
+          "summary": "GET /api/ultra-performance/status",
+          "description": "Endpoint for /api/ultra-performance/status",
+          "tags": [
+            "ultra-performance"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/upload-image": {
+        "post": {
+          "summary": "POST /api/upload-image",
+          "description": "Endpoint for /api/upload-image",
+          "tags": [
+            "upload-image"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/api/v1/gpu/stats": {
+        "get": {
+          "summary": "GET /api/v1/gpu/stats",
+          "description": "Endpoint for /api/v1/gpu/stats",
+          "tags": [
+            "v1"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/debug/flask-blueprints": {
+        "get": {
+          "summary": "GET /debug/flask-blueprints",
+          "description": "Endpoint for /debug/flask-blueprints",
+          "tags": [
+            "flask-blueprints"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/metrics": {
+        "get": {
+          "summary": "GET /metrics",
+          "description": "Endpoint for /metrics",
+          "tags": [
+            "general"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      },
+      "/test-simple": {
+        "get": {
+          "summary": "GET /test-simple",
+          "description": "Endpoint for /test-simple",
+          "tags": [
+            "general"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Not Found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

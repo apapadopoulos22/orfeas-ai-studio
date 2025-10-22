@@ -1,0 +1,284 @@
++==============================================================================â•—
+|        [WARRIOR] ORFEAS PROTOCOL - CSP CONFIGURATION GUIDE [WARRIOR]                      |
+|                      SECURITY HARDENING                          |
++==============================================================================
+
+DATE: October 14, 2025
+AGENT: ORFEAS_SECURITY_MASTER
+ISSUE: CSP 'frame-ancestors' directive in meta tag
+STATUS: [OK] FIXED
+
+===============================================================================
+ ISSUE SUMMARY
+===============================================================================
+
+BROWSER ERROR:
+  "The Content Security Policy directive 'frame-ancestors' is ignored
+   when delivered via a <meta> element."
+
+LOCATION:
+  File: orfeas-studio.html
+  Line: 18 (original)
+
+ROOT CAUSE:
+  The 'frame-ancestors' CSP directive CANNOT be used in HTML <meta> tags.
+  It MUST be delivered via HTTP response headers for security reasons.
+
+SECURITY REASON:
+  Allowing 'frame-ancestors' in meta tags would let attackers bypass
+  clickjacking protection by injecting meta tags. Browser security
+  mandates HTTP header delivery only.
+
+===============================================================================
+[CONFIG] FIX APPLIED
+===============================================================================
+
+CHANGE MADE:
+  [FAIL] REMOVED: frame-ancestors 'none'; (from line 18)
+  [OK] ADDED: Explanatory comment about HTTP header requirement
+  [OK] KEPT: All other valid CSP directives
+
+FILE LOCATION:
+  orfeas-studio.html (lines 4-19)
+
+NEW CSP META TAG (VALID):
+  <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://cdn.socket.io https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: blob: http://localhost:5000;
+      connect-src 'self' http://localhost:5000 http://localhost:7777 http://localhost:8000 ws://localhost:5000;
+      font-src 'self';
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+  ">
+
+===============================================================================
+[SHIELD] CSP DIRECTIVES REFERENCE
+===============================================================================
+
+[OK] VALID IN META TAGS:
+  • default-src     - Fallback for all resource types
+  • script-src      - JavaScript sources
+  • style-src       - CSS sources
+  • img-src         - Image sources
+  • connect-src     - AJAX, WebSocket, EventSource URLs
+  • font-src        - Font sources
+  • object-src      - Plugin sources (<object>, <embed>)
+  • media-src       - Video/audio sources
+  • child-src       - Worker and frame sources
+  • base-uri        - <base> element URLs
+  • form-action     - Form submission targets
+
+[FAIL] HTTP HEADER ONLY (NOT ALLOWED IN META):
+  • frame-ancestors - Embedding restrictions (clickjacking protection)
+  • report-uri      - CSP violation reporting endpoint
+  • report-to       - Modern reporting API
+  • sandbox         - Sandbox restrictions
+
+===============================================================================
+[LAUNCH] IMPLEMENTING HTTP HEADER CSP (BACKEND)
+===============================================================================
+
+IF USING FLASK (backend/main.py):
+
+```python
+from flask import Flask, make_response
+
+app = Flask(__name__)
+
+@app.after_request
+def set_security_headers(response):
+    """Set security headers including CSP"""
+
+    # Content Security Policy (FULL VERSION)
+    csp_policy = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdn.socket.io https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: blob: http://localhost:5000; "
+        "connect-src 'self' http://localhost:5000 http://localhost:7777 http://localhost:8000 ws://localhost:5000; "
+        "font-src 'self'; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'; "
+        "frame-ancestors 'none'; "  # [OK] NOW VALID IN HTTP HEADER
+    )
+    response.headers['Content-Security-Policy'] = csp_policy
+
+    # Additional Security Headers
+    response.headers['X-Frame-Options'] = 'DENY'  # Backup for frame-ancestors
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+
+    return response
+```
+
+IF USING PYTHON HTTP.SERVER (frontend_server.py):
+
+```python
+from http.server import SimpleHTTPRequestHandler
+import socketserver
+
+class SecureHTTPRequestHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        # Content Security Policy
+        self.send_header('Content-Security-Policy',
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://cdn.socket.io https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: blob: http://localhost:5000; "
+            "connect-src 'self' http://localhost:5000 http://localhost:7777 http://localhost:8000 ws://localhost:5000; "
+            "font-src 'self'; "
+            "object-src 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'; "
+            "frame-ancestors 'none';"  # [OK] Valid here
+        )
+
+        # Additional Security Headers
+        self.send_header('X-Frame-Options', 'DENY')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.send_header('X-XSS-Protection', '1; mode=block')
+
+        SimpleHTTPRequestHandler.end_headers(self)
+
+# Start server
+with socketserver.TCPServer(("", 8000), SecureHTTPRequestHandler) as httpd:
+    print("Server running on http://localhost:8000")
+    httpd.serve_forever()
+```
+
+===============================================================================
+[SECURE] SECURITY BEST PRACTICES
+===============================================================================
+
+1. FRAME-ANCESTORS PROTECTION:
+   [OK] HTTP Header: Content-Security-Policy: frame-ancestors 'none'
+   [OK] Backup Header: X-Frame-Options: DENY
+   [FAIL] Meta Tag: <meta> frame-ancestors (IGNORED BY BROWSERS)
+
+2. CSP REPORTING (OPTIONAL):
+   If you want to monitor CSP violations:
+
+   HTTP Header:
+     Content-Security-Policy: ...; report-uri /csp-violation-report
+
+   Backend endpoint:
+     @app.route('/csp-violation-report', methods=['POST'])
+     def csp_report():
+         violation = request.get_json()
+         logger.warning(f"CSP Violation: {violation}")
+         return '', 204
+
+3. DEVELOPMENT vs PRODUCTION:
+
+   DEVELOPMENT (current):
+     script-src 'self' 'unsafe-inline'  # Allow inline scripts
+     style-src 'self' 'unsafe-inline'   # Allow inline styles
+
+   PRODUCTION (recommended):
+     script-src 'self' 'nonce-{random}'  # Use nonces for inline scripts
+     style-src 'self' 'nonce-{random}'   # Use nonces for inline styles
+
+===============================================================================
+[OK] VERIFICATION CHECKLIST
+===============================================================================
+
+AFTER APPLYING FIX:
+
+1. Open orfeas-studio.html in browser
+2. Open DevTools (F12) → Console tab
+3. Check for CSP warnings
+
+EXPECTED RESULTS:
+  [OK] NO "frame-ancestors is ignored" warning
+  [OK] NO CSP violation errors
+  [OK] All scripts load correctly
+  [OK] All styles load correctly
+  [OK] WebSocket connections work
+  [OK] Images load from localhost:5000
+
+BEFORE FIX:
+  [FAIL] Warning: "frame-ancestors is ignored when delivered via meta element"
+
+AFTER FIX:
+  [OK] No CSP warnings (directive removed from meta tag)
+
+===============================================================================
+[STATS] CURRENT CSP CONFIGURATION
+===============================================================================
+
+LOCATION: orfeas-studio.html (meta tag)
+
+ACTIVE DIRECTIVES:
+  • default-src: 'self'
+  • script-src: 'self' 'unsafe-inline' + CDNs (Socket.io, Cloudflare, jsDelivr)
+  • style-src: 'self' 'unsafe-inline'
+  • img-src: 'self' data: blob: http://localhost:5000
+  • connect-src: 'self' + localhost:5000, :7777, :8000 + WebSocket
+  • font-src: 'self'
+  • object-src: 'none' (blocks plugins)
+  • base-uri: 'self' (prevents <base> hijacking)
+  • form-action: 'self' (prevents form submission attacks)
+
+REMOVED DIRECTIVES:
+  • frame-ancestors: (moved to HTTP header TODO)
+
+===============================================================================
+[LAUNCH] NEXT STEPS (OPTIONAL SECURITY HARDENING)
+===============================================================================
+
+1. IMPLEMENT HTTP HEADER CSP:
+   Modify frontend_server.py to add CSP headers
+   OR configure Flask backend with @after_request decorator
+
+2. ADD FRAME-ANCESTORS VIA HTTP HEADER:
+   Content-Security-Policy: frame-ancestors 'none'
+   X-Frame-Options: DENY
+
+3. ENABLE CSP REPORTING (OPTIONAL):
+   Add report-uri directive to monitor violations
+   Create backend endpoint to log violations
+
+4. PRODUCTION CSP (OPTIONAL):
+   Replace 'unsafe-inline' with nonces
+   Implement strict CSP with nonce generation
+
+5. TEST SECURITY:
+   Use Mozilla Observatory: https://observatory.mozilla.org
+   Use SecurityHeaders.com: https://securityheaders.com
+
+===============================================================================
+ RESOURCES
+===============================================================================
+
+CSP SPECIFICATION:
+  https://www.w3.org/TR/CSP3/
+
+MDN DOCUMENTATION:
+  https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+
+CSP EVALUATOR:
+  https://csp-evaluator.withgoogle.com/
+
+FRAME-ANCESTORS:
+  https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
+
+===============================================================================
+
++==============================================================================â•—
+|  [WARRIOR] ORFEAS CSP FIX COMPLETE! [WARRIOR]                                |
+|                                                                              |
+|  Issue: frame-ancestors in meta tag                                          |
+|  Fix: Removed invalid directive                                              |
+|  Status: [OK] FIXED                                                            |
+|  Browser Warning: ELIMINATED                                                 |
+|  Security: MAINTAINED                                                        |
+|                                                                              |
+|  ORFEAS NEVER SLACKS OFF! SECURITY FIRST! [SECURE]                               |
++==============================================================================
+
+END OF REPORT

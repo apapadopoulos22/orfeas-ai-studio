@@ -1,0 +1,96 @@
+
+â•'                    BACKEND RESTART INSTRUCTIONS                              â•'
+â•'              Activate New Python File Logging System                         â•'
+
+
+ WHAT YOU NEED TO DO:
+
+
+STEP 1: STOP CURRENT BACKEND
+
+
+1. Find the PowerShell window that's running the backend
+   (Look for window with "python main.py" or Flask server output)
+
+2. Press Ctrl+C in that window to stop the backend
+
+3. Wait for the process to fully terminate (you'll see the command prompt return)
+
+
+STEP 2: RESTART BACKEND WITH NEW LOGGING
+
+
+In the SAME PowerShell window, run these commands:
+
+cd c:\Users\johng\Documents\Erevus\orfeas\backend
+$env:FLASK_ENV='production'
+$env:TESTING='0'
+python main.py
+
+
+STEP 3: VERIFY NEW LOGGING IS ACTIVE
+
+
+Watch the startup output. You MUST see these new lines:
+
+ LOOK FOR THESE:
+[ORFEAS] Dual logging initialized: console + logs/backend_requests.log
+[ORFEAS] File rotation: 10MB per file, 5 backups (50MB total)
+
+If you see those lines, the new logging is ACTIVE! 
+
+If you DON'T see those lines, something went wrong. 
+
+
+STEP 4: RETURN HERE AND RUN TEST
+
+
+Once the backend is restarted and you see the new logging messages:
+
+1. Return to THIS terminal window
+2. Run: .\TEST_FILE_LOGGING.ps1
+3. The test will automatically verify the logging is working
+
+
+ALTERNATIVE: AUTOMATED RESTART (if you prefer)
+
+
+If you want guided assistance:
+
+Run: .\RESTART_AND_TEST.ps1
+
+This will:
+- Give you step-by-step instructions
+- Wait for you to restart the backend manually
+- Verify the backend is running
+- Automatically run the logging test
+
+
+TROUBLESHOOTING
+
+
+ If backend won't start:
+   - Check for Python errors in the output
+   - Verify you're in the backend directory
+   - Check if port 5000 is already in use
+
+ If you don't see the new logging messages:
+   - Make sure you restarted the backend (not just refreshed)
+   - Check that main.py has the new code (should have log_with_flush)
+   - Try: Get-Content backend\main.py | Select-String "Dual logging"
+
+ If backend seems to hang:
+   - Wait 30-40 seconds for models to load
+   - You should see "Processor loaded: Hunyuan3DProcessor"
+   - Then "Full AI processor ready for requests!"
+
+
+
+ READY TO PROCEED?
+
+Once you've restarted the backend and see the new logging messages,
+come back to this terminal and run:
+
+.\TEST_FILE_LOGGING.ps1
+
+

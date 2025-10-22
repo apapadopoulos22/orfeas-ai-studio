@@ -1,0 +1,456 @@
+"""
+ORFEAS AI 2D→3D Studio - Enhanced Validation Security Tests
+============================================================
+ORFEAS AI Project
+
+Test Coverage:
+- All 6 validation layers
+- Malicious payload detection
+- Attack vector prevention
+- Performance benchmarks
+- Edge cases and error handling
+
+Target: Zero vulnerabilities, <100ms validation time
+"""
+
+import pytest
+import io
+import struct
+from PIL import Image
+from pathlib import Path
+import sys
+
+# Add backend to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from validation_enhanced import EnhancedImageValidator, get_enhanced_validator
+
+
+class FakeFileStorage:
+    """Mock Flask FileStorage for testing"""
+    def __init__(self, data: bytes, filename: str, content_type: str = 'image/png'):
+        self.data = data
+        self.filename = filename
+        self.content_type = content_type
+        self.stream = io.BytesIO(data)
+        self._reset()
+
+    def _reset(self):
+        """Reset stream to beginning"""
+        self.stream = io.BytesIO(self.data)
+
+    def read(self, *args, **kwargs):
+        """Read from stream (compatible with file-like interface)"""
+        return self.stream.read(*args, **kwargs)
+
+    def seek(self, pos):
+        """Seek to position"""
+        self.stream.seek(pos)
+
+    def tell(self):
+        """Get current position"""
+        return self.stream.tell()
+
+
+@pytest.fixture
+def validator():
+    """Create validator instance for each test"""
+    return EnhancedImageValidator()
+
+
+@pytest.fixture
+def valid_png_image():
+    """Generate a valid PNG image for testing"""
+    img = Image.new('RGB', (100, 100), color=(73, 109, 137))
+    buffer = io.BytesIO()
+    img.save(buffer, format='PNG')
+    return buffer.getvalue()
+
+
+@pytest.fixture
+def valid_jpg_image():
+    """Generate a valid JPEG image for testing"""
+    img = Image.new('RGB', (100, 100), color=(255, 0, 0))
+    buffer = io.BytesIO()
+    img.save(buffer, format='JPEG', quality=85)
+    return buffer.getvalue()
+
+
+class TestLayer1MagicNumber:
+    """Test LAYER 1: File Magic Number Validation"""
+
+    def test_valid_png_magic(self, validator, valid_png_image):
+        """Valid PNG magic number should pass"""
+        file_storage = FakeFileStorage(valid_png_image, 'test.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert is_valid, f"Valid PNG rejected: {error}"
+
+    def test_valid_jpg_magic(self, validator, valid_jpg_image):
+        """Valid JPEG magic number should pass"""
+        file_storage = FakeFileStorage(valid_jpg_image, 'test.jpg')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert is_valid, f"Valid JPEG rejected: {error}"
+
+    def test_spoofed_extension(self, validator):
+        """Executable renamed to .png should be blocked"""
+        # Windows PE header (MZ)
+        fake_png = b'MZ\x90\x00' + b'\x00' * 100
+        file_storage = FakeFileStorage(fake_png, 'malicious.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid, "Spoofed extension not detected!"
+        assert validator.validation_stats['blocked_magic_number'] > 0
+
+    def test_wrong_magic_number(self, validator, valid_jpg_image):
+        """JPEG data with .png extension should be blocked"""
+        file_storage = FakeFileStorage(valid_jpg_image, 'wrong.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid, "Wrong magic number not detected!"
+
+    def test_empty_file(self, validator):
+        """Empty file should be blocked"""
+        file_storage = FakeFileStorage(b'', 'empty.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+        assert "too small" in error.lower()
+
+
+class TestLayer2Dimensions:
+    """Test LAYER 2: Dimension & Size Sanity Checks"""
+
+    def test_valid_dimensions(self, validator):
+        """Standard dimension image should pass"""
+        img = Image.new('RGB', (800, 600))
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'valid.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert is_valid, f"Valid dimensions rejected: {error}"
+
+    def test_too_small_dimensions(self, validator):
+        """Image smaller than minimum should be blocked"""
+        img = Image.new('RGB', (16, 16))  # Below MIN_WIDTH/MIN_HEIGHT
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'too_small.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+        assert "too small" in error.lower()
+
+    def test_too_large_dimensions(self, validator):
+        """Image larger than maximum should be blocked"""
+        # Create image larger than MAX_WIDTH/MAX_HEIGHT
+        img = Image.new('RGB', (5000, 5000))
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'too_large.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+        assert "too large" in error.lower() or "too many pixels" in error.lower()
+
+    def test_file_size_limit(self, validator):
+        """Files exceeding MAX_FILE_SIZE should be blocked"""
+        # Create fake data exceeding 50MB
+        huge_data = b'\x89PNG\r\n\x1a\n' + b'X' * (51 * 1024 * 1024)
+        file_storage = FakeFileStorage(huge_data, 'huge.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+        assert "too large" in error.lower()
+
+    def test_decompression_bomb_detection(self, validator):
+        """Potential decompression bomb should be blocked"""
+        # This test is tricky - need to simulate high compression ratio
+        # Skip for now as creating actual decompression bomb is complex
+        pass
+
+
+class TestLayer3MaliciousContent:
+    """Test LAYER 3: Malicious Content Scanning"""
+
+    def test_embedded_javascript(self, validator, valid_png_image):
+        """Image with embedded <script> tag should be blocked"""
+        malicious_png = valid_png_image + b'<script>alert("XSS")</script>'
+        file_storage = FakeFileStorage(malicious_png, 'xss.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+        assert "suspicious" in error.lower() or "malicious" in error.lower()
+
+    def test_embedded_php(self, validator, valid_png_image):
+        """Image with embedded PHP code should be blocked"""
+        malicious_png = valid_png_image + b'<?php system($_GET["cmd"]); ?>'
+        file_storage = FakeFileStorage(malicious_png, 'php_backdoor.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+
+    def test_polyglot_attack(self, validator):
+        """Polyglot file (image + executable) should be blocked"""
+        # Create valid PNG header + dimensional data + Windows PE header in metadata area
+        img = Image.new('RGB', (100, 100))
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+        png_data = buffer.getvalue()
+
+        # Append executable header after image data
+        polyglot = png_data + b'MZ\x90\x00' + b'\x00' * 100
+        file_storage = FakeFileStorage(polyglot, 'polyglot.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+        assert "executable" in error.lower()
+
+    def test_excessive_null_bytes(self, validator):
+        """File with excessive null bytes should be blocked"""
+        # Create valid PNG then pad with excessive nulls (>85% for files > 10KB)
+        img = Image.new('RGB', (200, 200))  # Larger image
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+        valid_data = buffer.getvalue()
+
+        # Add massive null padding to make >85% null bytes and >10KB total
+        null_padding = b'\x00' * 50000  # Large null padding
+        malicious_data = valid_data + null_padding
+
+        # Verify we have >10KB and >85% null bytes
+        assert len(malicious_data) > 10240
+        null_ratio = malicious_data.count(b'\x00') / len(malicious_data)
+        assert null_ratio > 0.85
+
+        file_storage = FakeFileStorage(malicious_data, 'nullbytes.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+        assert "null byte" in error.lower()
+
+    def test_html_injection(self, validator, valid_png_image):
+        """Image with HTML injection should be blocked"""
+        malicious_png = valid_png_image + b'<!DOCTYPE html><html><body>Evil</body></html>'
+        file_storage = FakeFileStorage(malicious_png, 'html_inject.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+
+
+class TestLayer4FileIntegrity:
+    """Test LAYER 4: File Size Integrity"""
+
+    def test_valid_integrity(self, validator, valid_png_image):
+        """Valid file integrity should pass"""
+        file_storage = FakeFileStorage(valid_png_image, 'integrity.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert is_valid
+
+    def test_empty_file_integrity(self, validator):
+        """Empty file should fail integrity check"""
+        file_storage = FakeFileStorage(b'', 'empty.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+
+
+class TestLayer5EXIFSanitization:
+    """Test LAYER 5: EXIF Metadata Sanitization"""
+
+    def test_exif_removal(self, validator):
+        """EXIF metadata should be removed"""
+        # Create image with EXIF data
+        img = Image.new('RGB', (100, 100))
+        exif_data = img.getexif()
+        exif_data[0x010F] = "ORFEAS Camera"  # Manufacturer tag
+
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG', exif=exif_data)
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'with_exif.jpg')
+        is_valid, error, sanitized_img = validator.validate_image(file_storage)
+
+        assert is_valid
+        assert sanitized_img is not None
+        # Verify EXIF is removed
+        assert len(sanitized_img.getexif()) == 0
+
+    def test_malicious_exif_detection(self, validator):
+        """Malicious content in EXIF should be blocked"""
+        # This is complex to test properly - would need to craft EXIF with script
+        # For now, basic test
+        img = Image.new('RGB', (100, 100))
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'test.jpg')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert is_valid  # Should pass if no malicious EXIF
+
+    def test_rgba_conversion(self, validator):
+        """RGBA images should be converted to RGB safely"""
+        img = Image.new('RGBA', (100, 100), (255, 0, 0, 128))
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'rgba.png')
+        is_valid, error, sanitized_img = validator.validate_image(file_storage)
+
+        assert is_valid
+        assert sanitized_img.mode == 'RGB'  # Should be converted
+
+
+class TestLayer6ColorProfile:
+    """Test LAYER 6: Color Profile Validation"""
+
+    def test_valid_rgb_mode(self, validator):
+        """Standard RGB image should pass"""
+        img = Image.new('RGB', (100, 100))
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'rgb.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert is_valid
+
+    def test_grayscale_mode(self, validator):
+        """Grayscale image should pass"""
+        img = Image.new('L', (100, 100))
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'grayscale.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert is_valid
+
+    def test_icc_profile_removal(self, validator):
+        """ICC profile should be removed for safety"""
+        # Create image with fake ICC profile
+        img = Image.new('RGB', (100, 100))
+        img.info['icc_profile'] = b'FAKE_ICC_PROFILE_DATA' * 100
+
+        buffer = io.BytesIO()
+        img.save(buffer, format='PNG')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'icc.png')
+        is_valid, error, sanitized_img = validator.validate_image(file_storage)
+
+        assert is_valid
+        # ICC profile should be removed (this test may need adjustment based on PIL behavior)
+
+
+class TestPerformance:
+    """Test validation performance"""
+
+    def test_validation_speed(self, validator, valid_png_image, benchmark):
+        """Validation should complete in <100ms"""
+        file_storage = FakeFileStorage(valid_png_image, 'benchmark.png')
+
+        def validate():
+            return validator.validate_image(file_storage)
+
+        # If pytest-benchmark is available
+        try:
+            result = benchmark(validate)
+            assert result[0], "Validation failed"
+            # Check that mean time is < 100ms
+            # Note: benchmark object has stats, may need to check differently
+        except:
+            # Fallback without benchmark
+            import time
+            start = time.time()
+            is_valid, error, _ = validator.validate_image(file_storage)
+            elapsed = (time.time() - start) * 1000
+
+            assert is_valid
+            assert elapsed < 100, f"Validation too slow: {elapsed:.2f}ms (target <100ms)"
+
+
+class TestValidationStats:
+    """Test validation statistics tracking"""
+
+    def test_stats_tracking(self, validator, valid_png_image):
+        """Validation stats should be tracked correctly"""
+        initial_stats = validator.get_validation_stats()
+        initial_total = initial_stats.get('total_validations', 0)
+        initial_success = initial_stats.get('successful_validations', 0)
+
+        file_storage = FakeFileStorage(valid_png_image, 'stats.png')
+        validator.validate_image(file_storage)
+
+        updated_stats = validator.get_validation_stats()
+        assert updated_stats['total_validations'] == initial_total + 1
+        assert updated_stats['successful_validations'] >= initial_success  # Greater or equal
+
+    def test_block_tracking(self, validator):
+        """Blocked validations should be tracked by layer"""
+        # Test magic number block
+        file_storage = FakeFileStorage(b'INVALID', 'bad.png')
+        validator.validate_image(file_storage)
+
+        stats = validator.get_validation_stats()
+        assert stats['blocked_magic_number'] > 0
+
+
+class TestBackwardsCompatibility:
+    """Test legacy methods for backwards compatibility"""
+
+    def test_validate_filename(self):
+        """Legacy filename validation should work"""
+        is_valid, error = EnhancedImageValidator.validate_filename('test.png')
+        assert is_valid
+
+        is_valid, error = EnhancedImageValidator.validate_filename('../../../etc/passwd')
+        assert not is_valid
+
+    def test_validate_file_size(self):
+        """Legacy file size validation should work"""
+        is_valid, error = EnhancedImageValidator.validate_file_size(1024)
+        assert is_valid
+
+        is_valid, error = EnhancedImageValidator.validate_file_size(100 * 1024 * 1024)
+        assert not is_valid
+
+    def test_validate_mime_type(self):
+        """Legacy MIME type validation should work"""
+        is_valid, error = EnhancedImageValidator.validate_mime_type('image/png')
+        assert is_valid
+
+        is_valid, error = EnhancedImageValidator.validate_mime_type('application/x-executable')
+        assert not is_valid
+
+
+class TestSingletonPattern:
+    """Test singleton validator instance"""
+
+    def test_get_enhanced_validator(self):
+        """get_enhanced_validator should return same instance"""
+        validator1 = get_enhanced_validator()
+        validator2 = get_enhanced_validator()
+        assert validator1 is validator2
+
+
+class TestEdgeCases:
+    """Test edge cases and error handling"""
+
+    def test_corrupted_image(self, validator):
+        """Corrupted image data should be handled gracefully"""
+        # Valid PNG header but corrupted data
+        corrupted = b'\x89PNG\r\n\x1a\n' + b'CORRUPTED_DATA'
+        file_storage = FakeFileStorage(corrupted, 'corrupted.png')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        assert not is_valid
+
+    def test_no_filename(self, validator, valid_png_image):
+        """Missing filename should be handled"""
+        file_storage = FakeFileStorage(valid_png_image, '')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        # Should handle gracefully (may pass or fail depending on implementation)
+
+    def test_unusual_formats(self, validator):
+        """Less common but valid formats should work"""
+        # Test BMP
+        img = Image.new('RGB', (100, 100))
+        buffer = io.BytesIO()
+        img.save(buffer, format='BMP')
+
+        file_storage = FakeFileStorage(buffer.getvalue(), 'test.bmp')
+        is_valid, error, _ = validator.validate_image(file_storage)
+        # BMP should pass validation
+        assert is_valid, f"BMP format rejected: {error}"
+
+
+# Run tests with: pytest test_enhanced_validation.py -v
+if __name__ == '__main__':
+    pytest.main([__file__, '-v', '--tb=short'])

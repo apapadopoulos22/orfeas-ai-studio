@@ -1,0 +1,177 @@
+# ==============================================================================
+# ORFEAS BACKEND LOG CAPTURE UTILITY
+#
+# PURPOSE: Capture and analyze backend logs during 3D generation requests
+# THERION AI Project
+# ==============================================================================
+
+Write-Host ""
+Write-Host "=========================================================================" -ForegroundColor Cyan
+Write-Host "BACKEND LOG CAPTURE UTILITY" -ForegroundColor Cyan
+Write-Host "=========================================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Check if backend is running
+Write-Host "[1/4] Checking if backend is running..." -ForegroundColor Yellow
+$response = $null
+try {
+    $response = Invoke-WebRequest -Uri "http://localhost:5000/health" -UseBasicParsing -TimeoutSec 5
+    Write-Host "âœ… Backend is running on port 5000" -ForegroundColor Green
+}
+catch {
+    Write-Host "âŒ Backend is NOT running on port 5000" -ForegroundColor Red
+    Write-Host "   Please start the backend first using RESTART_WITH_DIAGNOSTIC_LOGS.ps1" -ForegroundColor Yellow
+    exit 1
+}
+
+# Find the diagnostic log file
+Write-Host ""
+Write-Host "[2/4] Locating log files..." -ForegroundColor Yellow
+$logDir = "logs"
+if (Test-Path $logDir) {
+    $logFiles = Get-ChildItem $logDir -Filter "diagnostic_*.log" | Sort-Object LastWriteTime -Descending
+    if ($logFiles.Count -gt 0) {
+        $latestLog = $logFiles[0].FullName
+        Write-Host "âœ… Found log file: $latestLog" -ForegroundColor Green
+
+        # Get last few lines to see where logs ended
+        $lastLines = Get-Content $latestLog -Tail 10
+        Write-Host ""
+        Write-Host "   Last 10 lines of log file:" -ForegroundColor Cyan
+        $lastLines | ForEach-Object { Write-Host "   $_" -ForegroundColor Gray }
+    }
+    else {
+        Write-Host "âš ï¸ No diagnostic log files found" -ForegroundColor Yellow
+    }
+}
+
+# Check for Python processes
+Write-Host ""
+Write-Host "[3/4] Finding backend Python process..." -ForegroundColor Yellow
+$pythonProcesses = Get-Process python* -ErrorAction SilentlyContinue | Where-Object {
+    $_.CommandLine -like "*main.py*" -or $_.MainWindowTitle -like "*python*"
+}
+
+if ($pythonProcesses) {
+    Write-Host "âœ… Found backend process(es):" -ForegroundColor Green
+    $pythonProcesses | ForEach-Object {
+        Write-Host "   PID: $($_.Id) | Memory: $([math]::Round($_.WS/1MB, 2)) MB" -ForegroundColor Cyan
+    }
+}
+else {
+    Write-Host "âš ï¸ Could not find Python process running main.py" -ForegroundColor Yellow
+    Write-Host "   This is expected if running in a separate window" -ForegroundColor Gray
+}
+
+# Instructions for manual log capture
+Write-Host ""
+Write-Host "[4/4] MANUAL LOG CAPTURE INSTRUCTIONS" -ForegroundColor Yellow
+Write-Host "=========================================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Since the backend is running in a separate terminal window, please follow these steps:" -ForegroundColor White
+Write-Host ""
+Write-Host "1. Find the PowerShell window titled 'python main.py' or showing backend logs" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "2. In that window, scroll up to find logs from around 22:42:00" -ForegroundColor Yellow
+Write-Host "   (When you ran test_diagnostic_quick.py)" -ForegroundColor Gray
+Write-Host ""
+Write-Host "3. Look for these specific log patterns:" -ForegroundColor Yellow
+Write-Host "   â€¢ [DIAGNOSTIC] Processor Status Check" -ForegroundColor Cyan
+Write-Host "   â€¢ [DIAGNOSTIC] Quality Validation Parameters" -ForegroundColor Cyan
+Write-Host "   â€¢ [DIAGNOSTIC] Result type" -ForegroundColor Cyan
+Write-Host "   â€¢ [QUALITY] Stage: bg_removal" -ForegroundColor Cyan
+Write-Host "   â€¢ [QUALITY] Stage: shape" -ForegroundColor Cyan
+Write-Host "   â€¢ [QUALITY] Stage: texture" -ForegroundColor Cyan
+Write-Host "   â€¢ [AI] Using standard 3D generation" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "4. Copy ALL relevant logs and paste them into a new file:" -ForegroundColor Yellow
+Write-Host "   txt\BACKEND_TERMINAL_LOGS.txt" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "=========================================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Alternative: Run a test now with live capture
+Write-Host "ALTERNATIVE: Run a test NOW with live log monitoring" -ForegroundColor Green
+Write-Host "=========================================================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Would you like to run test_diagnostic_quick.py RIGHT NOW" -ForegroundColor Yellow
+Write-Host "while we monitor the log file in real-time?" -ForegroundColor Yellow
+Write-Host ""
+$runTest = Read-Host "Run test now? (y/n)"
+
+if ($runTest -eq "y" -or $runTest -eq "Y") {
+    Write-Host ""
+    Write-Host "Starting log monitor and test..." -ForegroundColor Green
+    Write-Host ""
+
+    # Create a unique test image
+    $timestamp = Get-Date -Format "HHmmss"
+    $testImage = "temp/test_images/capture_test_$timestamp.png"
+
+    Write-Host "Creating test image: $testImage" -ForegroundColor Cyan
+    python create_test_image.py $testImage
+
+    if (-not (Test-Path $testImage)) {
+        Write-Host "âŒ Failed to create test image" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "âœ… Test image created" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Monitoring logs and running test..." -ForegroundColor Cyan
+    Write-Host "=========================================================================" -ForegroundColor Cyan
+
+    # Start monitoring log file in background
+    $logMonitor = Start-Job -ScriptBlock {
+        param($logFile)
+        Get-Content $logFile -Wait -Tail 50
+    } -ArgumentList $latestLog
+
+    # Run the test
+    Write-Host ""
+    Write-Host "Running test_diagnostic_quick.py..." -ForegroundColor Yellow
+    python test_diagnostic_quick.py
+
+    # Wait a moment for logs to flush
+    Start-Sleep -Seconds 2
+
+    # Stop monitoring
+    Stop-Job $logMonitor -ErrorAction SilentlyContinue
+
+    # Get the new logs
+    Write-Host ""
+    Write-Host "=========================================================================" -ForegroundColor Cyan
+    Write-Host "NEW LOGS FROM TEST RUN:" -ForegroundColor Green
+    Write-Host "=========================================================================" -ForegroundColor Cyan
+
+    $newLogs = Receive-Job $logMonitor
+    if ($newLogs) {
+        $newLogs | ForEach-Object { Write-Host $_ }
+
+        # Save to file
+        $outputFile = "txt\BACKEND_TERMINAL_LOGS_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt"
+        $newLogs | Out-File -FilePath $outputFile -Encoding UTF8
+        Write-Host ""
+        Write-Host "âœ… Logs saved to: $outputFile" -ForegroundColor Green
+    }
+    else {
+        Write-Host "âš ï¸ No new logs captured!" -ForegroundColor Yellow
+        Write-Host "   This confirms that logs are NOT being written to the file during requests" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "   PROBLEM CONFIRMED: Tee-Object is not capturing request logs" -ForegroundColor Red
+        Write-Host "   The logs must be in the backend terminal window only" -ForegroundColor Yellow
+    }
+
+    Remove-Job $logMonitor -Force -ErrorAction SilentlyContinue
+
+}
+else {
+    Write-Host ""
+    Write-Host "Skipping live test. Please check backend terminal manually." -ForegroundColor Yellow
+}
+
+Write-Host ""
+Write-Host "=========================================================================" -ForegroundColor Cyan
+Write-Host "LOG CAPTURE COMPLETE" -ForegroundColor Green
+Write-Host "=========================================================================" -ForegroundColor Cyan
+Write-Host ""

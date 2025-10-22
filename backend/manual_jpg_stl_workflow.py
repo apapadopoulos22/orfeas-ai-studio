@@ -1,0 +1,329 @@
+#!/usr/bin/env python3
+"""
+MANUAL JPG TO STL WORKFLOW GUIDE
+Shows you exactly how to import JPG, convert to STL, test preview, and check integrity
+"""
+
+from PIL import Image, ImageDraw
+from pathlib import Path
+import struct
+import numpy as np
+
+def create_test_jpg_image() -> None:
+    """Creates a test JPG image with clear depth variations for STL conversion"""
+
+    print("[ART] CREATING TEST JPG IMAGE FOR STL CONVERSION")
+    print("=" * 60)
+
+    # Create image with realistic depth variation
+    width, height = 200, 200
+    img = Image.new('RGB', (width, height), 'white')
+    draw = ImageDraw.Draw(img)
+
+    # Create a face-like structure with clear depth
+    print("üìê Adding depth features to image...")
+
+    # Background (far - dark)
+    draw.rectangle([0, 0, width, height], fill=(50, 50, 50))
+
+    # Head shape (medium depth - gray)
+    head_center_x, head_center_y = width // 2, height // 2
+    head_width, head_height = 120, 140
+
+    draw.ellipse([
+        head_center_x - head_width//2,
+        head_center_y - head_height//2,
+        head_center_x + head_width//2,
+        head_center_y + head_height//2
+    ], fill=(120, 120, 120))
+
+    # Nose (close - bright)
+    nose_x, nose_y = head_center_x, head_center_y - 10
+    draw.polygon([
+        (nose_x - 8, nose_y + 15),
+        (nose_x, nose_y - 15),
+        (nose_x + 8, nose_y + 15)
+    ], fill=(200, 200, 200))
+
+    # Eyes (recessed - dark)
+    eye_y = head_center_y - 25
+    draw.ellipse([head_center_x - 35, eye_y - 8, head_center_x - 15, eye_y + 8],
+                fill=(80, 80, 80))
+    draw.ellipse([head_center_x + 15, eye_y - 8, head_center_x + 35, eye_y + 8],
+                fill=(80, 80, 80))
+
+    # Mouth (recessed - medium)
+    mouth_y = head_center_y + 25
+    draw.ellipse([head_center_x - 20, mouth_y - 5, head_center_x + 20, mouth_y + 5],
+                fill=(100, 100, 100))
+
+    # Add gradient shading for depth
+    print("üé≠ Adding realistic shading...")
+    pixels = np.array(img)
+
+    for y in range(height):
+        for x in range(width):
+            # Distance from center
+            dist_from_center = ((x - head_center_x)**2 + (y - head_center_y)**2)**0.5
+
+            # Add subtle depth shading
+            if dist_from_center < head_width//2:
+                # Inside head area - add 3D shading
+                shading_factor = 1.0 + 0.3 * np.cos(dist_from_center * 0.02)
+                pixels[y, x] = np.clip(pixels[y, x] * shading_factor, 0, 255)
+
+    img = Image.fromarray(pixels.astype(np.uint8))
+
+    # Save the test image
+    test_path = Path("manual_test_image.jpg")
+    img.save(test_path, "JPEG", quality=95)
+
+    print(f"[OK] Created test image: {test_path}")
+    print(f"üìè Dimensions: {width}x{height} pixels")
+    print(f"üíæ File size: {test_path.stat().st_size} bytes")
+    print("[TARGET] Features: Face with nose (protruding), eyes (recessed), realistic shading")
+
+    return test_path
+
+def analyze_stl_file(stl_path: str) -> int:
+    """Analyzes an STL file for integrity and structure"""
+
+    print(f"\n[SEARCH] ANALYZING STL FILE: {stl_path}")
+    print("=" * 60)
+
+    if not stl_path.exists():
+        print(f"[FAIL] File not found: {stl_path}")
+        return False
+
+    file_size = stl_path.stat().st_size
+    print(f"üìè File size: {file_size:,} bytes ({file_size/1024:.1f} KB)")
+
+    if file_size < 84:
+        print("[FAIL] File too small to be valid STL (minimum: 84 bytes)")
+        return False
+
+    try:
+        with open(stl_path, 'rb') as f:
+            # Read STL header (80 bytes)
+            header = f.read(80)
+            header_text = header.decode('ascii', errors='ignore').strip()
+            print(f"üìã Header: '{header_text[:40]}{'...' if len(header_text) > 40 else ''}'")
+
+            # Read triangle count (4 bytes)
+            triangle_bytes = f.read(4)
+            if len(triangle_bytes) != 4:
+                print("[FAIL] Invalid STL: Missing triangle count")
+                return False
+
+            triangle_count = struct.unpack('<I', triangle_bytes)[0]
+            print(f"üìê Triangle count: {triangle_count:,}")
+
+            if triangle_count == 0:
+                print("[FAIL] STL contains no triangles")
+                return False
+
+            # Calculate expected file size
+            expected_size = 80 + 4 + (triangle_count * 50)
+            print(f" Expected size: {expected_size:,} bytes")
+
+            size_diff = abs(file_size - expected_size)
+            if size_diff > 100:
+                print(f"[WARN] Size mismatch: {size_diff} bytes difference")
+            else:
+                print("[OK] File size matches expected structure")
+
+            # Analyze first few triangles
+            print(f"\nüî∫ TRIANGLE ANALYSIS:")
+            valid_triangles = 0
+            total_area = 0
+            min_coord = float('inf')
+            max_coord = float('-inf')
+
+            for i in range(min(10, triangle_count)):
+                # Read triangle data (50 bytes total)
+                # Normal vector (12 bytes)
+                normal = struct.unpack('<3f', f.read(12))
+                # Vertex 1 (12 bytes)
+                v1 = struct.unpack('<3f', f.read(12))
+                # Vertex 2 (12 bytes)
+                v2 = struct.unpack('<3f', f.read(12))
+                # Vertex 3 (12 bytes)
+                v3 = struct.unpack('<3f', f.read(12))
+                # Attribute (2 bytes)
+                f.read(2)
+
+                # Check if triangle is valid (not degenerate)
+                vertices = v1 + v2 + v3
+                if any(abs(coord) > 0.001 for coord in vertices):
+                    valid_triangles += 1
+
+                    # Calculate triangle area
+                    # Area = 0.5 * |cross product of two edges|
+                    edge1 = (v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2])
+                    edge2 = (v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2])
+
+                    cross = (
+                        edge1[1] * edge2[2] - edge1[2] * edge2[1],
+                        edge1[2] * edge2[0] - edge1[0] * edge2[2],
+                        edge1[0] * edge2[1] - edge1[1] * edge2[0]
+                    )
+
+                    area = 0.5 * (cross[0]**2 + cross[1]**2 + cross[2]**2)**0.5
+                    total_area += area
+
+                    # Track coordinate range
+                    for coord in vertices:
+                        min_coord = min(min_coord, coord)
+                        max_coord = max(max_coord, coord)
+
+                # Show details of first triangle
+                if i == 0:
+                    print(f"   First triangle:")
+                    print(f"     Normal: ({normal[0]:.3f}, {normal[1]:.3f}, {normal[2]:.3f})")
+                    print(f"     V1: ({v1[0]:.3f}, {v1[1]:.3f}, {v1[2]:.3f})")
+                    print(f"     V2: ({v2[0]:.3f}, {v2[1]:.3f}, {v2[2]:.3f})")
+                    print(f"     V3: ({v3[0]:.3f}, {v3[1]:.3f}, {v3[2]:.3f})")
+
+            print(f"   Valid triangles: {valid_triangles}/10 checked")
+            if valid_triangles > 0:
+                print(f"   Coordinate range: {min_coord:.3f} to {max_coord:.3f}")
+                print(f"   Average triangle area: {total_area/valid_triangles:.6f}")
+
+            # Quality assessment
+            print(f"\n[STATS] QUALITY ASSESSMENT:")
+
+            if triangle_count >= 10000:
+                quality_level = "ULTRA HIGH"
+                quality_score = 95
+            elif triangle_count >= 5000:
+                quality_level = "HIGH"
+                quality_score = 85
+            elif triangle_count >= 1000:
+                quality_level = "MEDIUM"
+                quality_score = 70
+            elif triangle_count >= 100:
+                quality_level = "LOW"
+                quality_score = 50
+            else:
+                quality_level = "BASIC"
+                quality_score = 25
+
+            triangle_density = triangle_count / 10000  # Normalized density
+
+            print(f"   Quality Level: {quality_level}")
+            print(f"   Quality Score: {quality_score}/100")
+            print(f"   Triangle Density: {triangle_density:.2f}")
+
+            # Final verdict
+            if valid_triangles >= 8 and triangle_count >= 500:
+                print(f"[OK] STL INTEGRITY: EXCELLENT - Ready for 3D printing/viewing")
+                return True
+            elif valid_triangles >= 5 and triangle_count >= 100:
+                print(f"[OK] STL INTEGRITY: GOOD - Suitable for most applications")
+                return True
+            elif valid_triangles >= 1:
+                print(f"[WARN] STL INTEGRITY: BASIC - May need improvement")
+                return True
+            else:
+                print(f"[FAIL] STL INTEGRITY: POOR - File may be corrupted")
+                return False
+
+    except Exception as e:
+        print(f"[FAIL] Analysis failed: {e}")
+        return False
+
+def show_manual_workflow() -> None:
+    """Shows the complete manual workflow for JPG to STL conversion"""
+
+    print("\n[LAUNCH] MANUAL JPG TO STL WORKFLOW")
+    print("=" * 70)
+
+    print("STEP 1: PREPARE YOUR JPG IMAGE")
+    print("   • Use high contrast between foreground/background")
+    print("   • Bright areas = close/protruding (nose, forehead)")
+    print("   • Dark areas = far/recessed (eyes, mouth, shadows)")
+    print("   • Recommended size: 150x150 to 500x500 pixels")
+    print("   • Save as JPG with 90%+ quality")
+
+    print("\nSTEP 2: ACCESS ORFEAS STUDIO")
+    print("   • Open browser to: http://localhost:5002/studio")
+    print("   • Wait for interface to load completely")
+    print("   • Check that Three.js 3D viewer is initialized")
+
+    print("\nSTEP 3: UPLOAD YOUR JPG")
+    print("   • Click 'Choose File' or drag image to upload area")
+    print("   • Wait for upload confirmation (Job ID will appear)")
+    print("   • Image will be displayed in the interface")
+
+    print("\nSTEP 4: CONFIGURE 3D SETTINGS")
+    print("   • Format: STL (for 3D printing compatibility)")
+    print("   • Quality: Medium or High (High for detailed models)")
+    print("   • Method: Auto (lets system choose optimal algorithm)")
+    print("   • Dimensions: Set width, height, depth (mm or units)")
+
+    print("\nSTEP 5: GENERATE 3D MODEL")
+    print("   • Click 'Generate 3D Model' button")
+    print("   • Watch progress bar (MiDaS depth estimation)")
+    print("   • Processing time: 30s-2min depending on quality")
+
+    print("\nSTEP 6: PREVIEW THE RESULT")
+    print("   • 3D model appears in Three.js viewer")
+    print("   • Use mouse to rotate, zoom, pan")
+    print("   • Check that depth looks correct (nose protruding, etc.)")
+    print("   • Verify triangle count and quality metrics")
+
+    print("\nSTEP 7: DOWNLOAD STL FILE")
+    print("   • Click download button when generation completes")
+    print("   • File saves as 'model.stl' or similar")
+    print("   • Note the file size and triangle count")
+
+    print("\nSTEP 8: VERIFY STL INTEGRITY")
+    print("   • Use the analyze_stl_file() function above")
+    print("   • Check triangle count (>1000 = good quality)")
+    print("   • Verify coordinates are realistic")
+    print("   • Ensure file size matches expected structure")
+
+    print("\nSTEP 9: TEST IN 3D SOFTWARE (Optional)")
+    print("   • Open STL in Blender, MeshLab, or similar")
+    print("   • Check for holes, non-manifold edges")
+    print("   • Test 3D printing suitability if needed")
+
+    print("\n[TARGET] TROUBLESHOOTING TIPS:")
+    print("   • If preview shows flat surface: increase image contrast")
+    print("   • If STL is too rough: use higher quality setting")
+    print("   • If conversion fails: try smaller image or lower quality")
+    print("   • If server issues: restart the powerful_3d_server.py")
+
+def main() -> None:
+    """Main function demonstrating the complete workflow"""
+
+    print("[TARGET] JPG TO STL COMPLETE WORKFLOW DEMONSTRATION")
+    print("=" * 70)
+
+    # 1. Create test image
+    test_jpg = create_test_jpg_image()
+
+    # 2. Show manual workflow
+    show_manual_workflow()
+
+    # 3. If there are STL files to analyze, do it
+    print(f"\n[SEARCH] CHECKING FOR EXISTING STL FILES TO ANALYZE...")
+
+    stl_files = list(Path(".").glob("*.stl"))
+    if stl_files:
+        print(f"Found {len(stl_files)} STL files to analyze:")
+        for stl_file in stl_files[:3]:  # Analyze first 3
+            print(f"\n[FOLDER] Analyzing: {stl_file}")
+            analyze_stl_file(stl_file)
+    else:
+        print("   No STL files found in current directory")
+        print("   After generating STL through the workflow above,")
+        print("   run this script again to analyze the results!")
+
+    print(f"\n[OK] WORKFLOW DEMONSTRATION COMPLETE!")
+    print(f"[IMAGE] Test image created: {test_jpg}")
+    print(f"[WEB] Access studio at: http://localhost:5002/studio")
+    print(f"[CONFIG] Use the manual workflow steps above for conversion")
+
+if __name__ == "__main__":
+    main()

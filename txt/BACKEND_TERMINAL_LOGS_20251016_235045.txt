@@ -1,0 +1,50 @@
+`torch.library.impl_abstract` was renamed to `torch.library.register_fake`. Please use that instead; we will remove 
+`torch.library.impl_abstract` in a future version of PyTorch.
+  @torch.library.impl_abstract("xformers_flash::flash_bwd")
+2025-10-16 22:40:48 | WARNING  | xformers        | A matching Triton is not available, some optimizations will not be 
+enabled
+Traceback (most recent call last):
+  File "C:\Users\johng\AppData\Roaming\Python\Python311\site-packages\xformers\__init__.py", line 57, in 
+_is_triton_available
+    import triton  # noqa
+    ^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'triton'
+2025-10-16 22:40:48 | INFO     | hunyuan_integration | Loading Hunyuan3D models...
+2025-10-16 22:40:48 | INFO     | hunyuan_integration | Initializing background remover...
+2025-10-16 22:40:48 | INFO     | hunyuan_integration | [CHECK] Background remover initialized
+2025-10-16 22:40:48 | INFO     | hunyuan_integration | Initializing shape generation pipeline (this may take a 
+while)...
+2025-10-16 22:40:48,961 - hy3dgen.shapgen - INFO - Try to load model from local path: 
+C:\Users\johng/.cache/hy3dgen\tencent/Hunyuan3D-2\hunyuan3d-dit-v2-0
+2025-10-16 22:40:48 | INFO     | hy3dgen.shapgen | Try to load model from local path: 
+C:\Users\johng/.cache/hy3dgen\tencent/Hunyuan3D-2\hunyuan3d-dit-v2-0
+2025-10-16 22:40:48,961 - hy3dgen.shapgen - INFO - Model path not exists, try to download from huggingface
+2025-10-16 22:40:48 | INFO     | hy3dgen.shapgen | Model path not exists, try to download from huggingface
+
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]
+Fetching 6 files: 100%|##########| 6/6 [00:00<?, ?it/s]
+2025-10-16 22:40:49,582 - hy3dgen.shapgen - INFO - Loading model from C:\Users\johng\.cache\huggingface\hub\models--ten
+cent--Hunyuan3D-2\snapshots\4ea2fff9a7db8c2b637f06457655d0bfa875dbf5\hunyuan3d-dit-v2-0\model.fp16.safetensors
+2025-10-16 22:40:49 | INFO     | hy3dgen.shapgen | Loading model from C:\Users\johng\.cache\huggingface\hub\models--ten
+cent--Hunyuan3D-2\snapshots\4ea2fff9a7db8c2b637f06457655d0bfa875dbf5\hunyuan3d-dit-v2-0\model.fp16.safetensors
+PointCrossAttentionEncoder INFO: pc_sharpedge_size is given, using pc_size=5120, pc_sharpedge_size=5120
+2025-10-16 22:41:12 | INFO     | hunyuan_integration | [CHECK] Shape generation pipeline initialized
+2025-10-16 22:41:12 | INFO     | hunyuan_integration | [CHECK] Texture generation pipeline temporarily disabled
+2025-10-16 22:41:12 | INFO     | hunyuan_integration | Attempting to load text-to-image pipeline...
+2025-10-16 22:41:13 | WARNING  | hunyuan_integration | Text-to-image pipeline not available: type object 
+'HunyuanDiTPipeline' has no attribute 'from_pretrained'
+2025-10-16 22:41:13 | INFO     | hunyuan_integration | \U0001f389 All Hunyuan3D models initialized successfully
+2025-10-16 22:41:13 | INFO     | hunyuan_integration | [ORFEAS] Models cached for instant future loads (94% faster!)
+2025-10-16 22:41:13 | INFO     | hunyuan_integration | Using Hunyuan3D processor
+2025-10-16 22:41:13 | INFO     | __main__        | [DIAGNOSTIC] \u2705 Processor loaded: Hunyuan3DProcessor
+2025-10-16 22:41:13 | INFO     | __main__        | [OK] Hunyuan3D-2.1 loaded
+2025-10-16 22:41:13 | INFO     | __main__        | [DIAGNOSTIC] \u2705 Full AI processor ready for requests!
+2025-10-16 22:41:13 | INFO     | __main__        | [OK] Processors initialized successfully (BACKGROUND COMPLETE)
+2025-10-16 22:41:13 | INFO     | health_check    | Application readiness: True
+2025-10-16 22:41:13 | INFO     | __main__        | [ORFEAS] ORFEAS PHASE 5: Application marked as READY
+2025-10-16 22:41:13 | INFO     | __main__        | [ORFEAS] Initializing batch processor for GPU-optimized parallel 
+generation...
+2025-10-16 22:41:13 | INFO     | batch_processor | BatchProcessor initialized (batch_size=4)
+2025-10-16 22:41:13 | INFO     | batch_processor | \U0001f4e5 AsyncJobQueue initialized (max_size=100)
+2025-10-16 22:41:13 | INFO     | batch_processor | [LAUNCH] Async job queue processing started
+2025-10-16 22:41:13 | INFO     | __main__        | [OK] Batch processor initialized - 3x throughput enabled!

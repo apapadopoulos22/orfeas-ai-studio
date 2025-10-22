@@ -1,0 +1,187 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "orfeas-production",
+    "title": "ORFEAS AI Production Dashboard",
+    "tags": ["orfeas", "ai", "gpu", "production"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "GPU Utilization (%)",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "nvidia_gpu_duty_cycle",
+            "legendFormat": "GPU {{device}}"
+          }
+        ],
+        "yaxes": [
+          { "format": "percent", "min": 0, "max": 100 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "GPU Memory Usage (GB)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "nvidia_gpu_memory_used_bytes / 1024 / 1024 / 1024",
+            "legendFormat": "Used Memory"
+          },
+          {
+            "expr": "nvidia_gpu_memory_total_bytes / 1024 / 1024 / 1024",
+            "legendFormat": "Total Memory"
+          }
+        ],
+        "yaxes": [
+          { "format": "decgbytes", "min": 0 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "API Request Rate (req/s)",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(flask_http_request_total[1m])",
+            "legendFormat": "{{method}} {{endpoint}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Generation Time (seconds)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(generation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(generation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(generation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "System CPU Usage (%)",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 16, "w": 8, "h": 6 },
+        "targets": [
+          {
+            "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)",
+            "legendFormat": "CPU Usage"
+          }
+        ],
+        "yaxes": [
+          { "format": "percent", "min": 0, "max": 100 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "System Memory Usage (GB)",
+        "type": "graph",
+        "gridPos": { "x": 8, "y": 16, "w": 8, "h": 6 },
+        "targets": [
+          {
+            "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / 1024 / 1024 / 1024",
+            "legendFormat": "Used Memory"
+          }
+        ],
+        "yaxes": [
+          { "format": "decgbytes", "min": 0 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Redis Cache Hit Rate (%)",
+        "type": "singlestat",
+        "gridPos": { "x": 16, "y": 16, "w": 8, "h": 6 },
+        "targets": [
+          {
+            "expr": "(rate(redis_keyspace_hits_total[5m]) / (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m]))) * 100"
+          }
+        ],
+        "format": "percent",
+        "valueName": "current"
+      },
+      {
+        "id": 8,
+        "title": "Active Generations",
+        "type": "singlestat",
+        "gridPos": { "x": 0, "y": 22, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "active_generations"
+          }
+        ],
+        "format": "none",
+        "valueName": "current"
+      },
+      {
+        "id": 9,
+        "title": "Queue Length",
+        "type": "singlestat",
+        "gridPos": { "x": 6, "y": 22, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "generation_queue_length"
+          }
+        ],
+        "format": "none",
+        "valueName": "current"
+      },
+      {
+        "id": 10,
+        "title": "Success Rate (%)",
+        "type": "singlestat",
+        "gridPos": { "x": 12, "y": 22, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "(rate(generation_success_total[5m]) / rate(generation_total[5m])) * 100"
+          }
+        ],
+        "format": "percent",
+        "valueName": "current",
+        "thresholds": "90,95",
+        "colors": ["#d44a3a", "#e0b400", "#299c46"]
+      },
+      {
+        "id": 11,
+        "title": "Error Rate (errors/min)",
+        "type": "singlestat",
+        "gridPos": { "x": 18, "y": 22, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "rate(generation_errors_total[1m]) * 60"
+          }
+        ],
+        "format": "none",
+        "valueName": "current",
+        "thresholds": "1,5",
+        "colors": ["#299c46", "#e0b400", "#d44a3a"]
+      }
+    ]
+  }
+}

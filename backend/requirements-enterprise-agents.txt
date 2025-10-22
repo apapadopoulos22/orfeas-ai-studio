@@ -1,0 +1,58 @@
+# Enterprise Agent Framework Dependencies
+# for ORFEAS AI 2D→3D Studio Enterprise Agent System
+
+# Core Dependencies (if not already included)
+redis>=4.5.0
+aioredis>=2.0.0
+aiohttp>=3.8.0
+asyncio-mqtt>=0.11.0
+
+# LangChain Enterprise Framework
+langchain>=0.1.0
+langchain-openai>=0.0.5
+langchain-anthropic>=0.1.0
+langchain-google-genai>=0.0.5
+langchain-community>=0.0.20
+
+# Advanced AI/ML Libraries
+openai>=1.10.0
+anthropic>=0.15.0
+google-generativeai>=0.3.0
+
+# Enterprise Integration
+kubernetes>=25.0.0
+prometheus-client>=0.16.0
+grafana-api>=1.0.3
+
+# Message Queue & Communication
+celery>=5.3.0
+kombu>=5.3.0
+pika>=1.3.0
+
+# Performance & Monitoring
+psutil>=5.9.0
+memory-profiler>=0.61.0
+py-spy>=0.3.0
+
+# Security & Authentication
+cryptography>=41.0.0
+pyjwt>=2.8.0
+authlib>=1.2.0
+
+# Data Persistence
+sqlalchemy>=2.0.0
+alembic>=1.13.0
+
+# Async Support
+asyncio>=3.4.3
+aiofiles>=23.0.0
+aiojobs>=1.2.0
+
+# Type Hints & Validation
+pydantic>=2.5.0
+typing-extensions>=4.9.0
+
+# Testing (for enterprise agent testing)
+pytest-asyncio>=0.23.0
+pytest-redis>=3.0.0
+pytest-mock>=3.12.0

@@ -1,0 +1,59 @@
+{
+    "default": true,
+    "MD013": false,
+    "MD025": {
+        "front_matter_title": ""
+    },
+    "MD024": {
+        "siblings_only": true
+    },
+    "MD036": true,
+    "MD040": {
+        "allowed_languages": [
+            "text",
+            "ascii",
+            "plaintext",
+            "bash",
+            "sh",
+            "shell",
+            "powershell",
+            "ps1",
+            "python",
+            "py",
+            "javascript",
+            "js",
+            "typescript",
+            "ts",
+            "json",
+            "yaml",
+            "yml",
+            "toml",
+            "ini",
+            "html",
+            "css",
+            "xml",
+            "sql",
+            "dockerfile",
+            "java",
+            "kotlin",
+            "csharp",
+            "cs",
+            "go",
+            "rust"
+        ],
+        "language_only": false,
+        "code_blocks": true,
+        "html_blocks": true
+    },
+    "MD012": {
+        "maximum": 1
+    },
+    "MD033": false,
+    "MD034": false,
+    "MD046": {
+        "style": "fenced"
+    },
+    "MD004": {
+        "style": "dash"
+    }
+}
