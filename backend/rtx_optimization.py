@@ -173,7 +173,7 @@ def initialize_rtx_optimizations() -> Dict[str, bool]:
         "mixed_precision": opt.enable_mixed_precision(),
         "cudnn_benchmark": opt.enable_cudnn_benchmark(),
         "memory_fraction": opt.set_memory_fraction(),
-        "tensorrt": opt.tensorrt_available,
+        "tensorrt": False,  # Disabled: TensorRT import causes hang on Windows
     }
 
 
