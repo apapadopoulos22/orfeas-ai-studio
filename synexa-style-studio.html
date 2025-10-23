@@ -968,6 +968,16 @@
         margin-top: var(--spacing-sm);
         color: var(--text-secondary);
       }
+
+      .textarea-input {
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+      }
+
+      .bob-ai-button-spacing {
+        margin-top: var(--spacing-sm);
+      }
     </style>
   </head>
   <body>
@@ -1121,6 +1131,28 @@
                 <option value="marching_cubes">Marching Cubes</option>
                 <option value="depth_extrusion">Depth Extrusion</option>
               </select>
+            </div>
+
+            <!-- Bob AI Text-to-Image Section -->
+            <div class="form-group">
+              <label class="form-label">🤖 Bob AI Text-to-Image</label>
+              <p class="api-description">
+                Describe what you want to see, and Bob AI will generate an image
+                prompt
+              </p>
+              <textarea
+                id="bob-ai-prompt"
+                class="form-input textarea-input"
+                placeholder="E.g., 'A futuristic spaceship with glowing neon lights'"
+              ></textarea>
+              <button
+                type="button"
+                class="btn btn-secondary btn-full-width bob-ai-button-spacing"
+                onclick="generateWithBobAI()"
+                id="bob-ai-btn"
+              >
+                <span>✨</span> Generate Image with Bob AI
+              </button>
             </div>
 
             <button
@@ -2462,6 +2494,71 @@
 
         // Trigger download
         window.location.href = downloadUrl;
+      }
+
+      // ============================================
+      // BOB AI TEXT-TO-IMAGE
+      // ============================================
+
+      async function generateWithBobAI() {
+        const prompt = document.getElementById("bob-ai-prompt").value;
+
+        if (!prompt.trim()) {
+          alert("⚠️ Please enter a description for Bob AI to enhance");
+          return;
+        }
+
+        const bobAiBtn = document.getElementById("bob-ai-btn");
+        bobAiBtn.disabled = true;
+
+        try {
+          console.log("[BOB-AI] Sending prompt to Bob AI:", prompt);
+
+          const response = await fetch(`${API_BASE}/api/local-llm/generate`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
+            },
+            body: JSON.stringify({
+              prompt: `You are an expert at creating detailed, vivid image descriptions for AI image generation.
+
+User's description: "${prompt}"
+
+Create a detailed, professional image prompt that enhances the user's description with artistic details, lighting, composition, and style. Keep it under 200 words. Respond with ONLY the enhanced prompt, no explanation.`,
+              max_tokens: 500,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Bob AI error: HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("[BOB-AI] Response received:", data);
+
+          if (!data.response) {
+            throw new Error("No response from Bob AI");
+          }
+
+          // Show the enhanced prompt
+          const enhancedPrompt = data.response.trim();
+          document.getElementById("bob-ai-prompt").value = enhancedPrompt;
+
+          // Show success notification
+          alert(
+            `✨ Bob AI Enhanced Your Description!\n\n${enhancedPrompt}\n\nNow upload an image or generate a new one with this enhanced prompt!`
+          );
+
+          console.log("[BOB-AI] ✅ Prompt enhancement complete");
+        } catch (error) {
+          console.error("[BOB-AI] Error:", error);
+          alert(
+            `❌ Bob AI Error: ${error.message}\n\nMake sure:\n1. Ollama is running\n2. Backend is running\n3. Bob AI (Mistral) is available`
+          );
+        } finally {
+          bobAiBtn.disabled = false;
+        }
       }
     </script>
   </body>
