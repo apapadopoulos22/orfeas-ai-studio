@@ -2538,6 +2538,18 @@ class OrfeasUnifiedServer:
                 unique_filename = f"{job_id}_generated.png"
                 output_path = self.uploads_dir / unique_filename
 
+                # [FIX] Create initial job entry BEFORE starting thread (prevents race condition)
+                initial_job_data = {
+                    "status": "processing",
+                    "progress": 0,
+                    "message": "Initializing AI model...",
+                    "type": "text_to_image",
+                    "prompt": prompt,
+                    "style": style
+                }
+                self.processing_jobs[job_id] = initial_job_data
+                self.job_progress[job_id] = initial_job_data
+
                 # Start async generation
                 @track_generation_metrics('text-to-image', 'ultimate-engine')
                 def process_text_to_image():
@@ -2972,7 +2984,7 @@ class OrfeasUnifiedServer:
 
             # [FIX] Check both job_progress and processing_jobs dictionaries
             job_data = self.job_progress.get(job_id) or self.processing_jobs.get(job_id)
-            
+
             if not job_data:
                 logger.warning(f"[API] Job not found: {job_id}")
                 return jsonify({"error": "Job not found"}), 404

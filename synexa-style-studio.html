@@ -2704,11 +2704,8 @@
           }
 
           // Update throbber with progress
-          const resultsContainer = document.getElementById(
-            "results-container"
-          );
-          const progress =
-            statusData.progress || (pollCount * 100) / maxPolls;
+          const resultsContainer = document.getElementById("results-container");
+          const progress = statusData.progress || (pollCount * 100) / maxPolls;
           resultsContainer.innerHTML = `
                   <div class="throbber-container">
                     <div class="throbber-large"></div>

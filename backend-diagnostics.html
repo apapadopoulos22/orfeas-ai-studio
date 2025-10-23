@@ -1,26 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ORFEAS Backend Test - Detailed Diagnostics</title>
     <style>
-        body { font-family: 'Courier New', monospace; margin: 20px; background: #0a0e1a; color: #00d4ff; }
-        .header { background: #141824; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .test { margin: 10px 0; padding: 15px; background: #141824; border-left: 4px solid #666; border-radius: 4px; }
-        .test.success { border-left-color: #10b981; }
-        .test.error { border-left-color: #ef4444; }
-        .test.info { border-left-color: #00d4ff; }
-        button { padding: 10px 20px; margin: 5px; background: #7c3aed; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: monospace; }
-        button:hover { background: #6d28d9; }
-        .result { background: #0a0e1a; padding: 10px; margin-top: 10px; border-radius: 4px; max-height: 300px; overflow-y: auto; }
-        h2 { color: #00d4ff; }
+      body {
+        font-family: "Courier New", monospace;
+        margin: 20px;
+        background: #0a0e1a;
+        color: #00d4ff;
+      }
+      .header {
+        background: #141824;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .test {
+        margin: 10px 0;
+        padding: 15px;
+        background: #141824;
+        border-left: 4px solid #666;
+        border-radius: 4px;
+      }
+      .test.success {
+        border-left-color: #10b981;
+      }
+      .test.error {
+        border-left-color: #ef4444;
+      }
+      .test.info {
+        border-left-color: #00d4ff;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        background: #7c3aed;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: monospace;
+      }
+      button:hover {
+        background: #6d28d9;
+      }
+      .result {
+        background: #0a0e1a;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+      h2 {
+        color: #00d4ff;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="header">
-        <h1>🔧 ORFEAS Backend Connection Diagnostics</h1>
-        <p>Detailed testing to identify connection issues</p>
+      <h1>🔧 ORFEAS Backend Connection Diagnostics</h1>
+      <p>Detailed testing to identify connection issues</p>
     </div>
 
     <button onclick="testLocalhost()">① Test Localhost:5000</button>
@@ -31,133 +73,156 @@
     <div id="results"></div>
 
     <script>
-        const API_LOCALHOST = 'http://127.0.0.1:5000';
-        const API_NGROK = 'https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev';
-        
-        function log(message, type = 'info') {
-            const results = document.getElementById('results');
-            const div = document.createElement('div');
-            div.className = `test ${type}`;
-            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            results.appendChild(div);
-            console.log(`[${type.toUpperCase()}] ${message}`);
-        }
+      const API_LOCALHOST = "http://127.0.0.1:5000";
+      const API_NGROK =
+        "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev";
 
-        function clearResults() {
-            document.getElementById('results').innerHTML = '';
-        }
+      function log(message, type = "info") {
+        const results = document.getElementById("results");
+        const div = document.createElement("div");
+        div.className = `test ${type}`;
+        div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        results.appendChild(div);
+        console.log(`[${type.toUpperCase()}] ${message}`);
+      }
 
-        async function testLocalhost() {
-            log('=== Testing Localhost:5000 ===', 'info');
+      function clearResults() {
+        document.getElementById("results").innerHTML = "";
+      }
+
+      async function testLocalhost() {
+        log("=== Testing Localhost:5000 ===", "info");
+        try {
+          log("Sending GET /api/models-info...", "info");
+          const response = await fetch(`${API_LOCALHOST}/api/models-info`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          log(
+            `Response status: ${response.status} ${response.statusText}`,
+            "info"
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            log("✓ Localhost WORKING - Backend is running!", "success");
+            log(
+              `Device: ${data.device}, GPU: ${JSON.stringify(
+                data.gpu_stats
+              ).substring(0, 50)}...`,
+              "success"
+            );
+          } else {
+            log(`✗ HTTP ${response.status}: ${await response.text()}`, "error");
+          }
+        } catch (err) {
+          log(`✗ Connection error: ${err.message}`, "error");
+          log(`Full error: ${err.toString()}`, "error");
+        }
+      }
+
+      async function testNgrok() {
+        log("=== Testing Ngrok Tunnel ===", "info");
+        try {
+          log("Sending GET to ngrok URL...", "info");
+          const response = await fetch(`${API_NGROK}/api/models-info`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "ngrok-skip-browser-warning": "true",
+            },
+          });
+
+          log(
+            `Response status: ${response.status} ${response.statusText}`,
+            "info"
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            log("✓ Ngrok WORKING - Tunnel is active!", "success");
+            log(
+              `Device: ${data.device}, GPU: ${JSON.stringify(
+                data.gpu_stats
+              ).substring(0, 50)}...`,
+              "success"
+            );
+          } else {
+            const text = await response.text();
+            log(`✗ HTTP ${response.status}`, "error");
+            log(`Response: ${text.substring(0, 200)}`, "error");
+          }
+        } catch (err) {
+          log(`✗ Ngrok error: ${err.message}`, "error");
+          log(`Full error: ${err.toString()}`, "error");
+          log(
+            `Hint: Check if ngrok is still running. URL might have changed.`,
+            "info"
+          );
+        }
+      }
+
+      async function testUpload() {
+        log("=== Testing Image Upload (Ngrok) ===", "info");
+        try {
+          log("Creating test image...", "info");
+          const canvas = document.createElement("canvas");
+          canvas.width = 256;
+          canvas.height = 256;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#00d4ff";
+          ctx.fillRect(0, 0, 256, 256);
+          ctx.fillStyle = "#7c3aed";
+          ctx.font = "20px Arial";
+          ctx.fillText("ORFEAS TEST", 50, 128);
+
+          canvas.toBlob(async (blob) => {
+            log(`Test image created: ${blob.size} bytes`, "info");
+            log("Sending POST /api/upload-image...", "info");
+
             try {
-                log('Sending GET /api/models-info...', 'info');
-                const response = await fetch(`${API_LOCALHOST}/api/models-info`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                log(`Response status: ${response.status} ${response.statusText}`, 'info');
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    log('✓ Localhost WORKING - Backend is running!', 'success');
-                    log(`Device: ${data.device}, GPU: ${JSON.stringify(data.gpu_stats).substring(0, 50)}...`, 'success');
-                } else {
-                    log(`✗ HTTP ${response.status}: ${await response.text()}`, 'error');
-                }
-            } catch (err) {
-                log(`✗ Connection error: ${err.message}`, 'error');
-                log(`Full error: ${err.toString()}`, 'error');
-            }
-        }
+              const formData = new FormData();
+              formData.append("image", blob, "test.png");
 
-        async function testNgrok() {
-            log('=== Testing Ngrok Tunnel ===', 'info');
-            try {
-                log('Sending GET to ngrok URL...', 'info');
-                const response = await fetch(`${API_NGROK}/api/models-info`, {
-                    method: 'GET',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true'
-                    }
-                });
-                
-                log(`Response status: ${response.status} ${response.statusText}`, 'info');
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    log('✓ Ngrok WORKING - Tunnel is active!', 'success');
-                    log(`Device: ${data.device}, GPU: ${JSON.stringify(data.gpu_stats).substring(0, 50)}...`, 'success');
-                } else {
-                    const text = await response.text();
-                    log(`✗ HTTP ${response.status}`, 'error');
-                    log(`Response: ${text.substring(0, 200)}`, 'error');
-                }
-            } catch (err) {
-                log(`✗ Ngrok error: ${err.message}`, 'error');
-                log(`Full error: ${err.toString()}`, 'error');
-                log(`Hint: Check if ngrok is still running. URL might have changed.`, 'info');
-            }
-        }
+              const response = await fetch(`${API_NGROK}/api/upload-image`, {
+                method: "POST",
+                body: formData,
+                headers: { "ngrok-skip-browser-warning": "true" },
+              });
 
-        async function testUpload() {
-            log('=== Testing Image Upload (Ngrok) ===', 'info');
-            try {
-                log('Creating test image...', 'info');
-                const canvas = document.createElement('canvas');
-                canvas.width = 256;
-                canvas.height = 256;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#00d4ff';
-                ctx.fillRect(0, 0, 256, 256);
-                ctx.fillStyle = '#7c3aed';
-                ctx.font = '20px Arial';
-                ctx.fillText('ORFEAS TEST', 50, 128);
-                
-                canvas.toBlob(async (blob) => {
-                    log(`Test image created: ${blob.size} bytes`, 'info');
-                    log('Sending POST /api/upload-image...', 'info');
-                    
-                    try {
-                        const formData = new FormData();
-                        formData.append('image', blob, 'test.png');
-                        
-                        const response = await fetch(`${API_NGROK}/api/upload-image`, {
-                            method: 'POST',
-                            body: formData,
-                            headers: { 'ngrok-skip-browser-warning': 'true' }
-                        });
-                        
-                        log(`Response status: ${response.status} ${response.statusText}`, 'info');
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            log('✓ Upload SUCCESSFUL!', 'success');
-                            log(`Job ID: ${data.job_id}`, 'success');
-                            log(`File: ${data.filename}`, 'success');
-                        } else {
-                            const text = await response.text();
-                            log(`✗ Upload failed: HTTP ${response.status}`, 'error');
-                            log(`Response: ${text.substring(0, 200)}`, 'error');
-                        }
-                    } catch (err) {
-                        log(`✗ Upload exception: ${err.message}`, 'error');
-                    }
-                });
-            } catch (err) {
-                log(`✗ Test setup error: ${err.message}`, 'error');
-            }
-        }
+              log(
+                `Response status: ${response.status} ${response.statusText}`,
+                "info"
+              );
 
-        // Auto-run on load
-        window.addEventListener('load', () => {
-            log('Diagnostics page loaded', 'info');
-            log(`Current URL: ${window.location.href}`, 'info');
-            log(`Localhost endpoint: ${API_LOCALHOST}`, 'info');
-            log(`Ngrok endpoint: ${API_NGROK}`, 'info');
-            log('Click buttons above to test each component', 'info');
-        });
+              if (response.ok) {
+                const data = await response.json();
+                log("✓ Upload SUCCESSFUL!", "success");
+                log(`Job ID: ${data.job_id}`, "success");
+                log(`File: ${data.filename}`, "success");
+              } else {
+                const text = await response.text();
+                log(`✗ Upload failed: HTTP ${response.status}`, "error");
+                log(`Response: ${text.substring(0, 200)}`, "error");
+              }
+            } catch (err) {
+              log(`✗ Upload exception: ${err.message}`, "error");
+            }
+          });
+        } catch (err) {
+          log(`✗ Test setup error: ${err.message}`, "error");
+        }
+      }
+
+      // Auto-run on load
+      window.addEventListener("load", () => {
+        log("Diagnostics page loaded", "info");
+        log(`Current URL: ${window.location.href}`, "info");
+        log(`Localhost endpoint: ${API_LOCALHOST}`, "info");
+        log(`Ngrok endpoint: ${API_NGROK}`, "info");
+        log("Click buttons above to test each component", "info");
+      });
     </script>
-</body>
+  </body>
 </html>

@@ -1272,3 +1272,211 @@ Quality Validator: True
 [AFTER PROCESSOR CALL]
   result type: <class 'bool'>
   result: True
+
+================================================================================
+JOB: 3b4162fd-85cb-406b-86c4-b1e70e291cda
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\3b4162fd-85cb-406b-86c4-b1e70e291cda_20251023_092604_runningm.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\3b4162fd-85cb-406b-86c4-b1e70e291cda\model_3b4162fd-85cb-406b-86c4-b1e70e291cda
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True
+
+================================================================================
+JOB: 6ae4fd9e-714b-42bd-aaf5-b92b63aee942
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\6ae4fd9e-714b-42bd-aaf5-b92b63aee942_20251023_093354_bg_f8f8f8-flat_750x_075_f-pad_750x1000_f8f8f8.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\6ae4fd9e-714b-42bd-aaf5-b92b63aee942\model_6ae4fd9e-714b-42bd-aaf5-b92b63aee942
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True
+
+================================================================================
+JOB: 46430d50-6351-4958-ae5d-ad465447920b
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\46430d50-6351-4958-ae5d-ad465447920b_20251023_104937_bg_f8f8f8-flat_750x_075_f-pad_750x1000_f8f8f8.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\46430d50-6351-4958-ae5d-ad465447920b\model_46430d50-6351-4958-ae5d-ad465447920b
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True
+
+================================================================================
+JOB: fc986165-8222-4900-acee-40c2d3ba1bea
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\fc986165-8222-4900-acee-40c2d3ba1bea_20251023_110343_bg_f8f8f8-flat_750x_075_f-pad_750x1000_f8f8f8.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\fc986165-8222-4900-acee-40c2d3ba1bea\model_fc986165-8222-4900-acee-40c2d3ba1bea
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True
+
+================================================================================
+JOB: 794ba4e0-390c-40c1-9ebc-5e8cef77123e
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\794ba4e0-390c-40c1-9ebc-5e8cef77123e_20251023_111159_bg_f8f8f8-flat_750x_075_f-pad_750x1000_f8f8f8.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\794ba4e0-390c-40c1-9ebc-5e8cef77123e\model_794ba4e0-390c-40c1-9ebc-5e8cef77123e
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True
+
+================================================================================
+JOB: 9ae715b3-e5cd-47ae-bc19-e0798be1124c
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\9ae715b3-e5cd-47ae-bc19-e0798be1124c_20251023_111652_bg_f8f8f8-flat_750x_075_f-pad_750x1000_f8f8f8.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\9ae715b3-e5cd-47ae-bc19-e0798be1124c\model_9ae715b3-e5cd-47ae-bc19-e0798be1124c
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True
+
+================================================================================
+JOB: 57673aed-7703-4219-ade7-9d10fc89f6b3
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\57673aed-7703-4219-ade7-9d10fc89f6b3_20251023_112113_bg_f8f8f8-flat_750x_075_f-pad_750x1000_f8f8f8.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\57673aed-7703-4219-ade7-9d10fc89f6b3\model_57673aed-7703-4219-ade7-9d10fc89f6b3
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True
+
+================================================================================
+JOB: 9a16de1e-8647-4fb6-a3a1-43db810a4816
+GPU Manager: True
+Processor 3D: True
+Processor Type: Hunyuan3DProcessor
+Mode: ProcessorMode.FULL_AI
+is_testing: False
+Quality Validator: True
+================================================================================
+
+[STANDARD_3D_GENERATION]
+  is_testing: False
+  processor_3d: True
+  processor_type: Hunyuan3DProcessor
+  Will use placeholder: False
+
+[BEFORE PROCESSOR CALL]
+  Method exists: True
+  input_path: C:\Users\johng\Documents\oscar\backend\uploads\9a16de1e-8647-4fb6-a3a1-43db810a4816_20251023_112455_bg_f8f8f8-flat_750x_075_f-pad_750x1000_f8f8f8.jpg
+  output_path: C:\Users\johng\Documents\oscar\backend\outputs\9a16de1e-8647-4fb6-a3a1-43db810a4816\model_9a16de1e-8647-4fb6-a3a1-43db810a4816
+  track_quality: True
+
+[AFTER PROCESSOR CALL]
+  result type: <class 'bool'>
+  result: True

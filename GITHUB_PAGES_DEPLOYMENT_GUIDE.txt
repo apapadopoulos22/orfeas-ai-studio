@@ -1,0 +1,357 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║    🚀 ORFEAS AI - GITHUB PAGES DEPLOYMENT GUIDE                       ║
+║                                                                        ║
+║              FREE • UNLIMITED • LIVE IN 10 MINUTES                    ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+
+
+OVERVIEW
+═════════════════════════════════════════════════════════════════════════
+
+GitHub Pages allows you to host static websites for FREE directly from
+your GitHub repository. Perfect for ORFEAS AI frontend!
+
+Cost: $0/month (forever)
+Setup Time: 10 minutes
+Performance: Global CDN
+Features: Unlimited bandwidth, no credit limits
+
+
+YOUR CURRENT STATE
+═════════════════════════════════════════════════════════════════════════
+
+✅ Git repository: Initialized
+✅ Files: Staged and committed
+✅ Netlify: Unlinked (clean state)
+✅ Ready: To push to GitHub
+
+
+STEP-BY-STEP DEPLOYMENT
+═════════════════════════════════════════════════════════════════════════
+
+
+STEP 1: CREATE GITHUB REPOSITORY
+────────────────────────────────
+
+1. Go to: https://github.com/new
+
+2. Fill in the form:
+   Repository name: orfeas-ai-studio
+   Description: ORFEAS AI - 3D Model Generation Studio
+   Visibility: PUBLIC (required for free Pages)
+
+3. Do NOT initialize with README/gitignore (we already have commits)
+
+4. Click: "Create repository"
+
+5. You'll see a page with a URL like:
+   https://github.com/YOUR-USERNAME/orfeas-ai-studio
+
+
+STEP 2: ADD REMOTE AND PUSH CODE
+─────────────────────────────────
+
+Now push your local code to GitHub. Run these commands:
+
+  cd c:\Users\johng\Documents\oscar
+
+  git remote add origin https://github.com/YOUR-USERNAME/orfeas-ai-studio
+
+  git branch -M main
+
+  git push -u origin main
+
+IMPORTANT: Replace "YOUR-USERNAME" with your actual GitHub username!
+
+Example (if username is "johndoe"):
+  git remote add origin https://github.com/johndoe/orfeas-ai-studio
+
+
+STEP 3: ENABLE GITHUB PAGES
+───────────────────────────
+
+1. Go to your repository:
+   https://github.com/YOUR-USERNAME/orfeas-ai-studio
+
+2. Click: "Settings" (top right, near the code button)
+
+3. Left sidebar, click: "Pages"
+
+4. Under "Build and deployment":
+   Source: Deploy from a branch
+   Branch: main (select)
+   Folder: / (root - should already be selected)
+
+5. Click: "Save"
+
+6. Wait 1-2 minutes for deployment
+
+7. At the top, you'll see:
+   "Your site is live at: https://YOUR-USERNAME.github.io/orfeas-ai-studio"
+
+COPY THIS URL - that's your LIVE ORFEAS AI Studio!
+
+
+EXAMPLE: Complete Setup
+═════════════════════════════════════════════════════════════════════════
+
+If your GitHub username is "john-smith":
+
+1. Create repo: https://github.com/john-smith/orfeas-ai-studio
+
+2. Push code:
+   git remote add origin https://github.com/john-smith/orfeas-ai-studio
+   git branch -M main
+   git push -u origin main
+
+3. Enable Pages:
+   Go to Settings → Pages
+   Select: main branch, / root folder
+   Click Save
+
+4. Your live site:
+   https://john-smith.github.io/orfeas-ai-studio
+
+That's it! Your site is LIVE!
+
+
+WHAT GITHUB PAGES DEPLOYS
+═════════════════════════════════════════════════════════════════════════
+
+Your Repository Contents:
+  ✅ synexa-style-studio.html (Main app)
+  ✅ netlify.toml (Configuration)
+  ✅ All assets and dependencies
+  ✅ Any other files in your repo
+
+GitHub Pages serves these as static website:
+  ✅ HTML pages: Accessible directly
+  ✅ JavaScript: Runs in browser
+  ✅ CSS/Images: Loaded normally
+  ✅ API calls: Routed to ngrok backend
+
+
+VERIFYING YOUR DEPLOYMENT
+═════════════════════════════════════════════════════════════════════════
+
+After you see "Your site is live at..." message:
+
+1. Copy your URL: https://YOUR-USERNAME.github.io/orfeas-ai-studio
+
+2. Open in browser
+
+3. Press F12 to open console
+
+4. Look for configuration message:
+   [CONFIG] API_BASE = https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev
+
+5. This means your frontend can reach the backend via ngrok!
+
+
+UPDATING YOUR SITE
+═════════════════════════════════════════════════════════════════════════
+
+If you make changes to files:
+
+1. Make your changes locally
+
+2. Stage and commit:
+   git add .
+   git commit -m "Update ORFEAS AI"
+
+3. Push to GitHub:
+   git push
+
+4. GitHub Pages automatically redeploys (usually <1 minute)
+
+5. Your changes are LIVE!
+
+
+COMPLETE WORKFLOW: FROM PUSH TO LIVE
+═════════════════════════════════════════════════════════════════════════
+
+Timeline for first deployment:
+
+  0:00 - You run: git push -u origin main
+  0:30 - GitHub receives your code
+  1:00 - GitHub Pages builds your site
+  2:00 - Your site is LIVE!
+
+Total: ~2 minutes
+
+For updates:
+  0:00 - You run: git push
+  0:30 - Changes deployed
+
+Total: ~30 seconds
+
+
+BACKEND + FRONTEND SETUP
+═════════════════════════════════════════════════════════════════════════
+
+Once your GitHub Pages site is live:
+
+Terminal 1 - Start Backend GPU Server:
+  cd c:\Users\johng\Documents\oscar\backend
+  python -u main.py
+  (Wait for: Running on http://127.0.0.1:5000)
+
+Terminal 2 - Start ngrok Tunnel:
+  cd c:\Users\johng\Documents\oscar
+  .\START_NGROK_TUNNEL.bat
+  (Wait for: Forwarding https://... -> http://localhost:5000)
+
+Terminal 3 - Open Your Site:
+  Open browser: https://YOUR-USERNAME.github.io/orfeas-ai-studio
+  Test: Upload image → Generate 3D → Download
+
+Done! Full system LIVE and working!
+
+
+TESTING YOUR ORFEAS AI STUDIO
+═════════════════════════════════════════════════════════════════════════
+
+1. Open your GitHub Pages URL
+2. Press F12 (Developer Tools)
+3. Go to Console tab
+4. You should see:
+   [CONFIG] API_BASE = https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev
+
+5. Try uploading an image:
+   - Click "Upload Image"
+   - Select a PNG or JPG file
+   - Click "Generate 3D Model"
+   - Wait 30-120 seconds (GPU processing)
+   - You should see 3D preview
+   - Download STL/OBJ/MTL files
+
+If it works: ✅ SUCCESS! Your ORFEAS AI is LIVE!
+If API fails: Check backend & ngrok are running
+
+
+CUSTOM DOMAIN (Optional)
+═════════════════════════════════════════════════════════════════════════
+
+If you want to use your own domain (orfeas.ai):
+
+1. Go to Repository Settings → Pages
+
+2. Under "Custom domain" enter your domain:
+   orfeas.ai
+
+3. Create CNAME file in your repo:
+   Create file: CNAME
+   Content: orfeas.ai
+
+4. Update DNS records with your domain provider
+
+5. GitHub Pages will auto-verify
+
+But this is OPTIONAL - github.io URL works great!
+
+
+TROUBLESHOOTING
+═════════════════════════════════════════════════════════════════════════
+
+Problem: "Repository not found" when pushing
+Solution:
+  • Make sure repository name is exactly: orfeas-ai-studio
+  • Check your GitHub username is correct in remote URL
+  • Verify you're in the right directory: c:\Users\johng\Documents\oscar
+
+Problem: Pages not showing up in Settings
+Solution:
+  • Wait 5 minutes after push (GitHub needs time to process)
+  • Refresh the page
+  • Check the "Actions" tab to see if build succeeded
+
+Problem: Site shows 404 error
+Solution:
+  • Make sure index.html or synexa-style-studio.html exists
+  • You might need to rename synexa-style-studio.html to index.html
+  • Or update netlify.toml to serve the correct file
+
+Problem: API calls failing
+Solution:
+  • Start backend: cd backend && python -u main.py
+  • Start ngrok: .\START_NGROK_TUNNEL.bat
+  • Check F12 console for error messages
+  • Verify ngrok URL is correct
+
+Problem: My domain isn't working
+Solution:
+  • DNS changes can take 24 hours to propagate
+  • Keep your github.io URL as backup
+  • Verify CNAME file is in repository root
+
+
+GITHUB PAGES BENEFITS
+═════════════════════════════════════════════════════════════════════════
+
+✅ FREE (forever, no credit limits)
+✅ Unlimited bandwidth
+✅ Unlimited sites per account
+✅ Global CDN (fast worldwide access)
+✅ HTTPS/TLS (secure by default)
+✅ Easy updates (just git push)
+✅ Automatic deploys (when you push)
+✅ Version control (full git history)
+✅ Easy rollback (revert to old commits)
+✅ No vendor lock-in (your code stays yours)
+
+
+GITHUB PAGES VS NETLIFY
+═════════════════════════════════════════════════════════════════════════
+
+GitHub Pages:
+  ✅ FREE
+  ✅ No credit limits
+  ✅ Unlimited bandwidth
+  ✅ Integrated with GitHub
+  ✅ Easy to use
+  ❌ Fewer advanced features
+
+Netlify:
+  ✅ Advanced features
+  ❌ Credit limits (your issue)
+  ❌ $19/month Pro plan
+  ❌ Paid to remove limits
+
+For ORFEAS AI: GitHub Pages is PERFECT!
+
+
+═════════════════════════════════════════════════════════════════════════
+
+                    🚀 YOU'RE READY FOR GITHUB PAGES
+
+                         3 SIMPLE STEPS:
+
+1. Create repo: https://github.com/new
+   Name: orfeas-ai-studio (PUBLIC)
+
+2. Push code:
+   git remote add origin https://github.com/YOUR-USERNAME/orfeas-ai-studio
+   git branch -M main
+   git push -u origin main
+
+3. Enable Pages:
+   Settings → Pages → Deploy from main → Save
+
+                    LIVE IN 10 MINUTES!
+
+═════════════════════════════════════════════════════════════════════════
+
+Your Live URL:
+  https://YOUR-USERNAME.github.io/orfeas-ai-studio
+
+Backend Ready:
+  python backend/main.py
+
+Tunnel Ready:
+  .\START_NGROK_TUNNEL.bat
+
+System: Ready to deploy & test!
+
+═════════════════════════════════════════════════════════════════════════
