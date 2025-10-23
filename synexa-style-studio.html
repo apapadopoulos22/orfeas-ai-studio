@@ -1615,15 +1615,15 @@
 
         try {
           console.log("[HEALTH] Checking backend health at:", API_BASE);
-          
+
           // Use the /api/models-info endpoint which we know works
           let response = await fetch(`${API_BASE}/api/models-info`, {
-            method: 'GET',
+            method: "GET",
             cache: "no-cache",
             headers: {
               "Cache-Control": "no-cache",
-              "Pragma": "no-cache",
-              "ngrok-skip-browser-warning": "true"
+              Pragma: "no-cache",
+              "ngrok-skip-browser-warning": "true",
             },
           });
 
@@ -1635,10 +1635,10 @@
           }
 
           // Verify we got JSON, not HTML error page
-          const contentType = response.headers.get('content-type');
-          if (!contentType || !contentType.includes('application/json')) {
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
             console.error("[HEALTH] Wrong content type:", contentType);
-            throw new Error('Backend returned non-JSON response');
+            throw new Error("Backend returned non-JSON response");
           }
 
           const data = await response.json();
@@ -1650,45 +1650,52 @@
 
             // GPU Information
             let gpuInfo = "❌ GPU: Not Available";
-            if (data.device.toUpperCase() === 'CUDA') {
+            if (data.device.toUpperCase() === "CUDA") {
               gpuInfo = `✅ GPU: NVIDIA RTX 3090 (CUDA Ready)`;
-              
+
               // Add memory info if available
               if (data.gpu_stats && data.gpu_stats.allocated_mb) {
-                gpuInfo += `\n   Allocated: ${data.gpu_stats.allocated_mb.toFixed(0)} MB`;
+                gpuInfo += `\n   Allocated: ${data.gpu_stats.allocated_mb.toFixed(
+                  0
+                )} MB`;
               }
             }
 
             alert(
               `✅ ORFEAS Backend is HEALTHY\n\n` +
-              `${gpuInfo}\n` +
-              `Device: ${data.device}\n\n` +
-              `🎨 Ready to generate 3D models!`
+                `${gpuInfo}\n` +
+                `Device: ${data.device}\n\n` +
+                `🎨 Ready to generate 3D models!`
             );
           } else {
-            throw new Error('Invalid backend response format');
+            throw new Error("Invalid backend response format");
           }
         } catch (error) {
           indicator.style.color = "var(--accent-error)";
           console.error("[HEALTH] Error:", error);
-          
+
           // Provide helpful error message
           let errorMsg = error.message;
-          if (error.message.includes('Failed to fetch')) {
-            errorMsg = 'Cannot reach backend - Check if ngrok tunnel is running';
-          } else if (error.message.includes('401') || error.message.includes('403')) {
-            errorMsg = 'Access denied - Check ngrok tunnel configuration';
-          } else if (error.message.includes('non-JSON')) {
-            errorMsg = 'Backend returned invalid response - May be returning error page';
+          if (error.message.includes("Failed to fetch")) {
+            errorMsg =
+              "Cannot reach backend - Check if ngrok tunnel is running";
+          } else if (
+            error.message.includes("401") ||
+            error.message.includes("403")
+          ) {
+            errorMsg = "Access denied - Check ngrok tunnel configuration";
+          } else if (error.message.includes("non-JSON")) {
+            errorMsg =
+              "Backend returned invalid response - May be returning error page";
           }
-          
+
           alert(
             `⚠️ Backend Health Check Failed\n\n` +
-            `Error: ${errorMsg}\n\n` +
-            `Ensure you have:\n` +
-            `1. Backend running: cd backend && python main.py\n` +
-            `2. Ngrok running: .\\ngrok http 5000\n` +
-            `3. Both processes still active`
+              `Error: ${errorMsg}\n\n` +
+              `Ensure you have:\n` +
+              `1. Backend running: cd backend && python main.py\n` +
+              `2. Ngrok running: .\\ngrok http 5000\n` +
+              `3. Both processes still active`
           );
         }
       }
@@ -1908,8 +1915,10 @@
         }
 
         console.log("[POLLING] Starting status polling for job:", currentJobId);
+        let pollCount = 0;
 
         statusPollingInterval = setInterval(async () => {
+          pollCount++;
           try {
             const response = await fetch(
               `${API_BASE}/api/job-status/${currentJobId}`,
@@ -1924,20 +1933,19 @@
 
             const data = await response.json();
             console.log(
-              "[POLLING] Status:",
-              data.status,
-              "Progress:",
-              data.progress
+              `[POLLING #${pollCount}] Status: ${data.status} | Progress: ${
+                data.progress
+              }% | Message: ${data.message || "N/A"}`
             );
 
             updateProgress(data);
 
             if (data.status === "completed") {
-              console.log("[POLLING] Generation completed!");
+              console.log("[POLLING] ✅ Generation completed!");
               clearInterval(statusPollingInterval);
               onGenerationComplete(data);
             } else if (data.status === "failed") {
-              console.error("[POLLING] Generation failed!");
+              console.error("[POLLING] ❌ Generation failed!");
               clearInterval(statusPollingInterval);
               onGenerationFailed(data);
             }
@@ -1951,9 +1959,27 @@
         const progressFill = document.getElementById("progress-fill");
         const progressText = document.getElementById("progress-text");
 
-        progressFill.style.width = `${data.progress}%`;
-        progressText.textContent =
-          data.message || `Progress: ${data.progress}%`;
+        // Ensure progress is a valid number between 0-100
+        const progress = Math.max(
+          0,
+          Math.min(100, parseInt(data.progress) || 0)
+        );
+
+        progressFill.style.width = `${progress}%`;
+
+        // Build detailed message
+        let message = data.message || `Processing: ${progress}%`;
+        if (data.status) {
+          message = `[${data.status.toUpperCase()}] ${message}`;
+        }
+
+        progressText.textContent = message;
+
+        console.log("[PROGRESS] Updated: ", {
+          progress,
+          message,
+          status: data.status,
+        });
       }
 
       let lastOutputFile = null;
