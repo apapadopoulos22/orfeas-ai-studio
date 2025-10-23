@@ -2512,218 +2512,239 @@
         bobAiBtn.disabled = true;
 
         try {
-          console.log("[BOB-AI] Sending prompt to Bob AI:", prompt);
+          console.log("[BOB-AI] Starting text-to-image generation:", prompt);
 
-          const response = await fetch(`${API_BASE}/api/local-llm/generate`, {
+          // Step 1: Enhance prompt with Bob AI (Mistral)
+          console.log("[BOB-AI] Step 1: Enhancing prompt with Mistral...");
+          const enhanceResponse = await fetch(
+            `${API_BASE}/api/local-llm/generate`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
+              },
+              body: JSON.stringify({
+                prompt: `You are a professional image prompt engineer. The user provided:
+
+User's description: "${prompt}"
+
+Create a detailed, professional image prompt that enhances the user's description with artistic details, lighting, composition, and style. Keep it under 200 words. Respond with ONLY the enhanced prompt, no explanation.`,
+                max_tokens: 500,
+              }),
+            }
+          );
+
+          if (!enhanceResponse.ok) {
+            throw new Error(`Bob AI error: HTTP ${enhanceResponse.status}`);
+          }
+
+          const enhanceData = await enhanceResponse.json();
+          if (!enhanceData.response) {
+            throw new Error("No response from Bob AI enhancement");
+          }
+
+          const enhancedPrompt = enhanceData.response.trim();
+          document.getElementById("bob-ai-prompt").value = enhancedPrompt;
+          console.log(
+            "[BOB-AI] Prompt enhanced:",
+            enhancedPrompt.substring(0, 100) + "..."
+          );
+
+          // Step 2: Show loading state
+          showThrobber("Generating image with AI models...");
+
+          // Step 3: Generate actual image using text-to-image API
+          console.log("[BOB-AI] Step 2: Calling real text-to-image API...");
+          const imageResponse = await fetch(`${API_BASE}/api/text-to-image`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "ngrok-skip-browser-warning": "true",
             },
             body: JSON.stringify({
-              prompt: `You are an expert at creating detailed, vivid image descriptions for AI image generation.
-
-User's description: "${prompt}"
-
-Create a detailed, professional image prompt that enhances the user's description with artistic details, lighting, composition, and style. Keep it under 200 words. Respond with ONLY the enhanced prompt, no explanation.`,
-              max_tokens: 500,
+              prompt: enhancedPrompt,
+              style: "photorealistic",
+              width: 512,
+              height: 512,
+              steps: 50,
+              guidance_scale: 7.0,
             }),
           });
 
-          if (!response.ok) {
-            throw new Error(`Bob AI error: HTTP ${response.status}`);
+          if (!imageResponse.ok) {
+            const errorText = await imageResponse.text();
+            console.error("[BOB-AI] Image generation error:", errorText);
+            throw new Error(
+              `Image generation failed: HTTP ${imageResponse.status}`
+            );
           }
 
-          const data = await response.json();
-          console.log("[BOB-AI] Response received:", data);
+          const imageData = await imageResponse.json();
+          console.log("[BOB-AI] Image generation response:", imageData);
 
-          if (!data.response) {
-            throw new Error("No response from Bob AI");
+          if (imageData.status === "completed" && imageData.preview_url) {
+            // Step 4: Display generated image
+            console.log(
+              "[BOB-AI] Image generated successfully:",
+              imageData.preview_url
+            );
+            displayGeneratedImage(imageData.preview_url, enhancedPrompt);
+          } else if (imageData.job_id) {
+            // Step 5: Poll for async job completion
+            console.log(
+              "[BOB-AI] Image generation queued, job ID:",
+              imageData.job_id
+            );
+            pollImageGeneration(imageData.job_id, enhancedPrompt);
+          } else {
+            throw new Error("Invalid response from image generation API");
           }
 
-          // Get the enhanced prompt
-          const enhancedPrompt = data.response.trim();
-          document.getElementById("bob-ai-prompt").value = enhancedPrompt;
-
-          console.log("[BOB-AI] Enhanced prompt:", enhancedPrompt);
-
-          // Generate a visual representation with canvas
-          generateImagePreviewFromPrompt(enhancedPrompt);
-
-          console.log("[BOB-AI] ✅ Image preview generated");
+          console.log("[BOB-AI] ✅ Image generation started");
         } catch (error) {
           console.error("[BOB-AI] Error:", error);
+          hideThrobber();
           alert(
-            `❌ Bob AI Error: ${error.message}\n\nMake sure:\n1. Ollama is running\n2. Backend is running\n3. Bob AI (Mistral) is available`
+            `❌ Bob AI Error: ${error.message}\n\nMake sure:\n1. Backend is running\n2. Text-to-image API is available\n3. Ollama is running for prompt enhancement`
           );
         } finally {
           bobAiBtn.disabled = false;
         }
       }
 
-      function generateImagePreviewFromPrompt(prompt) {
-        // Create a canvas-based image preview
-        const canvas = document.createElement("canvas");
-        const width = 512;
-        const height = 512;
-        canvas.width = width;
-        canvas.height = height;
+      function showThrobber(message) {
+        const resultsContainer = document.getElementById("results-container");
+        resultsContainer.innerHTML = `
+          <div class="throbber-container">
+            <div class="throbber-large"></div>
+            <div class="throbber-pulse"></div>
+            <div class="throbber-status">${message}</div>
+          </div>
+        `;
+      }
 
-        const ctx = canvas.getContext("2d");
+      function hideThrobber() {
+        const resultsContainer = document.getElementById("results-container");
+        resultsContainer.innerHTML = "";
+      }
 
-        // Create a gradient background based on prompt keywords
-        const colors = extractColorsFromPrompt(prompt);
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, colors[0]);
-        gradient.addColorStop(0.5, colors[1]);
-        gradient.addColorStop(1, colors[2]);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
+      async function pollImageGeneration(jobId, prompt, pollCount = 0) {
+        const maxPolls = 180; // 3 minutes (180 seconds at 1s intervals)
+        const pollInterval = 1000; // 1 second
 
-        // Add decorative patterns based on prompt
-        ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-        for (let i = 0; i < 20; i++) {
-          const x = Math.random() * width;
-          const y = Math.random() * height;
-          const size = Math.random() * 50 + 20;
-          ctx.fillRect(x, y, size, size);
+        if (pollCount >= maxPolls) {
+          hideThrobber();
+          alert("❌ Image generation timeout. Please try again.");
+          return;
         }
 
-        // Add text description
-        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-        ctx.font = "bold 18px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        try {
+          const statusResponse = await fetch(
+            `${API_BASE}/api/job-status/${jobId}`,
+            {
+              headers: { "ngrok-skip-browser-warning": "true" },
+            }
+          );
 
-        // Split text for multi-line display
-        const lines = wrapText(
-          ctx,
-          prompt.substring(0, 100) + "...",
-          width - 40
-        );
-        const lineHeight = 25;
-        const totalHeight = lines.length * lineHeight;
-        let y = (height - totalHeight) / 2;
-
-        lines.forEach((line) => {
-          ctx.fillText(line, width / 2, y);
-          y += lineHeight;
-        });
-
-        // Add Bob AI watermark
-        ctx.fillStyle = "rgba(124, 58, 237, 0.6)";
-        ctx.font = "12px Arial";
-        ctx.textAlign = "right";
-        ctx.fillText("✨ Generated with Bob AI", width - 10, height - 10);
-
-        // Convert canvas to image
-        canvas.toBlob((blob) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            // Display in preview container
-            const previewContainer =
-              document.getElementById("preview-container");
-            const previewImage = document.getElementById("preview-image");
-
-            previewImage.src = e.target.result;
-            uploadZone.classList.add("hidden");
-            previewContainer.classList.remove("hidden");
-
-            // Store as current file for processing
-            currentFile = new File([blob], "bob-ai-generated.png", {
-              type: "image/png",
-            });
-
-            console.log(
-              "[BOB-AI] Generated image displayed, ready for 3D generation"
+          if (!statusResponse.ok) {
+            throw new Error(
+              `Status check failed: HTTP ${statusResponse.status}`
             );
-
-            // Show prompt in results
-            document.getElementById("results-container").innerHTML = `
-              <div class="status-badge processing">
-                <span>✨</span> Bob AI Generated Image
-              </div>
-              <p class="progress-text-style">
-                ${prompt.substring(0, 150)}...
-              </p>
-              <p class="progress-text-style" style="font-size: 0.8rem; margin-top: var(--spacing-md);">
-                Click "Generate 3D Model" to convert this to a 3D object
-              </p>
-            `;
-
-            // Enable generate button
-            document.getElementById("generate-btn").disabled = false;
-          };
-          reader.readAsDataURL(blob);
-        });
-      }
-
-      function extractColorsFromPrompt(prompt) {
-        const promptLower = prompt.toLowerCase();
-        let colors = ["#1a1a2e", "#16213e", "#0f3460"];
-
-        if (
-          promptLower.includes("sunset") ||
-          promptLower.includes("warm") ||
-          promptLower.includes("gold")
-        ) {
-          colors = ["#ff6b35", "#f7931e", "#fdb833"];
-        } else if (
-          promptLower.includes("ocean") ||
-          promptLower.includes("water") ||
-          promptLower.includes("blue")
-        ) {
-          colors = ["#0077be", "#00b4d8", "#48cae4"];
-        } else if (
-          promptLower.includes("forest") ||
-          promptLower.includes("nature") ||
-          promptLower.includes("green")
-        ) {
-          colors = ["#1b3a1b", "#2d5016", "#5ba818"];
-        } else if (
-          promptLower.includes("night") ||
-          promptLower.includes("dark") ||
-          promptLower.includes("cyber")
-        ) {
-          colors = ["#0a0e1a", "#7c3aed", "#00d4ff"];
-        } else if (
-          promptLower.includes("space") ||
-          promptLower.includes("cosmic") ||
-          promptLower.includes("nebula")
-        ) {
-          colors = ["#0b0421", "#2a0845", "#7c3aed"];
-        } else if (
-          promptLower.includes("futuristic") ||
-          promptLower.includes("cyber") ||
-          promptLower.includes("neon")
-        ) {
-          colors = ["#0d0221", "#0a4d68", "#088395"];
-        }
-
-        return colors;
-      }
-
-      function wrapText(ctx, text, maxWidth) {
-        const words = text.split(" ");
-        const lines = [];
-        let currentLine = "";
-
-        words.forEach((word) => {
-          const testLine = currentLine + word + " ";
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > maxWidth && currentLine) {
-            lines.push(currentLine);
-            currentLine = word + " ";
-          } else {
-            currentLine = testLine;
           }
-        });
 
-        if (currentLine) {
-          lines.push(currentLine);
+          const statusData = await statusResponse.json();
+          console.log("[BOB-AI] Job status:", statusData);
+
+          // Update throbber with progress
+          const resultsContainer = document.getElementById("results-container");
+          const progress = statusData.progress || (pollCount * 100) / maxPolls;
+          resultsContainer.innerHTML = `
+            <div class="throbber-container">
+              <div class="throbber-large"></div>
+              <div class="throbber-pulse"></div>
+              <div class="throbber-status">
+                Generating image... ${Math.min(100, Math.round(progress))}%
+              </div>
+            </div>
+          `;
+
+          if (statusData.status === "completed") {
+            console.log("[BOB-AI] Generation complete:", statusData);
+            if (statusData.preview_url) {
+              displayGeneratedImage(statusData.preview_url, prompt);
+            } else if (statusData.filename) {
+              displayGeneratedImage(
+                `/api/preview/${statusData.filename}`,
+                prompt
+              );
+            }
+          } else if (statusData.status === "failed") {
+            hideThrobber();
+            alert(
+              `❌ Image generation failed: ${
+                statusData.message || "Unknown error"
+              }`
+            );
+          } else {
+            // Still processing, poll again
+            setTimeout(
+              () => pollImageGeneration(jobId, prompt, pollCount + 1),
+              pollInterval
+            );
+          }
+        } catch (error) {
+          console.error("[BOB-AI] Poll error:", error);
+          hideThrobber();
+          alert(`❌ Error checking generation status: ${error.message}`);
         }
+      }
 
-        return lines;
+      function displayGeneratedImage(imageUrl, prompt) {
+        console.log("[BOB-AI] Displaying generated image:", imageUrl);
+        const previewContainer = document.getElementById("preview-container");
+        const previewImage = document.getElementById("preview-image");
+
+        // Create image element to load
+        const img = new Image();
+        img.onload = () => {
+          previewImage.src = imageUrl;
+          uploadZone.classList.add("hidden");
+          previewContainer.classList.remove("hidden");
+
+          // Update results with success message
+          hideThrobber();
+          document.getElementById("results-container").innerHTML = `
+            <div class="status-badge success">
+              <span>✓</span> Image Generated Successfully
+            </div>
+            <p class="progress-text-style">
+              Ready to generate 3D model from this image
+            </p>
+          `;
+
+          // Create a blob from the image URL for upload
+          fetch(imageUrl)
+            .then((res) => res.blob())
+            .then((blob) => {
+              currentFile = new File([blob], "bob-ai-generated.png", {
+                type: "image/png",
+              });
+              console.log("[BOB-AI] Image ready for 3D generation");
+              document.getElementById("generate-btn").disabled = false;
+            })
+            .catch((err) => {
+              console.warn("[BOB-AI] Could not prepare image for upload:", err);
+              document.getElementById("generate-btn").disabled = false;
+            });
+        };
+
+        img.onerror = () => {
+          hideThrobber();
+          alert(`❌ Could not load generated image from: ${imageUrl}`);
+        };
+
+        img.src = imageUrl;
       }
     </script>
   </body>
