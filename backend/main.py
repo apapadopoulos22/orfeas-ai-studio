@@ -3034,6 +3034,53 @@ class OrfeasUnifiedServer:
 
             return jsonify(job_data)
 
+        @self.app.route('/api/download-base64/<job_id>/<filename>', methods=['GET'])
+        def download_file_base64(job_id, filename):
+            """Download file as base64-encoded JSON to bypass ngrok 20MB limit"""
+            try:
+                logger.info(f"[DOWNLOAD-B64] Base64 download request: {job_id}/{filename}")
+
+                # [SECURITY] Validate job and file exist
+                job_output_path = self.outputs_dir / job_id
+                if not job_output_path.exists():
+                    return jsonify({"error": "Job not found"}), 404
+
+                file_path = job_output_path / filename
+                try:
+                    resolved_file = file_path.resolve()
+                    resolved_job = job_output_path.resolve()
+                    if not str(resolved_file).startswith(str(resolved_job)):
+                        return jsonify({"error": "Invalid file path"}), 404
+                except:
+                    return jsonify({"error": "Invalid file path"}), 404
+
+                if not file_path.exists():
+                    return jsonify({"error": "File not found"}), 404
+
+                file_size = file_path.stat().st_size
+                logger.info(f"[DOWNLOAD-B64] File size: {file_size} bytes")
+
+                # Read and encode file to base64
+                import base64
+                with open(str(file_path), 'rb') as f:
+                    file_data = f.read()
+
+                encoded_data = base64.b64encode(file_data).decode('utf-8')
+                logger.info(f"[DOWNLOAD-B64] Encoded size: {len(encoded_data)} bytes")
+
+                # Return JSON with base64 data
+                return jsonify({
+                    "status": "success",
+                    "filename": filename,
+                    "original_size": file_size,
+                    "encoded_size": len(encoded_data),
+                    "data": encoded_data
+                })
+
+            except Exception as e:
+                logger.error(f"[DOWNLOAD-B64] Error: {str(e)}")
+                return jsonify({"error": str(e)}), 500
+
         @self.app.route('/api/download/<job_id>/<filename>', methods=['GET'])
         def download_file_plain(job_id, filename):
             """Download generated file - NO decorator to avoid hangs"""
@@ -3072,36 +3119,43 @@ class OrfeasUnifiedServer:
                     logger.info(f"[DOWNLOAD] ✅ Serving file: {file_path} ({file_size} bytes)")
                     logger.info(f"[DOWNLOAD] File size: {file_size}, MIME type: {self._get_mimetype(filename)}")
 
-                    # For large files, use streaming response to avoid memory issues
-                    if file_size > 10 * 1024 * 1024:  # >10MB
-                        logger.info(f"[DOWNLOAD] Large file detected ({file_size} bytes), using streaming response")
-                        from flask import Response
+                    # ALWAYS use streaming for ALL files to ensure complete transmission through ngrok
+                    logger.info(f"[DOWNLOAD] Using direct streaming response for file: {file_size} bytes")
+                    from flask import Response
+                    import io
 
-                        def generate():
+                    def generate_file():
+                        """Stream file in chunks with explicit logging for debugging"""
+                        bytes_sent = 0
+                        try:
                             with open(str(file_path), 'rb') as f:
-                                chunk_size = 1024 * 1024  # 1MB chunks
+                                chunk_size = 512 * 1024  # 512KB chunks (smaller for ngrok stability)
                                 while True:
                                     chunk = f.read(chunk_size)
                                     if not chunk:
                                         break
+                                    bytes_sent += len(chunk)
+                                    logger.debug(f"[DOWNLOAD] Sent chunk: {len(chunk)} bytes (total: {bytes_sent}/{file_size})")
                                     yield chunk
+                            logger.info(f"[DOWNLOAD] ✅ Successfully streamed {bytes_sent} bytes out of {file_size}")
+                        except Exception as e:
+                            logger.error(f"[DOWNLOAD] ❌ Stream error after {bytes_sent} bytes: {str(e)}")
+                            raise
 
-                        response = Response(
-                            generate(),
-                            mimetype='application/octet-stream',
-                            headers={
-                                'Content-Disposition': f'attachment; filename="{filename}"',
-                                'Content-Length': str(file_size)
-                            }
-                        )
-                        logger.info(f"[DOWNLOAD] Streaming response prepared, Content-Length: {file_size}")
-                        return response
-                    else:
-                        # For small files, use send_file
-                        response = send_file(str(file_path), as_attachment=True)
-                        response.headers['Content-Length'] = str(file_size)
-                        logger.info(f"[DOWNLOAD] Response headers set, Content-Length: {file_size}")
-                        return response
+                    response = Response(
+                        generate_file(),
+                        mimetype='application/octet-stream',
+                        headers={
+                            'Content-Disposition': f'attachment; filename="{filename}"',
+                            'Content-Type': 'application/octet-stream',
+                            'Content-Length': str(file_size),
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache',
+                            'Expires': '0'
+                        }
+                    )
+                    logger.info(f"[DOWNLOAD] Streaming response prepared with Content-Length: {file_size}")
+                    return response
                 else:
                     logger.warning(f"[SECURITY] File not found in job directory: {filename}")
                     return jsonify({"error": "File not found"}), 404
@@ -5163,15 +5217,24 @@ class OrfeasUnifiedServer:
             except Exception as e:
                 logger.warning(f"[ENTERPRISE] Agent communication setup failed: {e}")
 
-        # [TEST MODE FIX] Use plain Flask.run() in test mode (SocketIO disabled)
-        if self.is_testing or self.socketio is None:
-            logger.info("[TEST MODE] Starting plain Flask server (no SocketIO)")
-            self.app.run(host=host, port=port, debug=debug, use_reloader=False, threaded=True)
-        else:
-            # Production: use SocketIO.run with threading mode
-            # ORFEAS FIX: Disable auto-reloader to prevent interrupting 30-second model loading
-            # ORFEAS FIX: allow_unsafe_werkzeug=True for development/testing (not production!)
-            self.socketio.run(self.app, host=host, port=port, debug=debug, use_reloader=False, allow_unsafe_werkzeug=True)
+        # [FIX] Use SocketIO.run() for proper keep-alive, but wrap with error handling
+        logger.info("[LAUNCH] Starting server with SocketIO keep-alive")
+        try:
+            if self.socketio:
+                self.socketio.run(
+                    self.app,
+                    host=host,
+                    port=port,
+                    debug=debug,
+                    use_reloader=False,
+                    allow_unsafe_werkzeug=True
+                )
+            else:
+                logger.warning("[LAUNCH] SocketIO unavailable, falling back to Flask.run()")
+                self.app.run(host=host, port=port, debug=debug, use_reloader=False, threaded=True)
+        except Exception as e:
+            logger.error(f"[ERROR] Server startup failed: {e}", exc_info=True)
+            raise
 
 
 def validate_environment():

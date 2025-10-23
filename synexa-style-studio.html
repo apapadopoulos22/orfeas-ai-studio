@@ -2202,13 +2202,17 @@
         // canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
 
         // ========== FORCED UPDATE CHECK ==========
-        console.warn("===== LOAD3DMODEL FUNCTION CALLED - UPDATED VERSION =====");
+        console.warn(
+          "===== LOAD3DMODEL FUNCTION CALLED - UPDATED VERSION ====="
+        );
         console.warn("File updated at:", new Date().toISOString());
-        
+
         // Force throw to verify file is loaded
         if (!window._3D_PREVIEW_UPDATED) {
           window._3D_PREVIEW_UPDATED = true;
-          console.log("🔄 Updated 3D preview code is loaded - cache bypass successful");
+          console.log(
+            "🔄 Updated 3D preview code is loaded - cache bypass successful"
+          );
         }
 
         // Make viewer visible BEFORE initializing Three.js scene
@@ -2245,8 +2249,14 @@
 
             // Verify canvas exists and is valid
             console.log("[DEBUG] Canvas element:", canvas);
-            console.log("[DEBUG] Canvas tag name:", canvas ? canvas.tagName : "NULL");
-            console.log("[DEBUG] Canvas parent:", canvas ? canvas.parentElement : "NULL");
+            console.log(
+              "[DEBUG] Canvas tag name:",
+              canvas ? canvas.tagName : "NULL"
+            );
+            console.log(
+              "[DEBUG] Canvas parent:",
+              canvas ? canvas.parentElement : "NULL"
+            );
 
             // Camera setup - NOW canvas has proper dimensions since viewer is visible
             const width = canvas.offsetWidth || 800;
@@ -2414,36 +2424,52 @@
         console.log("[LOADER] Creating STLLoader...");
         const loader = new THREE.STLLoader();
 
-        console.log("[LOADER] Starting STL load from:", downloadUrl);
+        console.log(
+          "[LOADER] Starting STL load from (via base64):",
+          downloadUrl
+        );
 
-        // Fetch to validate file size first
-        fetch(downloadUrl)
+        // Use base64 endpoint to bypass ngrok 20MB limit
+        const base64Url = downloadUrl.replace(
+          "/api/download/",
+          "/api/download-base64/"
+        );
+        console.log("[LOADER] Using base64 endpoint:", base64Url);
+
+        // Fetch base64-encoded file
+        fetch(base64Url)
           .then((response) => {
-            const contentLength = response.headers.get("content-length");
-            console.log(
-              "[LOADER] File size from header:",
-              contentLength,
-              "bytes"
-            );
-
-            // Sanity check: STL files should be reasonable size (< 500MB)
-            if (contentLength && parseInt(contentLength) > 500 * 1024 * 1024) {
-              throw new Error(
-                `File too large: ${contentLength} bytes (max 500MB)`
-              );
-            }
-
             if (!response.ok) {
               throw new Error(
                 `HTTP ${response.status}: ${response.statusText}`
               );
             }
+            return response.json();
+          })
+          .then((result) => {
+            if (!result.data) {
+              throw new Error("No file data in response");
+            }
 
-            return response.arrayBuffer();
+            console.log(
+              "[LOADER] File received via base64, original size:",
+              result.original_size,
+              "bytes"
+            );
+
+            // Decode base64 to binary
+            const binaryString = atob(result.data);
+            const arrayBuffer = new ArrayBuffer(binaryString.length);
+            const view = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < binaryString.length; i++) {
+              view[i] = binaryString.charCodeAt(i);
+            }
+
+            return arrayBuffer;
           })
           .then((arrayBuffer) => {
             console.log(
-              "[LOADER] File downloaded, size:",
+              "[LOADER] File decoded, size:",
               arrayBuffer.byteLength,
               "bytes"
             );
