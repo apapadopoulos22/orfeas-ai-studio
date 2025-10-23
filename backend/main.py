@@ -2542,7 +2542,7 @@ class OrfeasUnifiedServer:
                 @track_generation_metrics('text-to-image', 'ultimate-engine')
                 def process_text_to_image():
                     try:
-                        self.processing_jobs[job_id] = {
+                        job_data = {
                             "status": "processing",
                             "progress": 0,
                             "message": "Initializing AI model...",
@@ -2550,6 +2550,8 @@ class OrfeasUnifiedServer:
                             "prompt": prompt,
                             "style": style
                         }
+                        self.processing_jobs[job_id] = job_data
+                        self.job_progress[job_id] = job_data  # [FIX] Sync with job_progress
 
                         # Emit status update
                         if self.socketio:
@@ -2566,6 +2568,7 @@ class OrfeasUnifiedServer:
                         # Update progress
                         self.processing_jobs[job_id]['progress'] = 10
                         self.processing_jobs[job_id]['message'] = '[ORFEAS] Initializing ULTIMATE AI engine...'
+                        self.job_progress[job_id] = self.processing_jobs[job_id]  # [FIX] Sync
 
                         if self.socketio:
                             self.emit_event('job_update', {
@@ -2581,6 +2584,7 @@ class OrfeasUnifiedServer:
                         # Update progress
                         self.processing_jobs[job_id]['progress'] = 20
                         self.processing_jobs[job_id]['message'] = '[ART] Generating with best AI models...'
+                        self.job_progress[job_id] = self.processing_jobs[job_id]  # [FIX] Sync
 
                         if self.socketio:
                             self.emit_event('job_update', {
@@ -2614,9 +2618,10 @@ class OrfeasUnifiedServer:
                             # Update progress
                             self.processing_jobs[job_id]['progress'] = 100
                             self.processing_jobs[job_id]['status'] = 'completed'
-                            self.processing_jobs[job_id]['message'] = 'ÃƒÂ°Ã…Â¸Ã…Â½Ã¢â‚¬Â° Image generated successfully!'
+                            self.processing_jobs[job_id]['message'] = 'Image generated successfully!'
                             self.processing_jobs[job_id]['filename'] = unique_filename
                             self.processing_jobs[job_id]['preview_url'] = f"/api/preview/{unique_filename}"
+                            self.job_progress[job_id] = self.processing_jobs[job_id]  # [FIX] Sync
 
                             if self.socketio:
                                 self.emit_event('job_update', {
@@ -2634,11 +2639,13 @@ class OrfeasUnifiedServer:
 
                     except Exception as e:
                         logger.error(f"[FAIL] Text-to-image error: {str(e)}")
-                        self.processing_jobs[job_id] = {
+                        error_data = {
                             "status": "failed",
                             "progress": 0,
                             "message": str(e)
                         }
+                        self.processing_jobs[job_id] = error_data
+                        self.job_progress[job_id] = error_data  # [FIX] Sync
 
                         if self.socketio:
                             self.emit_event('job_update', {
@@ -2963,12 +2970,14 @@ class OrfeasUnifiedServer:
                 logger.warning(f"[SECURITY] Invalid job_id format rejected: {job_id}")
                 return jsonify({"error": "Job not found"}), 404
 
-            # [API FIX] ORFEAS: Return 404 for missing jobs (not 200)
-            if job_id not in self.job_progress:
+            # [FIX] Check both job_progress and processing_jobs dictionaries
+            job_data = self.job_progress.get(job_id) or self.processing_jobs.get(job_id)
+            
+            if not job_data:
                 logger.warning(f"[API] Job not found: {job_id}")
                 return jsonify({"error": "Job not found"}), 404
 
-            return jsonify(self.job_progress[job_id])
+            return jsonify(job_data)
 
         @self.app.route('/api/download/<job_id>/<filename>', methods=['GET'])
         def download_file_plain(job_id, filename):
