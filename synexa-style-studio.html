@@ -1614,92 +1614,81 @@
         indicator.style.color = "var(--accent-warning)";
 
         try {
-          // Try detailed health endpoint first
-          let response = await fetch(`${API_BASE}/health-detailed`, {
+          console.log("[HEALTH] Checking backend health at:", API_BASE);
+          
+          // Use the /api/models-info endpoint which we know works
+          let response = await fetch(`${API_BASE}/api/models-info`, {
+            method: 'GET',
             cache: "no-cache",
             headers: {
               "Cache-Control": "no-cache",
-              Pragma: "no-cache",
+              "Pragma": "no-cache",
+              "ngrok-skip-browser-warning": "true"
             },
           });
 
-          // Fallback to basic health if detailed not available
-          if (!response.ok) {
-            response = await fetch(`${API_BASE}/health`, {
-              cache: "no-cache",
-              headers: {
-                "Cache-Control": "no-cache",
-                Pragma: "no-cache",
-              },
-            });
-          }
+          console.log("[HEALTH] Response status:", response.status);
 
           if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            console.error("[HEALTH] Response not OK:", response.status);
+            throw new Error(`HTTP ${response.status} - Backend not responding`);
+          }
+
+          // Verify we got JSON, not HTML error page
+          const contentType = response.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            console.error("[HEALTH] Wrong content type:", contentType);
+            throw new Error('Backend returned non-JSON response');
           }
 
           const data = await response.json();
+          console.log("[HEALTH] Backend response:", data);
 
-          if (data.status === "healthy") {
+          // Check if we have device info
+          if (data.device) {
             indicator.style.color = "var(--accent-success)";
 
             // GPU Information
             let gpuInfo = "❌ GPU: Not Available";
-            if (data.gpu_available) {
-              const gpuCount = data.gpu_count || 1;
-              gpuInfo = `✅ GPU: NVIDIA RTX 3090 (Available)\n   Count: ${gpuCount} GPU${
-                gpuCount > 1 ? "s" : ""
-              }`;
-
+            if (data.device.toUpperCase() === 'CUDA') {
+              gpuInfo = `✅ GPU: NVIDIA RTX 3090 (CUDA Ready)`;
+              
               // Add memory info if available
-              if (data.gpu_memory && data.gpu_memory.length > 0) {
-                const gpu = data.gpu_memory[0];
-                gpuInfo += `\n   VRAM: Allocated ${gpu.allocated_mb.toFixed(
-                  0
-                )} MB, Reserved ${gpu.reserved_mb.toFixed(0)} MB`;
+              if (data.gpu_stats && data.gpu_stats.allocated_mb) {
+                gpuInfo += `\n   Allocated: ${data.gpu_stats.allocated_mb.toFixed(0)} MB`;
               }
-            }
-
-            // CUDA Information
-            const cudaInfo = data.cuda_version
-              ? `✅ CUDA: ${data.cuda_version}`
-              : "✅ CUDA: 12.0 (Runtime)";
-
-            // System metrics
-            let systemInfo = "";
-            if (data.cpu_percent !== undefined) {
-              systemInfo =
-                `\n\n📊 System Metrics:\n` +
-                `   CPU: ${data.cpu_percent.toFixed(1)}%\n` +
-                `   RAM: ${data.memory_percent.toFixed(1)}%\n` +
-                `   Disk: ${data.disk_percent.toFixed(1)}%`;
             }
 
             alert(
               `✅ ORFEAS Backend is HEALTHY\n\n` +
-                `${gpuInfo}\n` +
-                `${cudaInfo}` +
-                `${systemInfo}\n\n` +
-                `Status: ${data.status}\n` +
-                `Service: ${data.service || "orfeas-backend"}\n\n` +
-                `🎨 Ready to generate 3D models!`
+              `${gpuInfo}\n` +
+              `Device: ${data.device}\n\n` +
+              `🎨 Ready to generate 3D models!`
             );
           } else {
-            indicator.style.color = "var(--accent-error)";
-            alert(
-              `⚠️ System Status: ${data.status}\n\nPlease check the backend server.`
-            );
+            throw new Error('Invalid backend response format');
           }
         } catch (error) {
           indicator.style.color = "var(--accent-error)";
-          console.error("Health check error:", error);
+          console.error("[HEALTH] Error:", error);
+          
+          // Provide helpful error message
+          let errorMsg = error.message;
+          if (error.message.includes('Failed to fetch')) {
+            errorMsg = 'Cannot reach backend - Check if ngrok tunnel is running';
+          } else if (error.message.includes('401') || error.message.includes('403')) {
+            errorMsg = 'Access denied - Check ngrok tunnel configuration';
+          } else if (error.message.includes('non-JSON')) {
+            errorMsg = 'Backend returned invalid response - May be returning error page';
+          }
+          
           alert(
-            `❌ Cannot Connect to Backend Server\n\n` +
-              `Error: ${error.message}\n\n` +
-              `Please ensure the backend is running:\n` +
-              `  cd backend\n` +
-              `  python main.py\n\n` +
-              `Server should be at: ${API_BASE}`
+            `⚠️ Backend Health Check Failed\n\n` +
+            `Error: ${errorMsg}\n\n` +
+            `Ensure you have:\n` +
+            `1. Backend running: cd backend && python main.py\n` +
+            `2. Ngrok running: .\\ngrok http 5000\n` +
+            `3. Both processes still active`
           );
         }
       }
