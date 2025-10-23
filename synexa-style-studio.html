@@ -2745,10 +2745,19 @@
             }
           } else if (statusData.status === "failed") {
             hideThrobber();
+            console.error("[BOB-AI] Generation failed:", statusData);
+
+            // Build comprehensive error message
+            let errorMsg = statusData.message || "Unknown error";
+            if (statusData.error_details) {
+              errorMsg += `\n\nDetails: ${statusData.error_details}`;
+            }
+            if (statusData.error_type) {
+              errorMsg = `[${statusData.error_type}] ${errorMsg}`;
+            }
+
             alert(
-              `❌ Image generation failed: ${
-                statusData.message || "Unknown error"
-              }`
+              `❌ Image generation failed:\n\n${errorMsg}\n\nCheck backend logs for details.`
             );
           } else {
             // Still processing, poll again

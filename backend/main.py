@@ -2607,6 +2607,7 @@ class OrfeasUnifiedServer:
                             })
 
                         # Generate with ULTIMATE engine (tries multiple providers)
+                        logger.info(f"[ORFEAS] Calling ultimate_engine.generate_ultimate...")
                         image_bytes = ultimate_engine.generate_ultimate(
                             prompt=prompt,
                             style=style,
@@ -2617,16 +2618,24 @@ class OrfeasUnifiedServer:
                             quality_mode='best'  # Always use best quality
                         )
 
+                        logger.info(f"[ORFEAS] ultimate_engine returned: image_bytes={'present' if image_bytes else 'None'} (size: {len(image_bytes) if image_bytes else 0} bytes)")
+
                         success = False
                         if image_bytes:
                             # Save generated image
-                            output_path.write_bytes(image_bytes)
-                            success = True
-                            logger.info(f"[OK] Ultimate engine generated image: {output_path}")
+                            try:
+                                output_path.write_bytes(image_bytes)
+                                success = True
+                                logger.info(f"[OK] Image saved successfully: {output_path}")
+                            except Exception as save_error:
+                                logger.error(f"[FAIL] Failed to save image to {output_path}: {str(save_error)}")
+                                raise
                         else:
-                            logger.error(f"[FAIL] Ultimate engine failed to generate image")
+                            logger.error(f"[FAIL] Ultimate engine returned None (all providers failed or fallback failed)")
+                            raise Exception("[ORFEAS] Ultimate engine: Failed to generate image (returned None)")
 
                         if success and output_path.exists():
+                            logger.info(f"[OK] Image file verified at: {output_path}")
                             # Update progress
                             self.processing_jobs[job_id]['progress'] = 100
                             self.processing_jobs[job_id]['status'] = 'completed'
@@ -2647,14 +2656,22 @@ class OrfeasUnifiedServer:
 
                             logger.info(f"[OK] Text-to-image completed: {job_id}")
                         else:
-                            raise Exception("[ORFEAS] Ultimate engine: All AI providers failed")
+                            error_msg = f"[ORFEAS] Image file not found after save. Success: {success}, File exists: {output_path.exists()}, Path: {output_path}"
+                            logger.error(error_msg)
+                            raise Exception(error_msg)
 
                     except Exception as e:
+                        import traceback
+                        error_trace = traceback.format_exc()
                         logger.error(f"[FAIL] Text-to-image error: {str(e)}")
+                        logger.error(f"[FAIL] Error traceback:\n{error_trace}")
+
                         error_data = {
                             "status": "failed",
                             "progress": 0,
-                            "message": str(e)
+                            "message": f"Image generation failed: {str(e)}",
+                            "error_type": type(e).__name__,
+                            "error_details": str(e)
                         }
                         self.processing_jobs[job_id] = error_data
                         self.job_progress[job_id] = error_data  # [FIX] Sync
@@ -2664,7 +2681,7 @@ class OrfeasUnifiedServer:
                                 'job_id': job_id,
                                 'status': 'failed',
                                 'progress': 0,
-                                'message': str(e)
+                                'message': f"Image generation failed: {str(e)}"
                             })
 
                 # Start processing in background thread
