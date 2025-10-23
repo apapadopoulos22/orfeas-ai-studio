@@ -449,8 +449,8 @@
       }
 
       .studio-main {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: var(--spacing-lg);
       }
 
@@ -462,11 +462,12 @@
         text-align: center;
         cursor: pointer;
         transition: all var(--transition-base);
-        min-height: 300px;
+        min-height: 400px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        flex: 1;
       }
 
       .upload-zone:hover {
@@ -496,6 +497,7 @@
         justify-content: center;
         position: relative;
         overflow: hidden;
+        flex: 1;
       }
 
       .preview-image {
@@ -510,6 +512,7 @@
         border-radius: var(--radius-lg);
         background: var(--bg-darker);
         position: relative;
+        grid-column: 1 / -1;
       }
 
       #three-canvas {
