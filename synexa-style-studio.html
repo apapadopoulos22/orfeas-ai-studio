@@ -428,7 +428,7 @@
 
       .studio-workspace {
         display: grid;
-        grid-template-columns: 350px 1fr 350px;
+        grid-template-columns: 350px 1fr;
         gap: var(--spacing-lg);
         height: calc(100vh - 140px);
       }
@@ -1070,9 +1070,27 @@
                 Initializing...
               </p>
             </div>
+
+            <div id="results-container" class="mt-lg">
+              <p class="results-placeholder">Ready to generate</p>
+            </div>
+
+            <div
+              id="download-section"
+              class="hidden progress-container-spacing"
+            >
+              <button
+                type="button"
+                class="btn btn-primary btn-full-width"
+                onclick="downloadModel()"
+                id="download-btn"
+              >
+                <span>⬇️</span> Download Model
+              </button>
+            </div>
           </div>
 
-          <!-- Main Area: Upload & Preview -->
+          <!-- Main Area: Upload, Preview & 3D Viewer (FULL SIZE) -->
           <div class="studio-main">
             <div
               class="upload-zone"
@@ -1098,31 +1116,6 @@
 
             <div class="viewer-3d hidden" id="viewer-3d">
               <canvas id="three-canvas"></canvas>
-            </div>
-          </div>
-
-          <!-- Right Panel: Results -->
-          <div class="studio-panel">
-            <h3 class="studio-panel-title">Generation Results</h3>
-
-            <div id="results-container">
-              <p class="results-placeholder">
-                No results yet. Upload an image to start.
-              </p>
-            </div>
-
-            <div
-              id="download-section"
-              class="hidden progress-container-spacing"
-            >
-              <button
-                type="button"
-                class="btn btn-primary btn-full-width"
-                onclick="downloadModel()"
-                id="download-btn"
-              >
-                <span>⬇️</span> Download Model
-              </button>
             </div>
           </div>
         </div>
