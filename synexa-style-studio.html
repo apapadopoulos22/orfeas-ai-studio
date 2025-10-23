@@ -2172,18 +2172,16 @@
         // Check if Three.js loaded
         if (typeof THREE === "undefined") {
           console.error("[ERROR] Three.js library not loaded");
-          alert(
-            "❌ 3D Viewer Error: Three.js library failed to load. Please refresh the page."
-          );
+          console.log("[FALLBACK] Using web-based 3D viewer instead...");
+          viewOnline3DViewer();
           return;
         }
 
         // Check if STLLoader is available
         if (typeof THREE.STLLoader === "undefined") {
           console.error("[ERROR] STLLoader not available");
-          alert(
-            "❌ 3D Viewer Error: STL loader not available. Please refresh the page."
-          );
+          console.log("[FALLBACK] Using web-based 3D viewer instead...");
+          viewOnline3DViewer();
           return;
         }
 
@@ -2193,11 +2191,49 @@
         const canvas = document.getElementById("three-canvas");
         if (!canvas) {
           console.error("[ERROR] Canvas element #three-canvas not found!");
+          console.log("[FALLBACK] Using web-based 3D viewer instead...");
+          viewOnline3DViewer();
           return;
         }
 
-        // Clear previous canvas content
-        canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+        // IMPORTANT: Do NOT get 2D context on a canvas meant for WebGL!
+        // Once a canvas has a 2D context, it CANNOT be used for WebGL
+        // Remove this line - we'll use WebGL renderer directly instead
+        // canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+
+        // ========== FORCED UPDATE CHECK ==========
+        console.warn("===== LOAD3DMODEL FUNCTION CALLED - UPDATED VERSION =====");
+        console.warn("File updated at:", new Date().toISOString());
+        
+        // Force throw to verify file is loaded
+        if (!window._3D_PREVIEW_UPDATED) {
+          window._3D_PREVIEW_UPDATED = true;
+          console.log("🔄 Updated 3D preview code is loaded - cache bypass successful");
+        }
+
+        // Make viewer visible BEFORE initializing Three.js scene
+        const viewer = document.getElementById("viewer-3d");
+        console.log("[DEBUG] Viewer element before removing hidden:", viewer);
+        console.log(
+          "[DEBUG] Viewer classes before:",
+          viewer ? viewer.className : "NULL"
+        );
+
+        viewer.classList.remove("hidden");
+
+        console.log(
+          "[DEBUG] Viewer classes after removing hidden:",
+          viewer ? viewer.className : "NULL"
+        );
+        console.log(
+          "[DEBUG] Viewer computed display:",
+          viewer ? window.getComputedStyle(viewer).display : "NULL"
+        );
+
+        // FORCE browser to recalculate layout (reflow) by accessing offsetWidth
+        // This ensures CSS changes are applied before we read dimensions
+        void viewer.offsetWidth; // Force reflow
+        void viewer.offsetHeight; // Force reflow
 
         // Initialize Three.js scene (only once)
         if (!scene) {
@@ -2207,20 +2243,54 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x0a0e1a); // Match --bg-dark
 
-            // Camera setup
+            // Verify canvas exists and is valid
+            console.log("[DEBUG] Canvas element:", canvas);
+            console.log("[DEBUG] Canvas tag name:", canvas ? canvas.tagName : "NULL");
+            console.log("[DEBUG] Canvas parent:", canvas ? canvas.parentElement : "NULL");
+
+            // Camera setup - NOW canvas has proper dimensions since viewer is visible
             const width = canvas.offsetWidth || 800;
             const height = canvas.offsetHeight || 500;
+            console.log("[INIT] Canvas dimensions:", width, "x", height);
             camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
             camera.position.set(0, 0, 5);
 
             // Check WebGL support before creating renderer
+            console.log(
+              "[DEBUG] Canvas visibility:",
+              window.getComputedStyle(canvas).display
+            );
+            console.log(
+              "[DEBUG] Canvas offsetWidth:",
+              canvas.offsetWidth,
+              "offsetHeight:",
+              canvas.offsetHeight
+            );
+            console.log("[DEBUG] Attempting to get WebGL context...");
+
             const gl =
               canvas.getContext("webgl2") ||
               canvas.getContext("webgl") ||
               canvas.getContext("experimental-webgl");
+
             if (!gl) {
+              console.error("[DEBUG] WebGL context creation failed!");
+              console.error(
+                "[DEBUG] Canvas computed style:",
+                window.getComputedStyle(canvas).display
+              );
+              console.error(
+                "[DEBUG] Canvas in document:",
+                document.body.contains(canvas)
+              );
+              console.error(
+                "[DEBUG] Canvas parent visible:",
+                canvas.parentElement
+                  ? window.getComputedStyle(canvas.parentElement).display
+                  : "N/A"
+              );
               throw new Error(
-                "WebGL not supported by your browser. Please enable hardware acceleration in browser settings or use a different browser (Chrome/Edge/Firefox recommended)."
+                "WebGL not supported by your browser. Switching to web-based 3D viewer..."
               );
             }
             console.log(
@@ -2345,63 +2415,100 @@
         const loader = new THREE.STLLoader();
 
         console.log("[LOADER] Starting STL load from:", downloadUrl);
-        loader.load(
-          downloadUrl,
-          function (geometry) {
+
+        // Fetch to validate file size first
+        fetch(downloadUrl)
+          .then((response) => {
+            const contentLength = response.headers.get("content-length");
             console.log(
-              "[SUCCESS] STL loaded, vertices:",
-              geometry.attributes.position.count
+              "[LOADER] File size from header:",
+              contentLength,
+              "bytes"
             );
 
-            // Center and scale geometry
-            geometry.center();
-            geometry.computeVertexNormals();
-
-            // Calculate bounding box for proper scaling
-            geometry.computeBoundingBox();
-            const boundingBox = geometry.boundingBox;
-            const size = new THREE.Vector3();
-            boundingBox.getSize(size);
-            console.log("[GEOMETRY] Bounding box size:", size);
-
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 2 / maxDim; // Fit in 2 unit cube
-            console.log("[GEOMETRY] Scale factor:", scale);
-
-            // Create material with gradient effect
-            const material = new THREE.MeshPhongMaterial({
-              color: 0x00d4ff,
-              specular: 0x7c3aed,
-              shininess: 100,
-              flatShading: false,
-            });
-
-            // Create mesh
-            currentMesh = new THREE.Mesh(geometry, material);
-            currentMesh.scale.set(scale, scale, scale);
-            currentMesh.rotation.x = -Math.PI / 2; // Rotate to standard orientation
-
-            scene.add(currentMesh);
-            console.log("[SCENE] Mesh added to scene");
-
-            // Reset camera position
-            camera.position.set(0, 0, 5);
-            if (controls && controls.reset) {
-              controls.reset();
+            // Sanity check: STL files should be reasonable size (< 500MB)
+            if (contentLength && parseInt(contentLength) > 500 * 1024 * 1024) {
+              throw new Error(
+                `File too large: ${contentLength} bytes (max 500MB)`
+              );
             }
 
-            console.log(`[OK] ✅ 3D model loaded and displayed: ${filename}`);
-          },
-          function (progress) {
-            if (progress.total > 0) {
-              const percent = (
-                (progress.loaded / progress.total) *
-                100
-              ).toFixed(0);
-              console.log(`[PROGRESS] Loading STL: ${percent}%`);
+            if (!response.ok) {
+              throw new Error(
+                `HTTP ${response.status}: ${response.statusText}`
+              );
             }
-          },
-          function (error) {
+
+            return response.arrayBuffer();
+          })
+          .then((arrayBuffer) => {
+            console.log(
+              "[LOADER] File downloaded, size:",
+              arrayBuffer.byteLength,
+              "bytes"
+            );
+
+            if (arrayBuffer.byteLength === 0) {
+              throw new Error("Downloaded file is empty");
+            }
+
+            if (arrayBuffer.byteLength < 84) {
+              throw new Error(
+                "File too small to be valid STL (min 84 bytes for header)"
+              );
+            }
+
+            // Parse the STL manually to catch errors
+            try {
+              const geometry = new THREE.STLLoader().parse(arrayBuffer);
+              console.log(
+                "[SUCCESS] STL loaded, vertices:",
+                geometry.attributes.position.count
+              );
+
+              // Center and scale geometry
+              geometry.center();
+              geometry.computeVertexNormals();
+
+              // Calculate bounding box for proper scaling
+              geometry.computeBoundingBox();
+              const boundingBox = geometry.boundingBox;
+              const size = new THREE.Vector3();
+              boundingBox.getSize(size);
+              console.log("[GEOMETRY] Bounding box size:", size);
+
+              const maxDim = Math.max(size.x, size.y, size.z);
+              const scale = 2 / maxDim; // Fit in 2 unit cube
+              console.log("[GEOMETRY] Scale factor:", scale);
+
+              // Create material with gradient effect
+              const material = new THREE.MeshPhongMaterial({
+                color: 0x00d4ff,
+                specular: 0x7c3aed,
+                shininess: 100,
+                flatShading: false,
+              });
+
+              // Create mesh
+              currentMesh = new THREE.Mesh(geometry, material);
+              currentMesh.scale.set(scale, scale, scale);
+              currentMesh.rotation.x = -Math.PI / 2; // Rotate to standard orientation
+
+              scene.add(currentMesh);
+              console.log("[SCENE] Mesh added to scene");
+
+              // Reset camera position
+              camera.position.set(0, 0, 5);
+              if (controls && controls.reset) {
+                controls.reset();
+              }
+
+              console.log(`[OK] ✅ 3D model loaded and displayed: ${filename}`);
+            } catch (parseError) {
+              throw new Error(`Failed to parse STL: ${parseError.message}`);
+            }
+          })
+          .catch((error) => {
             console.error("[ERROR] ❌ Failed to load STL:", error);
 
             // Three.js initialized but STL failed to load - show fallback options
@@ -2437,8 +2544,7 @@
                       </p>
                     </div>
                   `;
-          }
-        );
+          });
       }
 
       // ============================================

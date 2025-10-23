@@ -250,7 +250,11 @@ class Hunyuan3DProcessor:
             return False
 
     def _lazy_load_model(self) -> bool:
-        """Lazy load the model on first use. Returns True if successful."""
+        """Lazy load the model on first use. Returns True if successful.
+
+        NOTE: With eager loading during startup, this should rarely be called.
+        But if called, it will attempt to load the model.
+        """
         if self.model_loaded:
             return True
 
@@ -258,16 +262,29 @@ class Hunyuan3DProcessor:
             self._load_from_cache()
             return self.model_loaded
 
-        # DO NOT try to load the model here - it will crash request handlers
-        # Model loading requires 4.59GB of VRAM and cannot be done synchronously in a request handler
-        logger.warning("[ORFEAS] Model not yet loaded - background loader should have loaded it")
-        return False
+        # If we reach here, model wasn't loaded at startup - try to load now
+        logger.warning("[ORFEAS] ⚠️  Model not loaded at startup, attempting emergency load...")
+        try:
+            self._initialize_model()
+            if self.model_loaded:
+                logger.info("[ORFEAS] ✅ Emergency load succeeded!")
+                return True
+            else:
+                logger.error("[ORFEAS] ❌ Emergency load returned False")
+                return False
+        except Exception as e:
+            logger.error(f"[ORFEAS] ❌ Emergency load failed: {e}")
+            return False
 
     def image_to_3d_generation(self, image_path: Path, output_path: Path, **kwargs: Any):
         """Generate true volumetric 3D model from image using Hunyuan3D AI."""
-        # Check if model is loaded; if not, return gracefully
+        # Check if model is loaded; if not, this is a critical error
         if not self.model_loaded:
-            logger.warning(f"[ORFEAS] Model not yet loaded. Unable to generate 3D model.")
+            logger.error(f"[ORFEAS] ❌ CRITICAL: Model not loaded at generation time!")
+            logger.error(f"[ORFEAS]    model_loaded={self.model_loaded}")
+            logger.error(f"[ORFEAS]    shapegen_pipeline={self.shapegen_pipeline is not None}")
+            logger.error(f"[ORFEAS] This should have been loaded during backend startup!")
+            logger.error(f"[ORFEAS] Generation cannot proceed without the model.")
             return False
 
         try:
@@ -294,7 +311,24 @@ class Hunyuan3DProcessor:
 
             # Generate volumetric 3D mesh using Hunyuan3D AI
             logger.info("[ORFEAS] Generating volumetric 3D mesh with Hunyuan3D...")
-            mesh = self.shapegen_pipeline(image=image)[0]
+            result = self.shapegen_pipeline(image=image)
+            logger.info(f"[ORFEAS] Pipeline returned result type: {type(result).__name__}")
+
+            if result is None:
+                raise Exception("Pipeline returned None")
+
+            if not isinstance(result, (list, tuple)) or len(result) == 0:
+                raise Exception(f"Pipeline returned invalid result: {type(result).__name__}, expected list/tuple with mesh")
+
+            mesh = result[0]
+            logger.info(f"[ORFEAS] Extracted mesh object: {type(mesh).__name__}")
+
+            # Validate mesh object
+            if mesh is None:
+                raise Exception("Mesh extraction from pipeline returned None")
+
+            if not hasattr(mesh, 'export'):
+                raise Exception(f"Mesh object has no export method. Type: {type(mesh).__name__}, attributes: {dir(mesh)[:5]}")
 
             # Export mesh - ensure proper file extension
             output_path = Path(output_path)
@@ -302,15 +336,103 @@ class Hunyuan3DProcessor:
                 output_path = output_path.with_suffix('.stl')
 
             logger.info(f"[ORFEAS] Exporting 3D model to: {output_path}")
-            mesh.export(str(output_path))
+            try:
+                mesh.export(str(output_path))
+                logger.info(f"[ORFEAS] mesh.export() completed successfully")
+            except Exception as export_err:
+                logger.error(f"[ORFEAS] ❌ mesh.export() FAILED: {type(export_err).__name__}: {export_err}")
+                raise Exception(f"mesh.export() failed: {export_err}") from export_err
+
+            # [CRITICAL FIX] Validate file after export to catch silent failures
+            import struct
+            import os
+
+            # 1. Check file exists and has content
+            if not output_path.exists():
+                raise Exception(f"STL export failed - file not created at {output_path}")
+
+            file_size = output_path.stat().st_size
+            if file_size == 0:
+                raise Exception("STL export failed - file is empty (0 bytes)")
+
+            logger.info(f"[ORFEAS] File exported: {file_size} bytes")
+
+            # 2. Validate STL format (binary format expected)
+            if str(output_path).lower().endswith('.stl'):
+                try:
+                    with open(output_path, 'rb') as f:
+                        # Read header (80 bytes)
+                        header = f.read(80)
+                        if len(header) < 80:
+                            raise Exception(f"STL header incomplete: {len(header)} bytes (expected 80)")
+
+                        # Read triangle count (4 bytes, little-endian uint32)
+                        triangle_count_bytes = f.read(4)
+                        if len(triangle_count_bytes) < 4:
+                            raise Exception("STL triangle count incomplete")
+
+                        triangle_count = struct.unpack('<I', triangle_count_bytes)[0]
+                        logger.info(f"[ORFEAS] STL contains {triangle_count} triangles")
+
+                        # Sanity check: reasonable triangle count
+                        if triangle_count == 0:
+                            raise Exception("STL file contains 0 triangles (invalid)")
+                        if triangle_count > 10000000:  # 10 million triangles = sanity limit
+                            raise Exception(f"STL contains excessive triangles: {triangle_count} (likely corrupted)")
+
+                        # 3. Verify file size matches STL format
+                        # STL binary: 80-byte header + 4-byte count + (50 bytes per triangle)
+                        expected_size = 80 + 4 + (triangle_count * 50)
+                        if file_size != expected_size:
+                            logger.warning(f"[ORFEAS] File size mismatch - expected {expected_size}, got {file_size}")
+                            # Don't fail here as some STL writers may add padding or metadata
+                            # but log warning for debugging
+
+                        # 4. Try to read first triangle to validate data integrity
+                        first_triangle = f.read(50)
+                        if len(first_triangle) < 50:
+                            raise Exception("First triangle incomplete - file may be corrupted")
+
+                        logger.info(f"[ORFEAS] STL format validation passed: {triangle_count} triangles, {file_size} bytes")
+
+                except struct.error as e:
+                    raise Exception(f"STL format validation failed: {e}")
+
+            # 5. Force disk flush to ensure data is written
+            try:
+                import sys
+                if sys.platform.startswith('win'):
+                    # Windows: flush file buffers
+                    import ctypes
+                    try:
+                        handle = ctypes.windll.kernel32.CreateFileW(
+                            str(output_path), 0xC0000000, 0, None, 3, 0x80, None
+                        )
+                        if handle != -1:
+                            ctypes.windll.kernel32.FlushFileBuffers(handle)
+                            ctypes.windll.kernel32.CloseHandle(handle)
+                            logger.info("[ORFEAS] File buffers flushed (Windows)")
+                    except Exception as flush_err:
+                        logger.warning(f"[ORFEAS] Could not flush file buffers: {flush_err}")
+                else:
+                    # Linux/Mac: use os.sync()
+                    try:
+                        os.sync()
+                        logger.info("[ORFEAS] File buffers flushed (Unix)")
+                    except Exception:
+                        pass  # os.sync() not always available
+            except Exception as e:
+                logger.warning(f"[ORFEAS] File flush warning (non-critical): {e}")
 
             logger.info(f"[ORFEAS] Successfully generated volumetric 3D model: {output_path}")
             return True
 
         except Exception as e:
-            logger.error(f"[ORFEAS] Hunyuan3D generation failed: {e}")
+            logger.error(f"[ORFEAS] ❌ Hunyuan3D generation EXCEPTION: {type(e).__name__}: {e}")
             import traceback
+            logger.error("Full traceback:")
             logger.error(traceback.format_exc())
+            logger.error(f"[ORFEAS] Generation failed for output_path: {output_path if 'output_path' in locals() else 'UNKNOWN'}")
             return False
 
     def generate_3d(self, image_path: Union[str, Path], output_path: Union[str, Path], **kwargs: Any) -> Union[Dict[str, Any], bool]:

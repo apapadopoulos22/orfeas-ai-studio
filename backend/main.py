@@ -166,7 +166,10 @@ log_formatter = logging.Formatter(
 )
 
 # Create handlers
-console_handler = logging.StreamHandler(sys.stdout)
+# Fix Windows console encoding to handle Unicode/emoji characters
+import io
+console_stream = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace', line_buffering=True)
+console_handler = logging.StreamHandler(console_stream)
 console_handler.setFormatter(log_formatter)
 console_handler.setLevel(logging.INFO)
 
@@ -1152,9 +1155,28 @@ class OrfeasUnifiedServer:
                     processor_type = type(self.processor_3d).__name__
                     logger.info(f"[DIAGNOSTIC] Processor factory returned: {processor_type}")
 
-                    # Now load the model in this background thread (safe operation for threads)
-                    if hasattr(self.processor_3d, 'load_model_background_safe'):
-                        logger.info("[ORFEAS] Loading Hunyuan3D model in background thread...")
+                    # [CRITICAL FIX] Force eager loading of Hunyuan3D model NOW (not lazy)
+                    # This ensures the model is ready before any generation requests arrive
+                    logger.info("[ORFEAS] ⚡ FORCING EAGER MODEL LOAD (not lazy) in background thread...")
+                    if hasattr(self.processor_3d, '_initialize_model'):
+                        logger.info("[ORFEAS] Calling _initialize_model() directly to force full load...")
+                        try:
+                            self.processor_3d._initialize_model()
+                            if self.processor_3d.model_loaded:
+                                logger.info("[SUCCESS] ✅ Hunyuan3D model FULLY LOADED and ready")
+                                logger.info(f"[SUCCESS] Model status: {self.processor_3d.get_model_info()}")
+                            else:
+                                logger.error("[CRITICAL] Model initialization returned False - generation will fail!")
+                                logger.warning("[FALLBACK] Using FallbackProcessor instead")
+                                self.processor_3d = FallbackProcessor(self.device)
+                        except Exception as model_load_err:
+                            logger.error(f"[CRITICAL] Direct model load failed: {model_load_err}")
+                            import traceback
+                            logger.error(f"Traceback:\n{traceback.format_exc()}")
+                            logger.warning("[FALLBACK] Using FallbackProcessor instead")
+                            self.processor_3d = FallbackProcessor(self.device)
+                    elif hasattr(self.processor_3d, 'load_model_background_safe'):
+                        logger.info("[ORFEAS] Using load_model_background_safe() method...")
                         success = self.processor_3d.load_model_background_safe()
                         if success:
                             logger.info("[SUCCESS] Hunyuan3D model loaded and cached")
@@ -1457,6 +1479,9 @@ class OrfeasUnifiedServer:
                 "processor": self.processor_3d.get_model_info() if (hasattr(self, 'processor_3d') and self.processor_3d) else {},
                 "capabilities": self.get_capabilities()
             })
+
+        # NOTE: /health-detailed endpoint already exists in monitoring.py
+        # No need to duplicate it here
 
         # [ORFEAS PHASE 6C] Cache Management Endpoints
         @self.app.route('/api/cache/stats', methods=['GET'])
@@ -3043,8 +3068,40 @@ class OrfeasUnifiedServer:
 
                 # Fallback: production mode - send actual file if exists
                 if file_path.exists():
-                    logger.info(f"[DOWNLOAD] Serving file: {file_path}")
-                    return send_file(str(file_path), as_attachment=True)
+                    file_size = file_path.stat().st_size
+                    logger.info(f"[DOWNLOAD] ✅ Serving file: {file_path} ({file_size} bytes)")
+                    logger.info(f"[DOWNLOAD] File size: {file_size}, MIME type: {self._get_mimetype(filename)}")
+
+                    # For large files, use streaming response to avoid memory issues
+                    if file_size > 10 * 1024 * 1024:  # >10MB
+                        logger.info(f"[DOWNLOAD] Large file detected ({file_size} bytes), using streaming response")
+                        from flask import Response
+
+                        def generate():
+                            with open(str(file_path), 'rb') as f:
+                                chunk_size = 1024 * 1024  # 1MB chunks
+                                while True:
+                                    chunk = f.read(chunk_size)
+                                    if not chunk:
+                                        break
+                                    yield chunk
+
+                        response = Response(
+                            generate(),
+                            mimetype='application/octet-stream',
+                            headers={
+                                'Content-Disposition': f'attachment; filename="{filename}"',
+                                'Content-Length': str(file_size)
+                            }
+                        )
+                        logger.info(f"[DOWNLOAD] Streaming response prepared, Content-Length: {file_size}")
+                        return response
+                    else:
+                        # For small files, use send_file
+                        response = send_file(str(file_path), as_attachment=True)
+                        response.headers['Content-Length'] = str(file_size)
+                        logger.info(f"[DOWNLOAD] Response headers set, Content-Length: {file_size}")
+                        return response
                 else:
                     logger.warning(f"[SECURITY] File not found in job directory: {filename}")
                     return jsonify({"error": "File not found"}), 404
@@ -4292,7 +4349,7 @@ class OrfeasUnifiedServer:
             # Find input image
             input_image_path = None
             for file_path in self.uploads_dir.glob(f"{job_id}_*"):
-                if file_path.suffix.lower() in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']:
+                if file_path.suffix.lower() in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.webp']:
                     input_image_path = file_path
                     break
 
@@ -4593,7 +4650,7 @@ class OrfeasUnifiedServer:
             # Find input image
             input_image_path = None
             for file_path in self.uploads_dir.glob(f"{job_id}_*"):
-                if file_path.suffix.lower() in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']:
+                if file_path.suffix.lower() in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.webp']:
                     input_image_path = file_path
                     break
 
