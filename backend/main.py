@@ -1063,6 +1063,7 @@ class OrfeasUnifiedServer:
 
         # Job tracking
         self.job_progress = {}
+        self.processing_jobs = {}  # [FIX] Added missing processing_jobs dictionary for text-to-image tracking
         self.active_jobs = set()
 
         # Initialize rate limiter if enabled (skip in test mode)
