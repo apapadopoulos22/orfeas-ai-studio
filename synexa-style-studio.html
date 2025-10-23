@@ -1636,1116 +1636,1186 @@
          SCRIPTS
          ============================================ -->
     <script>
-      // ============================================
-      // CONFIGURATION - ENVIRONMENT AWARE
-      // ============================================
+            // ============================================
+            // CONFIGURATION - ENVIRONMENT AWARE
+            // ============================================
 
-      // Detect environment and set API_BASE accordingly
-      // For Netlify: Uses window.API_BASE from netlify.toml redirect rules
-      // For local development: Falls back to localhost
-      const API_BASE =
-        (typeof window.API_BASE !== "undefined" && window.API_BASE) ||
-        (window.location.hostname === "localhost"
-          ? "http://127.0.0.1:5000"
-          : "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev");
+            // Detect environment and set API_BASE accordingly
+            // For Netlify: Uses window.API_BASE from netlify.toml redirect rules
+            // For local development: Falls back to localhost
+            const API_BASE =
+              (typeof window.API_BASE !== "undefined" && window.API_BASE) ||
+              (window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000"
+                : "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev");
 
-      console.log("[CONFIG] API_BASE:", API_BASE);
-      console.log("[CONFIG] Hostname:", window.location.hostname);
-      console.log(
-        "[CONFIG] Environment:",
-        window.location.hostname === "localhost" ? "LOCAL" : "PRODUCTION"
-      );
-
-      let currentJobId = null;
-      let currentFile = null;
-      let statusPollingInterval = null;
-      let selectedServerMode = "powerful_3d";
-
-      // ============================================
-      // NAVIGATION
-      // ============================================
-
-      function showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll(".section, .hero").forEach((s) => {
-          s.classList.remove("active");
-        });
-
-        // Show target section
-        const target = document.getElementById(sectionId);
-        if (target) {
-          target.classList.add("active");
-        }
-
-        // Update nav links
-        document.querySelectorAll(".nav-link").forEach((link) => {
-          link.classList.remove("active");
-        });
-        event?.target?.classList.add("active");
-      }
-
-      // ============================================
-      // MODE TOGGLE + LAUNCH HELPER
-      // ============================================
-      function setServerModeUI() {
-        const sel = document.getElementById("server-mode");
-        selectedServerMode = sel?.value || "powerful_3d";
-      }
-
-      function copyLaunchCommand() {
-        // Build a PowerShell command that starts our launcher with the selected mode
-        const mode = selectedServerMode || "powerful_3d";
-        const cmd = `powershell -NoLogo -NoExit -ExecutionPolicy Bypass -File \"${location.origin.replace(
-          "http://",
-          "http://"
-        )}\"`;
-        // Since we don't know the absolute path from the browser, provide a helpful template using the repo root
-        const template = `# Paste in PowerShell from repo root
-./START_HTTP_SERVER.ps1 -Mode ${mode}`;
-        navigator.clipboard
-          .writeText(template)
-          .then(() => {
-            alert(
-              "✅ Launch command copied to clipboard.\nOpen PowerShell in the repo root and paste to start the server."
+            console.log("[CONFIG] API_BASE:", API_BASE);
+            console.log("[CONFIG] Hostname:", window.location.hostname);
+            console.log(
+              "[CONFIG] Environment:",
+              window.location.hostname === "localhost" ? "LOCAL" : "PRODUCTION"
             );
-          })
-          .catch(() => {
-            alert(
-              "⚠️ Could not copy automatically. Use this from repo root:\n\n" +
-                template
-            );
-          });
-      }
 
-      // ============================================
-      // HEALTH CHECK
-      // ============================================
+            let currentJobId = null;
+            let currentFile = null;
+            let statusPollingInterval = null;
+            let selectedServerMode = "powerful_3d";
 
-      async function checkHealth() {
-        const indicator = document.getElementById("health-indicator");
-        indicator.style.color = "var(--accent-warning)";
+            // ============================================
+            // NAVIGATION
+            // ============================================
 
-        try {
-          console.log("[HEALTH] Checking backend health at:", API_BASE);
+            function showSection(sectionId) {
+              // Hide all sections
+              document.querySelectorAll(".section, .hero").forEach((s) => {
+                s.classList.remove("active");
+              });
 
-          // Use the /api/models-info endpoint which we know works
-          let response = await fetch(`${API_BASE}/api/models-info`, {
-            method: "GET",
-            cache: "no-cache",
-            headers: {
-              "Cache-Control": "no-cache",
-              Pragma: "no-cache",
-              "ngrok-skip-browser-warning": "true",
-            },
-          });
+              // Show target section
+              const target = document.getElementById(sectionId);
+              if (target) {
+                target.classList.add("active");
+              }
 
-          console.log("[HEALTH] Response status:", response.status);
+              // Update nav links
+              document.querySelectorAll(".nav-link").forEach((link) => {
+                link.classList.remove("active");
+              });
+              event?.target?.classList.add("active");
+            }
 
-          if (!response.ok) {
-            console.error("[HEALTH] Response not OK:", response.status);
-            throw new Error(`HTTP ${response.status} - Backend not responding`);
-          }
+            // ============================================
+            // MODE TOGGLE + LAUNCH HELPER
+            // ============================================
+            function setServerModeUI() {
+              const sel = document.getElementById("server-mode");
+              selectedServerMode = sel?.value || "powerful_3d";
+            }
 
-          // Verify we got JSON, not HTML error page
-          const contentType = response.headers.get("content-type");
-          if (!contentType || !contentType.includes("application/json")) {
-            console.error("[HEALTH] Wrong content type:", contentType);
-            throw new Error("Backend returned non-JSON response");
-          }
+            function copyLaunchCommand() {
+              // Build a PowerShell command that starts our launcher with the selected mode
+              const mode = selectedServerMode || "powerful_3d";
+              const cmd = `powershell -NoLogo -NoExit -ExecutionPolicy Bypass -File \"${location.origin.replace(
+                "http://",
+                "http://"
+              )}\"`;
+              // Since we don't know the absolute path from the browser, provide a helpful template using the repo root
+              const template = `# Paste in PowerShell from repo root
+      ./START_HTTP_SERVER.ps1 -Mode ${mode}`;
+              navigator.clipboard
+                .writeText(template)
+                .then(() => {
+                  alert(
+                    "✅ Launch command copied to clipboard.\nOpen PowerShell in the repo root and paste to start the server."
+                  );
+                })
+                .catch(() => {
+                  alert(
+                    "⚠️ Could not copy automatically. Use this from repo root:\n\n" +
+                      template
+                  );
+                });
+            }
 
-          const data = await response.json();
-          console.log("[HEALTH] Backend response:", data);
+            // ============================================
+            // HEALTH CHECK
+            // ============================================
 
-          // Check if we have device info
-          if (data.device) {
-            indicator.style.color = "var(--accent-success)";
+            async function checkHealth() {
+              const indicator = document.getElementById("health-indicator");
+              indicator.style.color = "var(--accent-warning)";
 
-            // GPU Information
-            let gpuInfo = "❌ GPU: Not Available";
-            if (data.device.toUpperCase() === "CUDA") {
-              gpuInfo = `✅ GPU: NVIDIA RTX 3090 (CUDA Ready)`;
+              try {
+                console.log("[HEALTH] Checking backend health at:", API_BASE);
 
-              // Add memory info if available
-              if (data.gpu_stats && data.gpu_stats.allocated_mb) {
-                gpuInfo += `\n   Allocated: ${data.gpu_stats.allocated_mb.toFixed(
-                  0
-                )} MB`;
+                // Use the /api/models-info endpoint which we know works
+                let response = await fetch(`${API_BASE}/api/models-info`, {
+                  method: "GET",
+                  cache: "no-cache",
+                  headers: {
+                    "Cache-Control": "no-cache",
+                    Pragma: "no-cache",
+                    "ngrok-skip-browser-warning": "true",
+                  },
+                });
+
+                console.log("[HEALTH] Response status:", response.status);
+
+                if (!response.ok) {
+                  console.error("[HEALTH] Response not OK:", response.status);
+                  throw new Error(`HTTP ${response.status} - Backend not responding`);
+                }
+
+                // Verify we got JSON, not HTML error page
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                  console.error("[HEALTH] Wrong content type:", contentType);
+                  throw new Error("Backend returned non-JSON response");
+                }
+
+                const data = await response.json();
+                console.log("[HEALTH] Backend response:", data);
+
+                // Check if we have device info
+                if (data.device) {
+                  indicator.style.color = "var(--accent-success)";
+
+                  // GPU Information
+                  let gpuInfo = "❌ GPU: Not Available";
+                  if (data.device.toUpperCase() === "CUDA") {
+                    gpuInfo = `✅ GPU: NVIDIA RTX 3090 (CUDA Ready)`;
+
+                    // Add memory info if available
+                    if (data.gpu_stats && data.gpu_stats.allocated_mb) {
+                      gpuInfo += `\n   Allocated: ${data.gpu_stats.allocated_mb.toFixed(
+                        0
+                      )} MB`;
+                    }
+                  }
+
+                  alert(
+                    `✅ ORFEAS Backend is HEALTHY\n\n` +
+                      `${gpuInfo}\n` +
+                      `Device: ${data.device}\n\n` +
+                      `🎨 Ready to generate 3D models!`
+                  );
+                } else {
+                  throw new Error("Invalid backend response format");
+                }
+              } catch (error) {
+                indicator.style.color = "var(--accent-error)";
+                console.error("[HEALTH] Error:", error);
+
+                // Provide helpful error message
+                let errorMsg = error.message;
+                if (error.message.includes("Failed to fetch")) {
+                  errorMsg =
+                    "Cannot reach backend - Check if ngrok tunnel is running";
+                } else if (
+                  error.message.includes("401") ||
+                  error.message.includes("403")
+                ) {
+                  errorMsg = "Access denied - Check ngrok tunnel configuration";
+                } else if (error.message.includes("non-JSON")) {
+                  errorMsg =
+                    "Backend returned invalid response - May be returning error page";
+                }
+
+                alert(
+                  `⚠️ Backend Health Check Failed\n\n` +
+                    `Error: ${errorMsg}\n\n` +
+                    `Ensure you have:\n` +
+                    `1. Backend running: cd backend && python main.py\n` +
+                    `2. Ngrok running: .\\ngrok http 5000\n` +
+                    `3. Both processes still active`
+                );
               }
             }
 
-            alert(
-              `✅ ORFEAS Backend is HEALTHY\n\n` +
-                `${gpuInfo}\n` +
-                `Device: ${data.device}\n\n` +
-                `🎨 Ready to generate 3D models!`
-            );
-          } else {
-            throw new Error("Invalid backend response format");
-          }
-        } catch (error) {
-          indicator.style.color = "var(--accent-error)";
-          console.error("[HEALTH] Error:", error);
+            // Run health check on load
+            setTimeout(checkHealth, 500);
 
-          // Provide helpful error message
-          let errorMsg = error.message;
-          if (error.message.includes("Failed to fetch")) {
-            errorMsg =
-              "Cannot reach backend - Check if ngrok tunnel is running";
-          } else if (
-            error.message.includes("401") ||
-            error.message.includes("403")
-          ) {
-            errorMsg = "Access denied - Check ngrok tunnel configuration";
-          } else if (error.message.includes("non-JSON")) {
-            errorMsg =
-              "Backend returned invalid response - May be returning error page";
-          }
+            // ============================================
+            // FILE UPLOAD
+            // ============================================
 
-          alert(
-            `⚠️ Backend Health Check Failed\n\n` +
-              `Error: ${errorMsg}\n\n` +
-              `Ensure you have:\n` +
-              `1. Backend running: cd backend && python main.py\n` +
-              `2. Ngrok running: .\\ngrok http 5000\n` +
-              `3. Both processes still active`
-          );
-        }
-      }
+            const uploadZone = document.getElementById("upload-zone");
+            const fileInput = document.getElementById("file-input");
 
-      // Run health check on load
-      setTimeout(checkHealth, 500);
+            // Drag and drop handlers
+            uploadZone.addEventListener("dragover", (e) => {
+              e.preventDefault();
+              uploadZone.classList.add("drag-over");
+            });
 
-      // ============================================
-      // FILE UPLOAD
-      // ============================================
+            uploadZone.addEventListener("dragleave", () => {
+              uploadZone.classList.remove("drag-over");
+            });
 
-      const uploadZone = document.getElementById("upload-zone");
-      const fileInput = document.getElementById("file-input");
+            uploadZone.addEventListener("drop", (e) => {
+              e.preventDefault();
+              uploadZone.classList.remove("drag-over");
 
-      // Drag and drop handlers
-      uploadZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        uploadZone.classList.add("drag-over");
-      });
+              const files = e.dataTransfer.files;
+              if (files.length > 0) {
+                handleFile(files[0]);
+              }
+            });
 
-      uploadZone.addEventListener("dragleave", () => {
-        uploadZone.classList.remove("drag-over");
-      });
-
-      uploadZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        uploadZone.classList.remove("drag-over");
-
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-          handleFile(files[0]);
-        }
-      });
-
-      function handleFileSelect(event) {
-        const file = event.target.files[0];
-        if (file) {
-          handleFile(file);
-        }
-      }
-
-      async function handleFile(file) {
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          alert("❌ Please upload an image file (JPG, PNG, WebP)");
-          return;
-        }
-
-        // Validate file size (16MB limit)
-        if (file.size > 16 * 1024 * 1024) {
-          alert("❌ File size must be less than 16MB");
-          return;
-        }
-
-        currentFile = file;
-
-        // Show preview
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const previewContainer = document.getElementById("preview-container");
-          const previewImage = document.getElementById("preview-image");
-
-          previewImage.src = e.target.result;
-          uploadZone.classList.add("hidden");
-          previewContainer.classList.remove("hidden");
-        };
-        reader.readAsDataURL(file);
-
-        // Upload to server
-        await uploadImage(file);
-      }
-
-      async function uploadImage(file) {
-        try {
-          console.log("[UPLOAD] Starting upload to:", API_BASE);
-          console.log("[UPLOAD] File:", file.name, file.size, file.type);
-
-          const formData = new FormData();
-          formData.append("image", file);
-
-          console.log("[UPLOAD] Sending fetch request...");
-          const response = await fetch(`${API_BASE}/api/upload-image`, {
-            method: "POST",
-            body: formData,
-            headers: {
-              "ngrok-skip-browser-warning": "true",
-            },
-          });
-
-          console.log(
-            "[UPLOAD] Response received:",
-            response.status,
-            response.statusText
-          );
-
-          if (!response.ok) {
-            let errText = "Upload failed";
-            try {
-              const errBody = await response.json();
-              if (errBody && errBody.error) errText = errBody.error;
-            } catch (_) {
-              try {
-                const txt = await response.text();
-                if (txt) errText = `${errText}: ${txt}`;
-              } catch (_) {}
+            function handleFileSelect(event) {
+              const file = event.target.files[0];
+              if (file) {
+                handleFile(file);
+              }
             }
-            console.error("[UPLOAD ERROR]", errText);
-            throw new Error(`${errText} (HTTP ${response.status})`);
-          }
 
-          const data = await response.json();
-          currentJobId = data.job_id;
-          console.log("[UPLOAD SUCCESS] Job ID:", currentJobId);
+            async function handleFile(file) {
+              // Validate file type
+              if (!file.type.startsWith("image/")) {
+                alert("❌ Please upload an image file (JPG, PNG, WebP)");
+                return;
+              }
 
-          // Update UI
-          document.getElementById("results-container").innerHTML = `
-                    <div class="status-badge success">
-                        <span>✓</span> Upload Successful
+              // Validate file size (16MB limit)
+              if (file.size > 16 * 1024 * 1024) {
+                alert("❌ File size must be less than 16MB");
+                return;
+              }
+
+              currentFile = file;
+
+              // Show preview
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                const previewContainer = document.getElementById("preview-container");
+                const previewImage = document.getElementById("preview-image");
+
+                previewImage.src = e.target.result;
+                uploadZone.classList.add("hidden");
+                previewContainer.classList.remove("hidden");
+              };
+              reader.readAsDataURL(file);
+
+              // Upload to server
+              await uploadImage(file);
+            }
+
+            async function uploadImage(file) {
+              try {
+                console.log("[UPLOAD] Starting upload to:", API_BASE);
+                console.log("[UPLOAD] File:", file.name, file.size, file.type);
+
+                const formData = new FormData();
+                formData.append("image", file);
+
+                console.log("[UPLOAD] Sending fetch request...");
+                const response = await fetch(`${API_BASE}/api/upload-image`, {
+                  method: "POST",
+                  body: formData,
+                  headers: {
+                    "ngrok-skip-browser-warning": "true",
+                  },
+                });
+
+                console.log(
+                  "[UPLOAD] Response received:",
+                  response.status,
+                  response.statusText
+                );
+
+                if (!response.ok) {
+                  let errText = "Upload failed";
+                  try {
+                    const errBody = await response.json();
+                    if (errBody && errBody.error) errText = errBody.error;
+                  } catch (_) {
+                    try {
+                      const txt = await response.text();
+                      if (txt) errText = `${errText}: ${txt}`;
+                    } catch (_) {}
+                  }
+                  console.error("[UPLOAD ERROR]", errText);
+                  throw new Error(`${errText} (HTTP ${response.status})`);
+                }
+
+                const data = await response.json();
+                currentJobId = data.job_id;
+                console.log("[UPLOAD SUCCESS] Job ID:", currentJobId);
+
+                // Update UI
+                document.getElementById("results-container").innerHTML = `
+                          <div class="status-badge success">
+                              <span>✓</span> Upload Successful
+                          </div>
+                          <p class="progress-text-style">
+                              Job ID: ${currentJobId}
+                          </p>
+                      `;
+
+                // Enable generate button
+                document.getElementById("generate-btn").disabled = false;
+              } catch (error) {
+                console.error("[UPLOAD EXCEPTION]", error);
+                alert(`❌ Upload failed. Please try again.\n\n${error.message}`);
+              }
+            }
+
+            // ============================================
+            // 3D GENERATION
+            // ============================================
+
+            async function generate3D() {
+              if (!currentJobId) {
+                alert("⚠️ Please upload an image first");
+                return;
+              }
+
+              const format = document.getElementById("format").value;
+              const quality = parseInt(document.getElementById("quality").value);
+              const dimensions = parseInt(
+                document.getElementById("dimensions").value
+              );
+
+              try {
+                console.log("[GENERATE] Starting 3D generation...");
+                console.log("[GENERATE] Job ID:", currentJobId);
+                console.log("[GENERATE] API Base:", API_BASE);
+
+                // Show progress UI
+                document
+                  .getElementById("progress-container")
+                  .classList.remove("hidden");
+                document.getElementById("generate-btn").disabled = true;
+
+                // Start generation
+                console.log(
+                  "[GENERATE] Sending fetch to:",
+                  `${API_BASE}/api/generate-3d`
+                );
+                const response = await fetch(`${API_BASE}/api/generate-3d`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true",
+                  },
+                  body: JSON.stringify({
+                    job_id: currentJobId,
+                    format: format,
+                    quality: quality,
+                    dimensions: {
+                      width: dimensions,
+                      height: dimensions,
+                      depth: dimensions,
+                    },
+                  }),
+                });
+
+                console.log(
+                  "[GENERATE] Response:",
+                  response.status,
+                  response.statusText
+                );
+
+                if (!response.ok) {
+                  const errText = await response.text();
+                  console.error("[GENERATE ERROR]", errText);
+                  throw new Error(
+                    `Generation failed (HTTP ${response.status}): ${errText}`
+                  );
+                }
+
+                const data = await response.json();
+                console.log("[GENERATE SUCCESS] Generation started");
+
+                // Start polling for status
+                startStatusPolling();
+              } catch (error) {
+                console.error("[GENERATE EXCEPTION]", error);
+                alert("❌ Generation failed. Please try again.\n\n" + error.message);
+                document.getElementById("generate-btn").disabled = false;
+                document.getElementById("progress-container").classList.add("hidden");
+              }
+            }
+
+            // ============================================
+            // STATUS POLLING
+            // ============================================
+
+            function startStatusPolling() {
+              if (statusPollingInterval) {
+                clearInterval(statusPollingInterval);
+              }
+
+              console.log("[POLLING] Starting status polling for job:", currentJobId);
+              let pollCount = 0;
+
+              statusPollingInterval = setInterval(async () => {
+                pollCount++;
+                try {
+                  const response = await fetch(
+                    `${API_BASE}/api/job-status/${currentJobId}`,
+                    {
+                      headers: { "ngrok-skip-browser-warning": "true" },
+                    }
+                  );
+                  if (!response.ok) {
+                    console.warn("[POLLING] Response not OK:", response.status);
+                    return;
+                  }
+
+                  const data = await response.json();
+                  console.log(
+                    `[POLLING #${pollCount}] Status: ${data.status} | Progress: ${
+                      data.progress
+                    }% | Message: ${data.message || "N/A"}`
+                  );
+
+                  updateProgress(data);
+
+                  if (data.status === "completed") {
+                    console.log("[POLLING] ✅ Generation completed!");
+                    clearInterval(statusPollingInterval);
+                    onGenerationComplete(data);
+                  } else if (data.status === "failed") {
+                    console.error("[POLLING] ❌ Generation failed!");
+                    clearInterval(statusPollingInterval);
+                    onGenerationFailed(data);
+                  }
+                } catch (error) {
+                  console.error("[POLLING ERROR]", error);
+                }
+              }, 1000);
+            }
+
+            function updateProgress(data) {
+              const progressFill = document.getElementById("progress-fill");
+              const progressText = document.getElementById("progress-text");
+
+              // Ensure progress is a valid number between 0-100
+              const progress = Math.max(
+                0,
+                Math.min(100, parseInt(data.progress) || 0)
+              );
+
+              progressFill.style.width = `${progress}%`;
+
+              // Build detailed message
+              let message = data.message || `Processing: ${progress}%`;
+              if (data.status) {
+                message = `[${data.status.toUpperCase()}] ${message}`;
+              }
+
+              progressText.textContent = message;
+
+              console.log("[PROGRESS] Updated: ", {
+                progress,
+                message,
+                status: data.status,
+              });
+            }
+
+            let lastOutputFile = null;
+
+            function onGenerationComplete(data) {
+              console.log("[COMPLETE] Generation data:", data);
+
+              // Update UI
+              document.getElementById("progress-container").classList.add("hidden");
+              document.getElementById("generate-btn").disabled = false;
+
+              // Store output file
+              if (data.output_file) {
+                lastOutputFile = data.output_file;
+              }
+
+              // Show success message with prominent download button
+              document.getElementById("results-container").innerHTML = `
+                      <div class="status-badge success">
+                          <span>✓</span> Generation Complete
+                      </div>
+                      <p class="progress-text-style" style="margin-bottom: var(--spacing-lg);">
+                          File: ${data.output_file || "model.stl"}
+                      </p>
+
+                      <button
+                          class="btn btn-primary btn-full-width"
+                          onclick="downloadModel()"
+                          style="font-size: 1.1rem; padding: 0.875rem 1.5rem; margin-bottom: var(--spacing-md);">
+                          <span>⬇️</span> Download 3D Model
+                      </button>
+
+                      <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-top: var(--spacing-sm);">
+                          💡 Tip: Open in Windows 3D Viewer, MeshLab, or Blender
+                      </p>
+                  `;
+
+              // Show download section (backup button)
+              document.getElementById("download-section").classList.remove("hidden");
+
+              // Try to load 3D viewer (optional - may fail on some browsers)
+              const viewer = document.getElementById("viewer-3d");
+              viewer.classList.remove("hidden");
+              console.log("[VIEWER] 3D viewer container shown");
+
+              if (data.output_file) {
+                console.log(
+                  "[LOAD] Attempting to load 3D preview:",
+                  data.output_file
+                );
+                load3DModel(data.output_file);
+              } else {
+                console.error("[ERROR] No output_file in response data");
+              }
+            }
+
+            function onGenerationFailed(data) {
+              document.getElementById("progress-container").classList.add("hidden");
+              document.getElementById("generate-btn").disabled = false;
+
+              document.getElementById("results-container").innerHTML = `
+                      <div class="status-badge error">
+                          <span>✗</span> Generation Failed
+                      </div>
+                      <p class="progress-text-style" style="color: var(--accent-error);">
+                          ${data.message || "Unknown error"}
+                      </p>
+                  `;
+            }
+
+            // ============================================
+            // 3D VIEWER (THREE.JS)
+            // ============================================
+
+            let scene, camera, renderer, controls, currentMesh;
+
+            function load3DModel(filename) {
+              // Check if Three.js loaded
+              if (typeof THREE === "undefined") {
+                console.error("[ERROR] Three.js library not loaded");
+                alert(
+                  "❌ 3D Viewer Error: Three.js library failed to load. Please refresh the page."
+                );
+                return;
+              }
+
+              // Check if STLLoader is available
+              if (typeof THREE.STLLoader === "undefined") {
+                console.error("[ERROR] STLLoader not available");
+                alert(
+                  "❌ 3D Viewer Error: STL loader not available. Please refresh the page."
+                );
+                return;
+              }
+
+              const downloadUrl = `${API_BASE}/api/download/${currentJobId}/${filename}`;
+              console.log("[LOAD] Download URL:", downloadUrl);
+
+              const canvas = document.getElementById("three-canvas");
+              if (!canvas) {
+                console.error("[ERROR] Canvas element #three-canvas not found!");
+                return;
+              }
+
+              // Clear previous canvas content
+              canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+
+              // Initialize Three.js scene (only once)
+              if (!scene) {
+                console.log("[INIT] Initializing Three.js scene...");
+
+                try {
+                  scene = new THREE.Scene();
+                  scene.background = new THREE.Color(0x0a0e1a); // Match --bg-dark
+
+                  // Camera setup
+                  const width = canvas.offsetWidth || 800;
+                  const height = canvas.offsetHeight || 500;
+                  camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+                  camera.position.set(0, 0, 5);
+
+                  // Check WebGL support before creating renderer
+                  const gl =
+                    canvas.getContext("webgl2") ||
+                    canvas.getContext("webgl") ||
+                    canvas.getContext("experimental-webgl");
+                  if (!gl) {
+                    throw new Error(
+                      "WebGL not supported by your browser. Please enable hardware acceleration in browser settings or use a different browser (Chrome/Edge/Firefox recommended)."
+                    );
+                  }
+                  console.log(
+                    "[INIT] WebGL context available:",
+                    gl instanceof WebGLRenderingContext ? "WebGL 1.0" : "WebGL 2.0"
+                  );
+
+                  // Renderer setup with maximum compatibility options
+                  renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    context: gl,
+                    antialias: false, // Disable for compatibility
+                    alpha: false,
+                    premultipliedAlpha: false,
+                    preserveDrawingBuffer: true,
+                    powerPreference: "default",
+                    failIfMajorPerformanceCaveat: false,
+                    precision: "lowp", // Use low precision for compatibility
+                  });
+                  renderer.setSize(width, height);
+                  renderer.setPixelRatio(1); // Force 1x for stability
+
+                  console.log("[INIT] WebGL renderer created successfully");
+
+                  // Orbit controls - check if OrbitControls is available
+                  if (typeof THREE.OrbitControls !== "undefined") {
+                    controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    controls.enableDamping = true;
+                    controls.dampingFactor = 0.05;
+                    controls.autoRotate = true;
+                    controls.autoRotateSpeed = 2.0;
+                    console.log("[INIT] OrbitControls initialized");
+                  } else {
+                    console.warn(
+                      "[WARN] OrbitControls not available, using basic camera"
+                    );
+                  }
+
+                  // Lighting
+                  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                  scene.add(ambientLight);
+
+                  const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+                  directionalLight1.position.set(1, 1, 1);
+                  scene.add(directionalLight1);
+
+                  const directionalLight2 = new THREE.DirectionalLight(0x00d4ff, 0.4);
+                  directionalLight2.position.set(-1, -1, -1);
+                  scene.add(directionalLight2);
+
+                  // Animation loop
+                  function animate() {
+                    requestAnimationFrame(animate);
+                    if (controls && controls.update) {
+                      controls.update();
+                    }
+                    renderer.render(scene, camera);
+                  }
+                  animate();
+
+                  // Handle window resize
+                  window.addEventListener("resize", () => {
+                    camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+                  });
+
+                  console.log("[INIT] Scene initialization complete");
+                } catch (error) {
+                  console.error(
+                    "[ERROR] Failed to initialize Three.js scene:",
+                    error
+                  );
+
+                  // WebGL unavailable - show fallback options with iframe viewer
+                  const viewerContainer = document.getElementById("viewer-3d");
+                  viewerContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: var(--spacing-lg); text-align: center; background: linear-gradient(135deg, rgba(7, 58, 76, 0.5), rgba(124, 58, 237, 0.1)); border-radius: var(--radius-lg);">
+                      <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">🖥️</div>
+                      <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: 1.5rem;">3D Preview Not Available</h3>
+                      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); max-width: 450px; line-height: 1.6;">
+                        Your browser doesn't support WebGL. Your 3D model was generated successfully! Choose how to view it:
+                      </p>
+
+                      <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
+                        <button class="btn btn-primary" onclick="viewOnline3DViewer()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
+                          <span>🌐</span> View Online
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
+                          <span>⬇️</span> Download Local
+                        </button>
+                      </div>
+
+                      <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md); margin-top: var(--spacing-md); text-align: left; max-width: 500px; font-size: 0.9rem;">
+                        <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: var(--spacing-sm);">� Viewing Methods:</p>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
+                          <li style="margin-bottom: var(--spacing-sm);">🌐 <strong>Online Viewer (no installation):</strong> View instantly in 3DViewer.net</li>
+                          <li style="margin-bottom: var(--spacing-sm);">📦 <strong>Windows 3D Viewer:</strong> Double-click .stl file (built-in)</li>
+                          <li style="margin-bottom: var(--spacing-sm);">🎨 <strong>Blender:</strong> Professional 3D software (free)</li>
+                          <li>🔧 <strong>MeshLab:</strong> Specialized mesh viewer (free)</li>
+                        </ul>
+                      </div>
+
+                      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: var(--spacing-lg);">
+                        ✅ Model ready | � Use online viewer or download to your computer
+                      </p>
                     </div>
-                    <p class="progress-text-style">
-                        Job ID: ${currentJobId}
-                    </p>
+                  `;
+                  return;
+                }
+              }
+
+              // Remove previous mesh if exists
+              if (currentMesh) {
+                scene.remove(currentMesh);
+                currentMesh.geometry.dispose();
+                currentMesh.material.dispose();
+              }
+
+              // Load STL model
+              console.log("[LOADER] Creating STLLoader...");
+              const loader = new THREE.STLLoader();
+
+              console.log("[LOADER] Starting STL load from:", downloadUrl);
+              loader.load(
+                downloadUrl,
+                function (geometry) {
+                  console.log(
+                    "[SUCCESS] STL loaded, vertices:",
+                    geometry.attributes.position.count
+                  );
+
+                  // Center and scale geometry
+                  geometry.center();
+                  geometry.computeVertexNormals();
+
+                  // Calculate bounding box for proper scaling
+                  geometry.computeBoundingBox();
+                  const boundingBox = geometry.boundingBox;
+                  const size = new THREE.Vector3();
+                  boundingBox.getSize(size);
+                  console.log("[GEOMETRY] Bounding box size:", size);
+
+                  const maxDim = Math.max(size.x, size.y, size.z);
+                  const scale = 2 / maxDim; // Fit in 2 unit cube
+                  console.log("[GEOMETRY] Scale factor:", scale);
+
+                  // Create material with gradient effect
+                  const material = new THREE.MeshPhongMaterial({
+                    color: 0x00d4ff,
+                    specular: 0x7c3aed,
+                    shininess: 100,
+                    flatShading: false,
+                  });
+
+                  // Create mesh
+                  currentMesh = new THREE.Mesh(geometry, material);
+                  currentMesh.scale.set(scale, scale, scale);
+                  currentMesh.rotation.x = -Math.PI / 2; // Rotate to standard orientation
+
+                  scene.add(currentMesh);
+                  console.log("[SCENE] Mesh added to scene");
+
+                  // Reset camera position
+                  camera.position.set(0, 0, 5);
+                  if (controls && controls.reset) {
+                    controls.reset();
+                  }
+
+                  console.log(`[OK] ✅ 3D model loaded and displayed: ${filename}`);
+                },
+                function (progress) {
+                  if (progress.total > 0) {
+                    const percent = (
+                      (progress.loaded / progress.total) *
+                      100
+                    ).toFixed(0);
+                    console.log(`[PROGRESS] Loading STL: ${percent}%`);
+                  }
+                },
+                function (error) {
+                  console.error("[ERROR] ❌ Failed to load STL:", error);
+
+                  // Three.js initialized but STL failed to load - show fallback options
+                  const viewerContainer = document.getElementById("viewer-3d");
+                  viewerContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: var(--spacing-lg); text-align: center; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(124, 58, 237, 0.1)); border-radius: var(--radius-lg);">
+                      <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">📦</div>
+                      <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: 1.5rem;">Preview Load Failed</h3>
+                      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); max-width: 450px; line-height: 1.6;">
+                        The preview couldn't load in your browser, but your 3D model was generated successfully! View it online or download:
+                      </p>
+
+                      <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
+                        <button class="btn btn-primary" onclick="viewOnline3DViewer()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
+                          <span>🌐</span> View Online
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
+                          <span>⬇️</span> Download Local
+                        </button>
+                      </div>
+
+                      <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md); margin-top: var(--spacing-md); text-align: left; max-width: 500px; font-size: 0.9rem;">
+                        <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: var(--spacing-sm);">✅ Model Ready - Choose Method:</p>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
+                          <li style="margin-bottom: var(--spacing-sm);">🌐 <strong>Online Viewer:</strong> View instantly (no download)</li>
+                          <li style="margin-bottom: var(--spacing-sm);">📥 <strong>Download:</strong> Open with Windows 3D Viewer</li>
+                          <li>🖥️ <strong>Desktop Software:</strong> Blender, MeshLab, CAD tools</li>
+                        </ul>
+                      </div>
+
+                      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: var(--spacing-lg);">
+                        Your model generated successfully | Ready to view or download
+                      </p>
+                    </div>
+                  `;
+                }
+              );
+            }
+
+            // ============================================
+            // 3DVIEWER.NET IFRAME FALLBACK
+            // ============================================
+
+            function viewOnline3DViewer() {
+              if (!currentJobId || !lastOutputFile) {
+                alert("❌ No model available. Please generate a model first.");
+                return;
+              }
+
+              const format = document.getElementById("format").value || "stl";
+              const modelUrl = `${API_BASE}/api/download/${currentJobId}/${lastOutputFile}`;
+
+              // Create iframe fallback viewer using 3dviewer.net
+              console.log("[3DVIEWER] Loading model:", modelUrl);
+
+              const viewerContainer = document.getElementById("viewer-3d");
+              viewerContainer.innerHTML = `
+                <div style="display: flex; flex-direction: column; height: 100%; border-radius: var(--radius-lg); overflow: hidden;">
+                  <div style="padding: var(--spacing-md); background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <p style="color: var(--text-primary); font-weight: 600; margin-bottom: var(--spacing-xs);">🌐 Online 3D Viewer</p>
+                      <p style="color: var(--text-muted); font-size: 0.85rem;">Powered by 3DViewer.net</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                      <span>⬇️</span> Download
+                    </button>
+                  </div>
+                  <iframe
+                    src="https://3dviewer.net?model=${encodeURIComponent(modelUrl)}"
+                    style="flex: 1; border: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);"
+                    allow="accelerometer; autoplay; camera; gyroscope; magnetometer; microphone; payment; usb"
+                    allowfullscreen>
+                  </iframe>
+                </div>
+              `;
+
+              console.log("[3DVIEWER] Iframe initialized. Model URL:", modelUrl);
+            }
+
+            // ============================================
+            // DOWNLOAD
+            // ============================================
+
+            function downloadModel() {
+              if (!currentJobId) return;
+
+              const format = document.getElementById("format").value;
+              const filename = lastOutputFile || `model.${format}`;
+              const downloadUrl = `${API_BASE}/api/download/${currentJobId}/${filename}`;
+
+              // Trigger download
+              window.location.href = downloadUrl;
+            }
+
+            // ============================================
+            // BOB AI TEXT-TO-IMAGE
+            // ============================================
+
+            async function generateWithBobAI() {
+              const prompt = document.getElementById("bob-ai-prompt").value;
+
+              if (!prompt.trim()) {
+                alert("⚠️ Please enter a description for Bob AI to enhance");
+                return;
+              }
+
+              const bobAiBtn = document.getElementById("bob-ai-btn");
+              bobAiBtn.disabled = true;
+
+              try {
+                console.log("[BOB-AI] Starting text-to-image generation:", prompt);
+
+                // Step 1: Enhance prompt with Bob AI (Mistral)
+                console.log("[BOB-AI] Step 1: Enhancing prompt with Mistral...");
+                const enhanceResponse = await fetch(
+                  `${API_BASE}/api/local-llm/generate`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "ngrok-skip-browser-warning": "true",
+                    },
+                    body: JSON.stringify({
+                      prompt: `You are a professional image prompt engineer. The user provided:
+
+      User's description: "${prompt}"
+
+      Create a detailed, professional image prompt that enhances the user's description with artistic details, lighting, composition, and style. Keep it under 200 words. Respond with ONLY the enhanced prompt, no explanation.`,
+                      max_tokens: 500,
+                    }),
+                  }
+                );
+
+                if (!enhanceResponse.ok) {
+                  throw new Error(`Bob AI error: HTTP ${enhanceResponse.status}`);
+                }
+
+                const enhanceData = await enhanceResponse.json();
+                if (!enhanceData.response) {
+                  throw new Error("No response from Bob AI enhancement");
+                }
+
+                const enhancedPrompt = enhanceData.response.trim();
+                document.getElementById("bob-ai-prompt").value = enhancedPrompt;
+                console.log(
+                  "[BOB-AI] Prompt enhanced:",
+                  enhancedPrompt.substring(0, 100) + "..."
+                );
+
+                // Step 2: Show loading state
+                showThrobber("Generating image with AI models...");
+
+                // Step 3: Generate actual image using text-to-image API
+                console.log("[BOB-AI] Step 2: Calling real text-to-image API...");
+                const imageResponse = await fetch(`${API_BASE}/api/text-to-image`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "ngrok-skip-browser-warning": "true",
+                  },
+                  body: JSON.stringify({
+                    prompt: enhancedPrompt,
+                    style: "photorealistic",
+                    width: 512,
+                    height: 512,
+                    steps: 50,
+                    guidance_scale: 7.0,
+                  }),
+                });
+
+                if (!imageResponse.ok) {
+                  const errorText = await imageResponse.text();
+                  console.error("[BOB-AI] Image generation error:", errorText);
+                  throw new Error(
+                    `Image generation failed: HTTP ${imageResponse.status}`
+                  );
+                }
+
+                let imageData;
+                try {
+                  imageData = await imageResponse.json();
+                } catch (parseError) {
+                  console.error("[BOB-AI] Failed to parse response:", parseError);
+                  const responseText = await imageResponse.text();
+                  throw new Error(
+                    `Invalid response from server: ${responseText.substring(0, 200)}`
+                  );
+                }
+
+                console.log("[BOB-AI] Image generation response:", imageData);
+
+                if (imageData.error) {
+                  throw new Error(imageData.error);
+                }
+
+                if (imageData.status === "completed" && imageData.preview_url) {
+                  // Step 4: Display generated image
+                  console.log(
+                    "[BOB-AI] Image generated successfully:",
+                    imageData.preview_url
+                  );
+                  displayGeneratedImage(imageData.preview_url, enhancedPrompt);
+                } else if (imageData.status === "processing" || imageData.job_id) {
+                  // Step 5: Poll for async job completion
+                  const jobId = imageData.job_id || imageData.id;
+                  console.log("[BOB-AI] Image generation queued, job ID:", jobId);
+                  if (!jobId) {
+                    throw new Error("No job ID returned from image generation API");
+                  }
+                  pollImageGeneration(jobId, enhancedPrompt);
+                } else {
+                  throw new Error(
+                    `Invalid response from image generation API: ${JSON.stringify(
+                      imageData
+                    ).substring(0, 200)}`
+                  );
+                }
+
+                console.log("[BOB-AI] ✅ Image generation started");
+              } catch (error) {
+                console.error("[BOB-AI] Error:", error);
+                hideThrobber();
+                alert(
+                  `❌ Bob AI Error: ${error.message}\n\nMake sure:\n1. Backend is running\n2. Text-to-image API is available\n3. Ollama is running for prompt enhancement`
+                );
+              } finally {
+                bobAiBtn.disabled = false;
+              }
+            }
+
+            function showThrobber(message) {
+              const resultsContainer = document.getElementById("results-container");
+              resultsContainer.innerHTML = `
+                <div class="throbber-container">
+                  <div class="throbber-large"></div>
+                  <div class="throbber-pulse"></div>
+                  <div class="throbber-status">${message}</div>
+                </div>
+              `;
+            }
+
+            function hideThrobber() {
+              const resultsContainer = document.getElementById("results-container");
+              resultsContainer.innerHTML = "";
+            }
+
+            async function pollImageGeneration(jobId, prompt, pollCount = 0) {
+              const maxPolls = 180; // 3 minutes (180 seconds at 1s intervals)
+              const pollInterval = 1000; // 1 second
+
+              if (pollCount >= maxPolls) {
+                hideThrobber();
+                alert("❌ Image generation timeout. Please try again.");
+                return;
+              }
+
+              try {
+                const statusResponse = await fetch(
+                  `${API_BASE}/api/job-status/${jobId}`,
+                  {
+                    headers: { "ngrok-skip-browser-warning": "true" },
+                  }
+                );
+
+                if (!statusResponse.ok) {
+                  throw new Error(
+                    `Status check failed: HTTP ${statusResponse.status}`
+                  );
+                }
+
+                const statusData = await statusResponse.json();
+                console.log("[BOB-AI] Job status:", statusData);
+
+                // Update throbber with progress
+                const resultsContainer = document.getElementById("results-container");
+                const progress = statusData.progress || (pollCount * 100) / maxPolls;
+                resultsContainer.innerHTML = `
+                  <div class="throbber-container">
+                    <div class="throbber-large"></div>
+                    <div class="throbber-pulse"></div>
+                    <div class="throbber-status">
+                      Generating image... ${Math.min(100, Math.round(progress))}%
+                    </div>
+                  </div>
                 `;
 
-          // Enable generate button
-          document.getElementById("generate-btn").disabled = false;
-        } catch (error) {
-          console.error("[UPLOAD EXCEPTION]", error);
-          alert(`❌ Upload failed. Please try again.\n\n${error.message}`);
-        }
-      }
+                if (statusData.status === "completed") {
+                  console.log("[BOB-AI] Generation complete:", statusData);
+                  let imageUrl = statusData.preview_url;
 
-      // ============================================
-      // 3D GENERATION
-      // ============================================
+                  if (!imageUrl && statusData.filename) {
+                    imageUrl = `${API_BASE}/api/preview/${statusData.filename}`;
+                  }
 
-      async function generate3D() {
-        if (!currentJobId) {
-          alert("⚠️ Please upload an image first");
-          return;
-        }
+                  if (!imageUrl && statusData.image_url) {
+                    imageUrl = statusData.image_url;
+                  }
 
-        const format = document.getElementById("format").value;
-        const quality = parseInt(document.getElementById("quality").value);
-        const dimensions = parseInt(
-          document.getElementById("dimensions").value
-        );
-
-        try {
-          console.log("[GENERATE] Starting 3D generation...");
-          console.log("[GENERATE] Job ID:", currentJobId);
-          console.log("[GENERATE] API Base:", API_BASE);
-
-          // Show progress UI
-          document
-            .getElementById("progress-container")
-            .classList.remove("hidden");
-          document.getElementById("generate-btn").disabled = true;
-
-          // Start generation
-          console.log(
-            "[GENERATE] Sending fetch to:",
-            `${API_BASE}/api/generate-3d`
-          );
-          const response = await fetch(`${API_BASE}/api/generate-3d`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify({
-              job_id: currentJobId,
-              format: format,
-              quality: quality,
-              dimensions: {
-                width: dimensions,
-                height: dimensions,
-                depth: dimensions,
-              },
-            }),
-          });
-
-          console.log(
-            "[GENERATE] Response:",
-            response.status,
-            response.statusText
-          );
-
-          if (!response.ok) {
-            const errText = await response.text();
-            console.error("[GENERATE ERROR]", errText);
-            throw new Error(
-              `Generation failed (HTTP ${response.status}): ${errText}`
-            );
-          }
-
-          const data = await response.json();
-          console.log("[GENERATE SUCCESS] Generation started");
-
-          // Start polling for status
-          startStatusPolling();
-        } catch (error) {
-          console.error("[GENERATE EXCEPTION]", error);
-          alert("❌ Generation failed. Please try again.\n\n" + error.message);
-          document.getElementById("generate-btn").disabled = false;
-          document.getElementById("progress-container").classList.add("hidden");
-        }
-      }
-
-      // ============================================
-      // STATUS POLLING
-      // ============================================
-
-      function startStatusPolling() {
-        if (statusPollingInterval) {
-          clearInterval(statusPollingInterval);
-        }
-
-        console.log("[POLLING] Starting status polling for job:", currentJobId);
-        let pollCount = 0;
-
-        statusPollingInterval = setInterval(async () => {
-          pollCount++;
-          try {
-            const response = await fetch(
-              `${API_BASE}/api/job-status/${currentJobId}`,
-              {
-                headers: { "ngrok-skip-browser-warning": "true" },
+                  if (imageUrl) {
+                    displayGeneratedImage(imageUrl, prompt);
+                  } else {
+                    hideThrobber();
+                    console.error(
+                      "[BOB-AI] No image URL in completion response:",
+                      statusData
+                    );
+                    alert(
+                      "❌ Image generation completed but no image URL returned. Check backend logs."
+                    );
+                  }
+                } else if (statusData.status === "failed") {
+                  hideThrobber();
+                  alert(
+                    `❌ Image generation failed: ${
+                      statusData.message || "Unknown error"
+                    }`
+                  );
+                } else {
+                  // Still processing, poll again
+                  setTimeout(
+                    () => pollImageGeneration(jobId, prompt, pollCount + 1),
+                    pollInterval
+                  );
+                }
+              } catch (error) {
+                console.error("[BOB-AI] Poll error:", error);
+                hideThrobber();
+                alert(`❌ Error checking generation status: ${error.message}`);
               }
-            );
-            if (!response.ok) {
-              console.warn("[POLLING] Response not OK:", response.status);
-              return;
             }
 
-            const data = await response.json();
-            console.log(
-              `[POLLING #${pollCount}] Status: ${data.status} | Progress: ${
-                data.progress
-              }% | Message: ${data.message || "N/A"}`
-            );
+            function displayGeneratedImage(imageUrl, prompt) {
+              console.log("[BOB-AI] Displaying generated image:", imageUrl);
+              const previewContainer = document.getElementById("preview-container");
+              const previewImage = document.getElementById("preview-image");
 
-            updateProgress(data);
-
-            if (data.status === "completed") {
-              console.log("[POLLING] ✅ Generation completed!");
-              clearInterval(statusPollingInterval);
-              onGenerationComplete(data);
-            } else if (data.status === "failed") {
-              console.error("[POLLING] ❌ Generation failed!");
-              clearInterval(statusPollingInterval);
-              onGenerationFailed(data);
-            }
-          } catch (error) {
-            console.error("[POLLING ERROR]", error);
-          }
-        }, 1000);
-      }
-
-      function updateProgress(data) {
-        const progressFill = document.getElementById("progress-fill");
-        const progressText = document.getElementById("progress-text");
-
-        // Ensure progress is a valid number between 0-100
-        const progress = Math.max(
-          0,
-          Math.min(100, parseInt(data.progress) || 0)
-        );
-
-        progressFill.style.width = `${progress}%`;
-
-        // Build detailed message
-        let message = data.message || `Processing: ${progress}%`;
-        if (data.status) {
-          message = `[${data.status.toUpperCase()}] ${message}`;
-        }
-
-        progressText.textContent = message;
-
-        console.log("[PROGRESS] Updated: ", {
-          progress,
-          message,
-          status: data.status,
-        });
-      }
-
-      let lastOutputFile = null;
-
-      function onGenerationComplete(data) {
-        console.log("[COMPLETE] Generation data:", data);
-
-        // Update UI
-        document.getElementById("progress-container").classList.add("hidden");
-        document.getElementById("generate-btn").disabled = false;
-
-        // Store output file
-        if (data.output_file) {
-          lastOutputFile = data.output_file;
-        }
-
-        // Show success message with prominent download button
-        document.getElementById("results-container").innerHTML = `
-                <div class="status-badge success">
-                    <span>✓</span> Generation Complete
-                </div>
-                <p class="progress-text-style" style="margin-bottom: var(--spacing-lg);">
-                    File: ${data.output_file || "model.stl"}
-                </p>
-
-                <button
-                    class="btn btn-primary btn-full-width"
-                    onclick="downloadModel()"
-                    style="font-size: 1.1rem; padding: 0.875rem 1.5rem; margin-bottom: var(--spacing-md);">
-                    <span>⬇️</span> Download 3D Model
-                </button>
-
-                <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-top: var(--spacing-sm);">
-                    💡 Tip: Open in Windows 3D Viewer, MeshLab, or Blender
-                </p>
-            `;
-
-        // Show download section (backup button)
-        document.getElementById("download-section").classList.remove("hidden");
-
-        // Try to load 3D viewer (optional - may fail on some browsers)
-        const viewer = document.getElementById("viewer-3d");
-        viewer.classList.remove("hidden");
-        console.log("[VIEWER] 3D viewer container shown");
-
-        if (data.output_file) {
-          console.log(
-            "[LOAD] Attempting to load 3D preview:",
-            data.output_file
-          );
-          load3DModel(data.output_file);
-        } else {
-          console.error("[ERROR] No output_file in response data");
-        }
-      }
-
-      function onGenerationFailed(data) {
-        document.getElementById("progress-container").classList.add("hidden");
-        document.getElementById("generate-btn").disabled = false;
-
-        document.getElementById("results-container").innerHTML = `
-                <div class="status-badge error">
-                    <span>✗</span> Generation Failed
-                </div>
-                <p class="progress-text-style" style="color: var(--accent-error);">
-                    ${data.message || "Unknown error"}
-                </p>
-            `;
-      }
-
-      // ============================================
-      // 3D VIEWER (THREE.JS)
-      // ============================================
-
-      let scene, camera, renderer, controls, currentMesh;
-
-      function load3DModel(filename) {
-        // Check if Three.js loaded
-        if (typeof THREE === "undefined") {
-          console.error("[ERROR] Three.js library not loaded");
-          alert(
-            "❌ 3D Viewer Error: Three.js library failed to load. Please refresh the page."
-          );
-          return;
-        }
-
-        // Check if STLLoader is available
-        if (typeof THREE.STLLoader === "undefined") {
-          console.error("[ERROR] STLLoader not available");
-          alert(
-            "❌ 3D Viewer Error: STL loader not available. Please refresh the page."
-          );
-          return;
-        }
-
-        const downloadUrl = `${API_BASE}/api/download/${currentJobId}/${filename}`;
-        console.log("[LOAD] Download URL:", downloadUrl);
-
-        const canvas = document.getElementById("three-canvas");
-        if (!canvas) {
-          console.error("[ERROR] Canvas element #three-canvas not found!");
-          return;
-        }
-
-        // Clear previous canvas content
-        canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Initialize Three.js scene (only once)
-        if (!scene) {
-          console.log("[INIT] Initializing Three.js scene...");
-
-          try {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0e1a); // Match --bg-dark
-
-            // Camera setup
-            const width = canvas.offsetWidth || 800;
-            const height = canvas.offsetHeight || 500;
-            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            camera.position.set(0, 0, 5);
-
-            // Check WebGL support before creating renderer
-            const gl =
-              canvas.getContext("webgl2") ||
-              canvas.getContext("webgl") ||
-              canvas.getContext("experimental-webgl");
-            if (!gl) {
-              throw new Error(
-                "WebGL not supported by your browser. Please enable hardware acceleration in browser settings or use a different browser (Chrome/Edge/Firefox recommended)."
-              );
-            }
-            console.log(
-              "[INIT] WebGL context available:",
-              gl instanceof WebGLRenderingContext ? "WebGL 1.0" : "WebGL 2.0"
-            );
-
-            // Renderer setup with maximum compatibility options
-            renderer = new THREE.WebGLRenderer({
-              canvas: canvas,
-              context: gl,
-              antialias: false, // Disable for compatibility
-              alpha: false,
-              premultipliedAlpha: false,
-              preserveDrawingBuffer: true,
-              powerPreference: "default",
-              failIfMajorPerformanceCaveat: false,
-              precision: "lowp", // Use low precision for compatibility
-            });
-            renderer.setSize(width, height);
-            renderer.setPixelRatio(1); // Force 1x for stability
-
-            console.log("[INIT] WebGL renderer created successfully");
-
-            // Orbit controls - check if OrbitControls is available
-            if (typeof THREE.OrbitControls !== "undefined") {
-              controls = new THREE.OrbitControls(camera, renderer.domElement);
-              controls.enableDamping = true;
-              controls.dampingFactor = 0.05;
-              controls.autoRotate = true;
-              controls.autoRotateSpeed = 2.0;
-              console.log("[INIT] OrbitControls initialized");
-            } else {
-              console.warn(
-                "[WARN] OrbitControls not available, using basic camera"
-              );
-            }
-
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-
-            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight1.position.set(1, 1, 1);
-            scene.add(directionalLight1);
-
-            const directionalLight2 = new THREE.DirectionalLight(0x00d4ff, 0.4);
-            directionalLight2.position.set(-1, -1, -1);
-            scene.add(directionalLight2);
-
-            // Animation loop
-            function animate() {
-              requestAnimationFrame(animate);
-              if (controls && controls.update) {
-                controls.update();
+              // Ensure absolute URL
+              let absoluteUrl = imageUrl;
+              if (
+                imageUrl.startsWith("/") &&
+                !imageUrl.startsWith("http")
+              ) {
+                absoluteUrl = `${API_BASE}${imageUrl}`;
+                console.log("[BOB-AI] Converted to absolute URL:", absoluteUrl);
               }
-              renderer.render(scene, camera);
+
+              // Create image element to load
+              const img = new Image();
+              img.crossOrigin = "anonymous";
+
+              img.onload = () => {
+                previewImage.src = absoluteUrl;
+                uploadZone.classList.add("hidden");
+                previewContainer.classList.remove("hidden");
+
+                // Update results with success message
+                hideThrobber();
+                document.getElementById("results-container").innerHTML = `
+                  <div class="status-badge success">
+                    <span>✓</span> Image Generated Successfully
+                  </div>
+                  <p class="progress-text-style">
+                    Ready to generate 3D model from this image
+                  </p>
+                `;
+
+                // Create a blob from the image URL for upload
+                fetch(absoluteUrl, {
+                  headers: { "ngrok-skip-browser-warning": "true" },
+                })
+                  .then((res) => {
+                    if (!res.ok) {
+                      throw new Error(
+                        `HTTP ${res.status}: Could not fetch image`
+                      );
+                    }
+                    return res.blob();
+                  })
+                  .then((blob) => {
+                    currentFile = new File([blob], "bob-ai-generated.png", {
+                      type: "image/png",
+                    });
+                    console.log("[BOB-AI] Image ready for 3D generation");
+                    document.getElementById("generate-btn").disabled = false;
+                  })
+                  .catch((err) => {
+                    console.warn(
+                      "[BOB-AI] Could not prepare image for upload:",
+                      err
+                    );
+                    // Still show image even if we can't prepare for upload
+                    document.getElementById("generate-btn").disabled = false;
+                  });
+              };
+
+              img.onerror = () => {
+                hideThrobber();
+                console.error("[BOB-AI] Image load error for URL:", absoluteUrl);
+                alert(
+                  `❌ Could not load generated image.\n\nURL: ${absoluteUrl}\n\nThis usually means:\n1. The backend might not be running\n2. The image file wasn't saved properly\n3. Network connectivity issue`
+                );
+              };
+
+              img.onabort = () => {
+                hideThrobber();
+                console.error("[BOB-AI] Image load aborted for URL:", absoluteUrl);
+                alert(
+                  `❌ Image loading was cancelled. Check your network connection.`
+                );
+              };
+
+              console.log("[BOB-AI] Loading image from:", absoluteUrl);
+              img.src = absoluteUrl;
             }
-            animate();
-
-            // Handle window resize
-            window.addEventListener("resize", () => {
-              camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
-              camera.updateProjectionMatrix();
-              renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
-            });
-
-            console.log("[INIT] Scene initialization complete");
-          } catch (error) {
-            console.error(
-              "[ERROR] Failed to initialize Three.js scene:",
-              error
-            );
-
-            // WebGL unavailable - show fallback options with iframe viewer
-            const viewerContainer = document.getElementById("viewer-3d");
-            viewerContainer.innerHTML = `
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: var(--spacing-lg); text-align: center; background: linear-gradient(135deg, rgba(7, 58, 76, 0.5), rgba(124, 58, 237, 0.1)); border-radius: var(--radius-lg);">
-                <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">🖥️</div>
-                <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: 1.5rem;">3D Preview Not Available</h3>
-                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); max-width: 450px; line-height: 1.6;">
-                  Your browser doesn't support WebGL. Your 3D model was generated successfully! Choose how to view it:
-                </p>
-
-                <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
-                  <button class="btn btn-primary" onclick="viewOnline3DViewer()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
-                    <span>🌐</span> View Online
-                  </button>
-                  <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
-                    <span>⬇️</span> Download Local
-                  </button>
-                </div>
-
-                <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md); margin-top: var(--spacing-md); text-align: left; max-width: 500px; font-size: 0.9rem;">
-                  <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: var(--spacing-sm);">� Viewing Methods:</p>
-                  <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
-                    <li style="margin-bottom: var(--spacing-sm);">🌐 <strong>Online Viewer (no installation):</strong> View instantly in 3DViewer.net</li>
-                    <li style="margin-bottom: var(--spacing-sm);">📦 <strong>Windows 3D Viewer:</strong> Double-click .stl file (built-in)</li>
-                    <li style="margin-bottom: var(--spacing-sm);">🎨 <strong>Blender:</strong> Professional 3D software (free)</li>
-                    <li>🔧 <strong>MeshLab:</strong> Specialized mesh viewer (free)</li>
-                  </ul>
-                </div>
-
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: var(--spacing-lg);">
-                  ✅ Model ready | � Use online viewer or download to your computer
-                </p>
-              </div>
-            `;
-            return;
-          }
-        }
-
-        // Remove previous mesh if exists
-        if (currentMesh) {
-          scene.remove(currentMesh);
-          currentMesh.geometry.dispose();
-          currentMesh.material.dispose();
-        }
-
-        // Load STL model
-        console.log("[LOADER] Creating STLLoader...");
-        const loader = new THREE.STLLoader();
-
-        console.log("[LOADER] Starting STL load from:", downloadUrl);
-        loader.load(
-          downloadUrl,
-          function (geometry) {
-            console.log(
-              "[SUCCESS] STL loaded, vertices:",
-              geometry.attributes.position.count
-            );
-
-            // Center and scale geometry
-            geometry.center();
-            geometry.computeVertexNormals();
-
-            // Calculate bounding box for proper scaling
-            geometry.computeBoundingBox();
-            const boundingBox = geometry.boundingBox;
-            const size = new THREE.Vector3();
-            boundingBox.getSize(size);
-            console.log("[GEOMETRY] Bounding box size:", size);
-
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 2 / maxDim; // Fit in 2 unit cube
-            console.log("[GEOMETRY] Scale factor:", scale);
-
-            // Create material with gradient effect
-            const material = new THREE.MeshPhongMaterial({
-              color: 0x00d4ff,
-              specular: 0x7c3aed,
-              shininess: 100,
-              flatShading: false,
-            });
-
-            // Create mesh
-            currentMesh = new THREE.Mesh(geometry, material);
-            currentMesh.scale.set(scale, scale, scale);
-            currentMesh.rotation.x = -Math.PI / 2; // Rotate to standard orientation
-
-            scene.add(currentMesh);
-            console.log("[SCENE] Mesh added to scene");
-
-            // Reset camera position
-            camera.position.set(0, 0, 5);
-            if (controls && controls.reset) {
-              controls.reset();
-            }
-
-            console.log(`[OK] ✅ 3D model loaded and displayed: ${filename}`);
-          },
-          function (progress) {
-            if (progress.total > 0) {
-              const percent = (
-                (progress.loaded / progress.total) *
-                100
-              ).toFixed(0);
-              console.log(`[PROGRESS] Loading STL: ${percent}%`);
-            }
-          },
-          function (error) {
-            console.error("[ERROR] ❌ Failed to load STL:", error);
-
-            // Three.js initialized but STL failed to load - show fallback options
-            const viewerContainer = document.getElementById("viewer-3d");
-            viewerContainer.innerHTML = `
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: var(--spacing-lg); text-align: center; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(124, 58, 237, 0.1)); border-radius: var(--radius-lg);">
-                <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">📦</div>
-                <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: 1.5rem;">Preview Load Failed</h3>
-                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); max-width: 450px; line-height: 1.6;">
-                  The preview couldn't load in your browser, but your 3D model was generated successfully! View it online or download:
-                </p>
-
-                <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
-                  <button class="btn btn-primary" onclick="viewOnline3DViewer()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
-                    <span>🌐</span> View Online
-                  </button>
-                  <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
-                    <span>⬇️</span> Download Local
-                  </button>
-                </div>
-
-                <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md); margin-top: var(--spacing-md); text-align: left; max-width: 500px; font-size: 0.9rem;">
-                  <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: var(--spacing-sm);">✅ Model Ready - Choose Method:</p>
-                  <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
-                    <li style="margin-bottom: var(--spacing-sm);">🌐 <strong>Online Viewer:</strong> View instantly (no download)</li>
-                    <li style="margin-bottom: var(--spacing-sm);">📥 <strong>Download:</strong> Open with Windows 3D Viewer</li>
-                    <li>🖥️ <strong>Desktop Software:</strong> Blender, MeshLab, CAD tools</li>
-                  </ul>
-                </div>
-
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: var(--spacing-lg);">
-                  Your model generated successfully | Ready to view or download
-                </p>
-              </div>
-            `;
-          }
-        );
-      }
-
-      // ============================================
-      // 3DVIEWER.NET IFRAME FALLBACK
-      // ============================================
-
-      function viewOnline3DViewer() {
-        if (!currentJobId || !lastOutputFile) {
-          alert("❌ No model available. Please generate a model first.");
-          return;
-        }
-
-        const format = document.getElementById("format").value || "stl";
-        const modelUrl = `${API_BASE}/api/download/${currentJobId}/${lastOutputFile}`;
-
-        // Create iframe fallback viewer using 3dviewer.net
-        console.log("[3DVIEWER] Loading model:", modelUrl);
-
-        const viewerContainer = document.getElementById("viewer-3d");
-        viewerContainer.innerHTML = `
-          <div style="display: flex; flex-direction: column; height: 100%; border-radius: var(--radius-lg); overflow: hidden;">
-            <div style="padding: var(--spacing-md); background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <p style="color: var(--text-primary); font-weight: 600; margin-bottom: var(--spacing-xs);">🌐 Online 3D Viewer</p>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">Powered by 3DViewer.net</p>
-              </div>
-              <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
-                <span>⬇️</span> Download
-              </button>
-            </div>
-            <iframe
-              src="https://3dviewer.net?model=${encodeURIComponent(modelUrl)}"
-              style="flex: 1; border: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);"
-              allow="accelerometer; autoplay; camera; gyroscope; magnetometer; microphone; payment; usb"
-              allowfullscreen>
-            </iframe>
-          </div>
-        `;
-
-        console.log("[3DVIEWER] Iframe initialized. Model URL:", modelUrl);
-      }
-
-      // ============================================
-      // DOWNLOAD
-      // ============================================
-
-      function downloadModel() {
-        if (!currentJobId) return;
-
-        const format = document.getElementById("format").value;
-        const filename = lastOutputFile || `model.${format}`;
-        const downloadUrl = `${API_BASE}/api/download/${currentJobId}/${filename}`;
-
-        // Trigger download
-        window.location.href = downloadUrl;
-      }
-
-      // ============================================
-      // BOB AI TEXT-TO-IMAGE
-      // ============================================
-
-      async function generateWithBobAI() {
-        const prompt = document.getElementById("bob-ai-prompt").value;
-
-        if (!prompt.trim()) {
-          alert("⚠️ Please enter a description for Bob AI to enhance");
-          return;
-        }
-
-        const bobAiBtn = document.getElementById("bob-ai-btn");
-        bobAiBtn.disabled = true;
-
-        try {
-          console.log("[BOB-AI] Starting text-to-image generation:", prompt);
-
-          // Step 1: Enhance prompt with Bob AI (Mistral)
-          console.log("[BOB-AI] Step 1: Enhancing prompt with Mistral...");
-          const enhanceResponse = await fetch(
-            `${API_BASE}/api/local-llm/generate`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
-              },
-              body: JSON.stringify({
-                prompt: `You are a professional image prompt engineer. The user provided:
-
-User's description: "${prompt}"
-
-Create a detailed, professional image prompt that enhances the user's description with artistic details, lighting, composition, and style. Keep it under 200 words. Respond with ONLY the enhanced prompt, no explanation.`,
-                max_tokens: 500,
-              }),
-            }
-          );
-
-          if (!enhanceResponse.ok) {
-            throw new Error(`Bob AI error: HTTP ${enhanceResponse.status}`);
-          }
-
-          const enhanceData = await enhanceResponse.json();
-          if (!enhanceData.response) {
-            throw new Error("No response from Bob AI enhancement");
-          }
-
-          const enhancedPrompt = enhanceData.response.trim();
-          document.getElementById("bob-ai-prompt").value = enhancedPrompt;
-          console.log(
-            "[BOB-AI] Prompt enhanced:",
-            enhancedPrompt.substring(0, 100) + "..."
-          );
-
-          // Step 2: Show loading state
-          showThrobber("Generating image with AI models...");
-
-          // Step 3: Generate actual image using text-to-image API
-          console.log("[BOB-AI] Step 2: Calling real text-to-image API...");
-          const imageResponse = await fetch(`${API_BASE}/api/text-to-image`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            body: JSON.stringify({
-              prompt: enhancedPrompt,
-              style: "photorealistic",
-              width: 512,
-              height: 512,
-              steps: 50,
-              guidance_scale: 7.0,
-            }),
-          });
-
-          if (!imageResponse.ok) {
-            const errorText = await imageResponse.text();
-            console.error("[BOB-AI] Image generation error:", errorText);
-            throw new Error(
-              `Image generation failed: HTTP ${imageResponse.status}`
-            );
-          }
-
-          const imageData = await imageResponse.json();
-          console.log("[BOB-AI] Image generation response:", imageData);
-
-          if (imageData.status === "completed" && imageData.preview_url) {
-            // Step 4: Display generated image
-            console.log(
-              "[BOB-AI] Image generated successfully:",
-              imageData.preview_url
-            );
-            displayGeneratedImage(imageData.preview_url, enhancedPrompt);
-          } else if (imageData.job_id) {
-            // Step 5: Poll for async job completion
-            console.log(
-              "[BOB-AI] Image generation queued, job ID:",
-              imageData.job_id
-            );
-            pollImageGeneration(imageData.job_id, enhancedPrompt);
-          } else {
-            throw new Error("Invalid response from image generation API");
-          }
-
-          console.log("[BOB-AI] ✅ Image generation started");
-        } catch (error) {
-          console.error("[BOB-AI] Error:", error);
-          hideThrobber();
-          alert(
-            `❌ Bob AI Error: ${error.message}\n\nMake sure:\n1. Backend is running\n2. Text-to-image API is available\n3. Ollama is running for prompt enhancement`
-          );
-        } finally {
-          bobAiBtn.disabled = false;
-        }
-      }
-
-      function showThrobber(message) {
-        const resultsContainer = document.getElementById("results-container");
-        resultsContainer.innerHTML = `
-          <div class="throbber-container">
-            <div class="throbber-large"></div>
-            <div class="throbber-pulse"></div>
-            <div class="throbber-status">${message}</div>
-          </div>
-        `;
-      }
-
-      function hideThrobber() {
-        const resultsContainer = document.getElementById("results-container");
-        resultsContainer.innerHTML = "";
-      }
-
-      async function pollImageGeneration(jobId, prompt, pollCount = 0) {
-        const maxPolls = 180; // 3 minutes (180 seconds at 1s intervals)
-        const pollInterval = 1000; // 1 second
-
-        if (pollCount >= maxPolls) {
-          hideThrobber();
-          alert("❌ Image generation timeout. Please try again.");
-          return;
-        }
-
-        try {
-          const statusResponse = await fetch(
-            `${API_BASE}/api/job-status/${jobId}`,
-            {
-              headers: { "ngrok-skip-browser-warning": "true" },
-            }
-          );
-
-          if (!statusResponse.ok) {
-            throw new Error(
-              `Status check failed: HTTP ${statusResponse.status}`
-            );
-          }
-
-          const statusData = await statusResponse.json();
-          console.log("[BOB-AI] Job status:", statusData);
-
-          // Update throbber with progress
-          const resultsContainer = document.getElementById("results-container");
-          const progress = statusData.progress || (pollCount * 100) / maxPolls;
-          resultsContainer.innerHTML = `
-            <div class="throbber-container">
-              <div class="throbber-large"></div>
-              <div class="throbber-pulse"></div>
-              <div class="throbber-status">
-                Generating image... ${Math.min(100, Math.round(progress))}%
-              </div>
-            </div>
-          `;
-
-          if (statusData.status === "completed") {
-            console.log("[BOB-AI] Generation complete:", statusData);
-            if (statusData.preview_url) {
-              displayGeneratedImage(statusData.preview_url, prompt);
-            } else if (statusData.filename) {
-              displayGeneratedImage(
-                `/api/preview/${statusData.filename}`,
-                prompt
-              );
-            }
-          } else if (statusData.status === "failed") {
-            hideThrobber();
-            alert(
-              `❌ Image generation failed: ${
-                statusData.message || "Unknown error"
-              }`
-            );
-          } else {
-            // Still processing, poll again
-            setTimeout(
-              () => pollImageGeneration(jobId, prompt, pollCount + 1),
-              pollInterval
-            );
-          }
-        } catch (error) {
-          console.error("[BOB-AI] Poll error:", error);
-          hideThrobber();
-          alert(`❌ Error checking generation status: ${error.message}`);
-        }
-      }
-
-      function displayGeneratedImage(imageUrl, prompt) {
-        console.log("[BOB-AI] Displaying generated image:", imageUrl);
-        const previewContainer = document.getElementById("preview-container");
-        const previewImage = document.getElementById("preview-image");
-
-        // Create image element to load
-        const img = new Image();
-        img.onload = () => {
-          previewImage.src = imageUrl;
-          uploadZone.classList.add("hidden");
-          previewContainer.classList.remove("hidden");
-
-          // Update results with success message
-          hideThrobber();
-          document.getElementById("results-container").innerHTML = `
-            <div class="status-badge success">
-              <span>✓</span> Image Generated Successfully
-            </div>
-            <p class="progress-text-style">
-              Ready to generate 3D model from this image
-            </p>
-          `;
-
-          // Create a blob from the image URL for upload
-          fetch(imageUrl)
-            .then((res) => res.blob())
-            .then((blob) => {
-              currentFile = new File([blob], "bob-ai-generated.png", {
-                type: "image/png",
-              });
-              console.log("[BOB-AI] Image ready for 3D generation");
-              document.getElementById("generate-btn").disabled = false;
-            })
-            .catch((err) => {
-              console.warn("[BOB-AI] Could not prepare image for upload:", err);
-              document.getElementById("generate-btn").disabled = false;
-            });
-        };
-
-        img.onerror = () => {
-          hideThrobber();
-          alert(`❌ Could not load generated image from: ${imageUrl}`);
-        };
-
-        img.src = imageUrl;
-      }
     </script>
   </body>
 </html>
