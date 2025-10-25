@@ -1,0 +1,614 @@
+{
+    "dashboard": {
+        "id": null,
+        "uid": "orfeas-optimizations",
+        "title": "ORFEAS AI - Optimization Metrics",
+        "tags": [
+            "orfeas",
+            "optimizations",
+            "performance"
+        ],
+        "timezone": "browser",
+        "schemaVersion": 38,
+        "version": 1,
+        "refresh": "5s",
+        "time": {
+            "from": "now-1h",
+            "to": "now"
+        },
+        "timepicker": {
+            "refresh_intervals": [
+                "5s",
+                "10s",
+                "30s",
+                "1m",
+                "5m"
+            ]
+        },
+        "panels": [
+            {
+                "id": 1,
+                "title": "Overview - Key Metrics",
+                "type": "stat",
+                "gridPos": {
+                    "h": 4,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "targets": [
+                    {
+                        "expr": "rate(orfeas_requests_total[5m])",
+                        "legendFormat": "Requests/sec",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "orfeas_gpu_utilization_percent",
+                        "legendFormat": "GPU Utilization %",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "rate(orfeas_cache_hits_total[5m]) / rate(orfeas_cache_requests_total[5m]) * 100",
+                        "legendFormat": "Cache Hit Rate %",
+                        "refId": "C"
+                    },
+                    {
+                        "expr": "orfeas_concurrent_jobs",
+                        "legendFormat": "Concurrent Jobs",
+                        "refId": "D"
+                    }
+                ],
+                "options": {
+                    "graphMode": "area",
+                    "colorMode": "background",
+                    "orientation": "horizontal",
+                    "textMode": "value_and_name"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "decimals": 1,
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "value": null,
+                                    "color": "green"
+                                },
+                                {
+                                    "value": 80,
+                                    "color": "yellow"
+                                },
+                                {
+                                    "value": 90,
+                                    "color": "red"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "title": "Progressive Rendering - Stage Latencies",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 4
+                },
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.50, rate(orfeas_progressive_stage_duration_seconds_bucket{stage=\"low\"}[5m]))",
+                        "legendFormat": "LOW (p50)",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.95, rate(orfeas_progressive_stage_duration_seconds_bucket{stage=\"low\"}[5m]))",
+                        "legendFormat": "LOW (p95)",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.50, rate(orfeas_progressive_stage_duration_seconds_bucket{stage=\"medium\"}[5m]))",
+                        "legendFormat": "MEDIUM (p50)",
+                        "refId": "C"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.95, rate(orfeas_progressive_stage_duration_seconds_bucket{stage=\"medium\"}[5m]))",
+                        "legendFormat": "MEDIUM (p95)",
+                        "refId": "D"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.50, rate(orfeas_progressive_stage_duration_seconds_bucket{stage=\"high\"}[5m]))",
+                        "legendFormat": "HIGH (p50)",
+                        "refId": "E"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.95, rate(orfeas_progressive_stage_duration_seconds_bucket{stage=\"high\"}[5m]))",
+                        "legendFormat": "HIGH (p95)",
+                        "refId": "F"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Duration (seconds)",
+                        "format": "s"
+                    }
+                ],
+                "legend": {
+                    "show": true,
+                    "alignAsTable": true,
+                    "avg": true,
+                    "current": true,
+                    "max": true,
+                    "min": true
+                }
+            },
+            {
+                "id": 3,
+                "title": "Cache Performance",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 4
+                },
+                "targets": [
+                    {
+                        "expr": "rate(orfeas_cache_hits_total[5m])",
+                        "legendFormat": "Cache Hits/sec",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "rate(orfeas_cache_misses_total[5m])",
+                        "legendFormat": "Cache Misses/sec",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "rate(orfeas_cache_hits_total[5m]) / rate(orfeas_cache_requests_total[5m]) * 100",
+                        "legendFormat": "Hit Rate %",
+                        "refId": "C"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Rate / Percentage",
+                        "format": "short"
+                    }
+                ],
+                "legend": {
+                    "show": true,
+                    "alignAsTable": true,
+                    "avg": true,
+                    "current": true
+                }
+            },
+            {
+                "id": 4,
+                "title": "GPU Utilization & VRAM Usage",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 12
+                },
+                "targets": [
+                    {
+                        "expr": "orfeas_gpu_utilization_percent",
+                        "legendFormat": "GPU Utilization %",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "orfeas_gpu_memory_used_bytes / orfeas_gpu_memory_total_bytes * 100",
+                        "legendFormat": "VRAM Usage %",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "orfeas_gpu_temperature_celsius",
+                        "legendFormat": "GPU Temperature °C",
+                        "refId": "C"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Percentage / Temperature",
+                        "format": "percent"
+                    }
+                ],
+                "alert": {
+                    "conditions": [
+                        {
+                            "evaluator": {
+                                "params": [
+                                    85
+                                ],
+                                "type": "gt"
+                            },
+                            "operator": {
+                                "type": "and"
+                            },
+                            "query": {
+                                "params": [
+                                    "C",
+                                    "5m",
+                                    "now"
+                                ]
+                            },
+                            "reducer": {
+                                "params": [],
+                                "type": "avg"
+                            },
+                            "type": "query"
+                        }
+                    ],
+                    "name": "GPU Temperature Alert",
+                    "message": "GPU temperature exceeds 85°C"
+                }
+            },
+            {
+                "id": 5,
+                "title": "GPU Batch Processing",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 12
+                },
+                "targets": [
+                    {
+                        "expr": "orfeas_concurrent_jobs",
+                        "legendFormat": "Concurrent Jobs",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "orfeas_gpu_batch_size",
+                        "legendFormat": "Current Batch Size",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "orfeas_queue_depth",
+                        "legendFormat": "Queue Depth",
+                        "refId": "C"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Count",
+                        "format": "short"
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "title": "Rate Limiting - Requests by Tier",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 20
+                },
+                "targets": [
+                    {
+                        "expr": "rate(orfeas_rate_limit_requests_total{tier=\"FREE\"}[5m])",
+                        "legendFormat": "FREE Tier",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "rate(orfeas_rate_limit_requests_total{tier=\"BASIC\"}[5m])",
+                        "legendFormat": "BASIC Tier",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "rate(orfeas_rate_limit_requests_total{tier=\"PREMIUM\"}[5m])",
+                        "legendFormat": "PREMIUM Tier",
+                        "refId": "C"
+                    },
+                    {
+                        "expr": "rate(orfeas_rate_limit_blocks_total[5m])",
+                        "legendFormat": "Rate Limited (429)",
+                        "refId": "D"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Requests/sec",
+                        "format": "reqps"
+                    }
+                ]
+            },
+            {
+                "id": 7,
+                "title": "Response Compression Savings",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 20
+                },
+                "targets": [
+                    {
+                        "expr": "rate(orfeas_response_size_bytes_total{encoding=\"none\"}[5m])",
+                        "legendFormat": "Uncompressed Bytes/sec",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "rate(orfeas_response_size_bytes_total{encoding=\"gzip\"}[5m])",
+                        "legendFormat": "Gzip Bytes/sec",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "rate(orfeas_response_size_bytes_total{encoding=\"br\"}[5m])",
+                        "legendFormat": "Brotli Bytes/sec",
+                        "refId": "C"
+                    },
+                    {
+                        "expr": "(1 - (rate(orfeas_response_size_bytes_total{encoding=~\"gzip|br\"}[5m]) / rate(orfeas_response_size_bytes_total{encoding=\"none\"}[5m]))) * 100",
+                        "legendFormat": "Compression Savings %",
+                        "refId": "D"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Bytes/sec",
+                        "format": "Bps"
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "title": "WebSocket Event Rate",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 28
+                },
+                "targets": [
+                    {
+                        "expr": "rate(orfeas_websocket_events_total{event=\"job_update\"}[5m])",
+                        "legendFormat": "job_update Events/sec",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "rate(orfeas_websocket_throttled_events_total[5m])",
+                        "legendFormat": "Throttled Events/sec",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "orfeas_websocket_connected_clients",
+                        "legendFormat": "Connected Clients",
+                        "refId": "C"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Events/sec or Clients",
+                        "format": "short"
+                    }
+                ]
+            },
+            {
+                "id": 9,
+                "title": "Model Quantization Usage",
+                "type": "piechart",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 28
+                },
+                "targets": [
+                    {
+                        "expr": "sum by (mode) (orfeas_quantization_mode_total)",
+                        "legendFormat": "{{mode}}",
+                        "refId": "A"
+                    }
+                ],
+                "options": {
+                    "legend": {
+                        "displayMode": "table",
+                        "placement": "right",
+                        "values": [
+                            "value",
+                            "percent"
+                        ]
+                    },
+                    "pieType": "donut"
+                }
+            },
+            {
+                "id": 10,
+                "title": "API Response Times (p50, p95, p99)",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 36
+                },
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.50, rate(orfeas_request_duration_seconds_bucket{endpoint=\"/api/generate-3d/progressive\"}[5m]))",
+                        "legendFormat": "Progressive p50",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.95, rate(orfeas_request_duration_seconds_bucket{endpoint=\"/api/generate-3d/progressive\"}[5m]))",
+                        "legendFormat": "Progressive p95",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.99, rate(orfeas_request_duration_seconds_bucket{endpoint=\"/api/generate-3d/progressive\"}[5m]))",
+                        "legendFormat": "Progressive p99",
+                        "refId": "C"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.50, rate(orfeas_request_duration_seconds_bucket{endpoint=\"/api/generate-3d\"}[5m]))",
+                        "legendFormat": "Standard p50",
+                        "refId": "D"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.95, rate(orfeas_request_duration_seconds_bucket{endpoint=\"/api/generate-3d\"}[5m]))",
+                        "legendFormat": "Standard p95",
+                        "refId": "E"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Duration (seconds)",
+                        "format": "s"
+                    }
+                ],
+                "legend": {
+                    "show": true,
+                    "alignAsTable": true,
+                    "avg": true,
+                    "current": true,
+                    "max": true,
+                    "min": true
+                },
+                "alert": {
+                    "conditions": [
+                        {
+                            "evaluator": {
+                                "params": [
+                                    20
+                                ],
+                                "type": "gt"
+                            },
+                            "operator": {
+                                "type": "and"
+                            },
+                            "query": {
+                                "params": [
+                                    "B",
+                                    "5m",
+                                    "now"
+                                ]
+                            },
+                            "reducer": {
+                                "params": [],
+                                "type": "avg"
+                            },
+                            "type": "query"
+                        }
+                    ],
+                    "name": "High Latency Alert",
+                    "message": "P95 latency exceeds 20 seconds"
+                }
+            },
+            {
+                "id": 11,
+                "title": "Error Rate",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 44
+                },
+                "targets": [
+                    {
+                        "expr": "rate(orfeas_requests_total{status=~\"5..\"}[5m])",
+                        "legendFormat": "5xx Errors/sec",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "rate(orfeas_requests_total{status=\"429\"}[5m])",
+                        "legendFormat": "429 Rate Limited/sec",
+                        "refId": "B"
+                    },
+                    {
+                        "expr": "rate(orfeas_requests_total{status=~\"4..\"}[5m])",
+                        "legendFormat": "4xx Errors/sec",
+                        "refId": "C"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Errors/sec",
+                        "format": "reqps"
+                    }
+                ],
+                "alert": {
+                    "conditions": [
+                        {
+                            "evaluator": {
+                                "params": [
+                                    1
+                                ],
+                                "type": "gt"
+                            },
+                            "operator": {
+                                "type": "and"
+                            },
+                            "query": {
+                                "params": [
+                                    "A",
+                                    "5m",
+                                    "now"
+                                ]
+                            },
+                            "reducer": {
+                                "params": [],
+                                "type": "avg"
+                            },
+                            "type": "query"
+                        }
+                    ],
+                    "name": "High Error Rate Alert",
+                    "message": "Server errors exceeding 1 req/sec"
+                }
+            },
+            {
+                "id": 12,
+                "title": "Cache Memory Usage",
+                "type": "graph",
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 44
+                },
+                "targets": [
+                    {
+                        "expr": "orfeas_cache_memory_bytes",
+                        "legendFormat": "Cache Memory Used",
+                        "refId": "A"
+                    },
+                    {
+                        "expr": "orfeas_cache_entries_total",
+                        "legendFormat": "Cache Entries",
+                        "refId": "B"
+                    }
+                ],
+                "yaxes": [
+                    {
+                        "label": "Bytes / Count",
+                        "format": "bytes"
+                    }
+                ]
+            }
+        ],
+        "annotations": {
+            "list": [
+                {
+                    "datasource": "Prometheus",
+                    "enable": true,
+                    "expr": "changes(orfeas_deployment_version[5m]) > 0",
+                    "iconColor": "blue",
+                    "name": "Deployments",
+                    "tagKeys": "version",
+                    "textFormat": "Deployment: {{version}}"
+                }
+            ]
+        }
+    }
+}

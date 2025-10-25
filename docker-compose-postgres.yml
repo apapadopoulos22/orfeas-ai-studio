@@ -1,0 +1,64 @@
+# ORFEAS AI STUDIO - PostgreSQL Extension
+# Extends docker-compose.yml with PostgreSQL database service
+# Usage: docker-compose -f docker-compose.yml -f docker-compose-postgres.yml up -d
+
+services:
+  # PostgreSQL - Job Queue Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: orfeas-postgres-production
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=orfeas_ai
+      - POSTGRES_USER=orfeas
+      - POSTGRES_PASSWORD=orfeas_secure_2025
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    command:
+      - postgres
+      - -c
+      - max_connections=200
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - effective_cache_size=1GB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - checkpoint_completion_target=0.9
+      - -c
+      - wal_buffers=16MB
+      - -c
+      - default_statistics_target=100
+      - -c
+      - random_page_cost=1.1
+      - -c
+      - effective_io_concurrency=200
+      - -c
+      - work_mem=2621kB
+      - -c
+      - min_wal_size=1GB
+      - -c
+      - max_wal_size=4GB
+    restart: unless-stopped
+    networks:
+      - orfeas-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U orfeas -d orfeas_ai" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Update backend to include PostgreSQL environment variables
+  backend:
+    environment:
+      - DATABASE_URL=postgresql://orfeas:orfeas_secure_2025@postgres:5432/orfeas_ai
+      - USE_POSTGRES_QUEUE=1
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
+    driver: local

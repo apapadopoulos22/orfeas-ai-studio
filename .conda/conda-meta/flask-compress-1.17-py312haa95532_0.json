@@ -1,0 +1,148 @@
+{
+  "build": "py312haa95532_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/win-64",
+  "constrains": [],
+  "depends": [
+    "brotli-python",
+    "flask",
+    "python >=3.12,<3.13.0a0",
+    "zstandard"
+  ],
+  "extracted_package_dir": "C:\\Users\\johng\\anaconda3\\pkgs\\flask-compress-1.17-py312haa95532_0",
+  "files": [
+    "Lib/site-packages/flask_compress-1.17.dist-info/INSTALLER",
+    "Lib/site-packages/flask_compress-1.17.dist-info/METADATA",
+    "Lib/site-packages/flask_compress-1.17.dist-info/RECORD",
+    "Lib/site-packages/flask_compress-1.17.dist-info/REQUESTED",
+    "Lib/site-packages/flask_compress-1.17.dist-info/WHEEL",
+    "Lib/site-packages/flask_compress-1.17.dist-info/direct_url.json",
+    "Lib/site-packages/flask_compress-1.17.dist-info/licenses/LICENSE.txt",
+    "Lib/site-packages/flask_compress-1.17.dist-info/top_level.txt",
+    "Lib/site-packages/flask_compress/__init__.py",
+    "Lib/site-packages/flask_compress/__pycache__/__init__.cpython-312.pyc",
+    "Lib/site-packages/flask_compress/__pycache__/_version.cpython-312.pyc",
+    "Lib/site-packages/flask_compress/__pycache__/flask_compress.cpython-312.pyc",
+    "Lib/site-packages/flask_compress/_version.py",
+    "Lib/site-packages/flask_compress/flask_compress.py"
+  ],
+  "fn": "flask-compress-1.17-py312haa95532_0.conda",
+  "license": "MIT",
+  "link": {
+    "source": "C:\\Users\\johng\\anaconda3\\pkgs\\flask-compress-1.17-py312haa95532_0",
+    "type": 1
+  },
+  "md5": "079f023bae8903a5d3e6778db7bbe6a4",
+  "name": "flask-compress",
+  "package_tarball_full_path": "C:\\Users\\johng\\anaconda3\\pkgs\\flask-compress-1.17-py312haa95532_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "eba919d7e6dbc8a45fce7e777785854ae4dfe57e03034882e55299a922a77805",
+        "sha256_in_prefix": "eba919d7e6dbc8a45fce7e777785854ae4dfe57e03034882e55299a922a77805",
+        "size_in_bytes": 9274
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "c82bc67aa090ca8d1ec6a21c8d993476b7489b591e17f20a32ff38cd786d8abe",
+        "sha256_in_prefix": "c82bc67aa090ca8d1ec6a21c8d993476b7489b591e17f20a32ff38cd786d8abe",
+        "size_in_bytes": 1149
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9",
+        "sha256_in_prefix": "95353a07a7887d8a224094d935cf9fc9a47a0692fa7a14f3537c466319f69fc9",
+        "size_in_bytes": 91
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "a7ed61970c87a9a96cbefbee4d05599eb667bd7538f9be96eb182440bb893a33",
+        "sha256_in_prefix": "a7ed61970c87a9a96cbefbee4d05599eb667bd7538f9be96eb182440bb893a33",
+        "size_in_bytes": 94
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/licenses/LICENSE.txt",
+        "path_type": "hardlink",
+        "sha256": "a19e75a2c6ab5168e1c0f185f6d14b4f0130cd926511b88f3382833a211e2269",
+        "sha256_in_prefix": "a19e75a2c6ab5168e1c0f185f6d14b4f0130cd926511b88f3382833a211e2269",
+        "size_in_bytes": 1085
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress-1.17.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "47b72a9dc35a6769aff1e3b8fa1661260bf926ce15f4a1e6885b163dcde51bcc",
+        "sha256_in_prefix": "47b72a9dc35a6769aff1e3b8fa1661260bf926ce15f4a1e6885b163dcde51bcc",
+        "size_in_bytes": 15
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "8dd16711d8372ad3acb4515f26137d51c87ae3be238d394eb454f95686629c94",
+        "sha256_in_prefix": "8dd16711d8372ad3acb4515f26137d51c87ae3be238d394eb454f95686629c94",
+        "size_in_bytes": 380
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "539755cd20fa232ef423edb6d967b258ef5905b4a500df6abe0459c230e8f0c9",
+        "sha256_in_prefix": "539755cd20fa232ef423edb6d967b258ef5905b4a500df6abe0459c230e8f0c9",
+        "size_in_bytes": 350
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress/__pycache__/_version.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "1ead54f45ddf07032b5d687270a580f549b0b040da77c5558a47f3218c2c5c74",
+        "sha256_in_prefix": "1ead54f45ddf07032b5d687270a580f549b0b040da77c5558a47f3218c2c5c74",
+        "size_in_bytes": 166
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress/__pycache__/flask_compress.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "48eab6e3da3292726ba659cb2f25f171a434c4c6c26e0c198b661e4686a8fca2",
+        "sha256_in_prefix": "48eab6e3da3292726ba659cb2f25f171a434c4c6c26e0c198b661e4686a8fca2",
+        "size_in_bytes": 10420
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress/_version.py",
+        "path_type": "hardlink",
+        "sha256": "9ce9bba673750e5a2f31d60edcdd52a6bbff002b262d95502096b5fd547e2b16",
+        "sha256_in_prefix": "9ce9bba673750e5a2f31d60edcdd52a6bbff002b262d95502096b5fd547e2b16",
+        "size_in_bytes": 22
+      },
+      {
+        "_path": "Lib/site-packages/flask_compress/flask_compress.py",
+        "path_type": "hardlink",
+        "sha256": "1584db2ebc9580c3802dfa7d1a52138703f0cd224d7bcfb2b3a53455aa029b32",
+        "sha256_in_prefix": "1584db2ebc9580c3802dfa7d1a52138703f0cd224d7bcfb2b3a53455aa029b32",
+        "size_in_bytes": 9833
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "flask-compress",
+  "sha256": "183decdeadf125202d3ec20a7bd697872b75f550d3225c9e2d2381bd4a2ff2db",
+  "size": 25578,
+  "subdir": "win-64",
+  "timestamp": 1749544903000,
+  "url": "https://repo.anaconda.com/pkgs/main/win-64/flask-compress-1.17-py312haa95532_0.conda",
+  "version": "1.17"
+}

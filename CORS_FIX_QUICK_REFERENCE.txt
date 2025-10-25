@@ -1,0 +1,138 @@
+# SYNEXA STUDIO - CORS FIX QUICK START
+
+**Status:** ✅ Fixed and Verified
+
+---
+
+## What Was Fixed?
+
+The CORS error that prevented synexa-style-studio.html from connecting to the backend has been completely resolved.
+
+---
+
+## How to Use
+
+### 1. Start Backend (if not running)
+```powershell
+cd C:\Users\johng\Documents\oscar\backend
+python main.py
+```
+
+### 2. Open Frontend
+**Option A:** Double-click to open locally
+```
+C:\Users\johng\Documents\oscar\synexa-style-studio.html
+```
+
+**Option B:** Use file:// protocol
+```
+file:///C:/Users/johng/Documents/oscar/synexa-style-studio.html
+```
+
+### 3. Verify Tests Pass
+Open TEST_SYNEXA_FIX.html to verify all 4 tests pass:
+```
+file:///C:/Users/johng/Documents/oscar/TEST_SYNEXA_FIX.html
+```
+
+---
+
+## What Changed?
+
+**Frontend (synexa-style-studio.html):**
+- Changed API connection from ngrok URL to localhost
+- Works with file:// protocol (origin='null')
+
+**Backend (backend/main.py):**
+- Added Cache-Control and Pragma to CORS allowed headers
+- Returns proper 204 status code for OPTIONS requests
+
+---
+
+## Verification
+
+**Backend Status:**
+- Port: 5000 ✅
+- Health: http://127.0.0.1:5000/api/health ✅
+- CORS: OPTIONS requests return 204 with headers ✅
+
+**Frontend Status:**
+- API_BASE: http://127.0.0.1:5000 ✅
+- CORS Errors: Fixed ✅
+
+---
+
+## Troubleshooting
+
+### Backend Not Starting?
+```powershell
+# Kill any stuck Python processes
+Get-Process python | Stop-Process -Force
+
+# Restart
+cd backend
+python main.py
+```
+
+### Still Getting CORS Errors?
+1. Clear browser cache (Ctrl+Shift+Delete)
+2. Close and reopen browser
+3. Try incognito/private window
+4. Check browser console (F12)
+
+### How to Verify CORS Works
+Open browser DevTools (F12):
+1. Go to Network tab
+2. Open synexa-style-studio.html
+3. Look for OPTIONS request
+4. Check Response Headers
+5. Verify: `Access-Control-Allow-Origin: *`
+
+---
+
+## System Requirements
+
+- Windows 10/11
+- Python 3.10+
+- GPU: NVIDIA RTX 3090 (Hunyuan3D model requires CUDA)
+- Disk: 20GB+ free space
+- RAM: 8GB minimum
+
+---
+
+## Files Involved
+
+| File | Purpose | Status |
+|------|---------|--------|
+| synexa-style-studio.html | Main frontend UI | ✅ Fixed |
+| backend/main.py | Flask API server | ✅ Updated |
+| TEST_SYNEXA_FIX.html | Verification tests | ✅ Created |
+
+---
+
+## Next Steps
+
+1. ✅ Verify backend is running on port 5000
+2. ✅ Open synexa-style-studio.html in browser
+3. ✅ Click "Launch Studio"
+4. ✅ Upload an image
+5. ✅ Generate 3D model
+6. ✅ Download results
+
+---
+
+## Support
+
+**Issue:** CORS error still showing
+- Solution: Clear cache, restart backend, check DevTools Network tab
+
+**Issue:** Backend won't start
+- Solution: Kill Python processes, check port 5000 is free, restart
+
+**Issue:** GPU not detected
+- Solution: Check NVIDIA drivers installed, CUDA 12.0 compatible
+
+---
+
+Generated: 2025-10-25
+Fixed By: GitHub Copilot

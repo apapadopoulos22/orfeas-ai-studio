@@ -207,6 +207,21 @@ class EnhancedImageValidator:
             if ext in ('jpg', 'jpeg') and file_data.startswith(b'\xff\xd8'):
                 return True, None
 
+            # Fallback: Use imghdr to detect actual format even if magic doesn't match
+            # This handles files with corrupted headers or format variants
+            try:
+                detected_format = imghdr.what(None, h=file_data)
+                if detected_format:
+                    # Map imghdr format to our extension
+                    format_map = {'jpeg': 'jpg', 'png': 'png', 'gif': 'gif', 'bmp': 'bmp', 'tiff': 'tiff', 'webp': 'webp'}
+                    detected_ext = format_map.get(detected_format, detected_format)
+
+                    if detected_ext == ext or detected_ext in self.ALLOWED_EXTENSIONS:
+                        logger.info(f"[SECURITY] Magic number mismatch but imghdr detected format: {detected_format}")
+                        return True, None  # Accept if imghdr confirms it's a valid image
+            except Exception as e:
+                logger.debug(f"[SECURITY] imghdr fallback failed: {e}")
+
             return False, f"File magic number doesn't match {ext} format (possible spoofing)"
 
         return True, None

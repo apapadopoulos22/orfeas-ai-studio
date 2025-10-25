@@ -1,10 +1,46 @@
 
-# ORFEAS AI 2D→3D STUDIO - AI CODING AGENT INSTRUCTIONS
+# ORFEAS AI 2D→3D STUDIO - GITHUB COPILOT INSTRUCTIONS
 
-**Project:** Enterprise AI multimedia platform for 2D→3D model generation, video composition, code development
-**Stack:** Python 3.10+/Flask/PyTorch + HTML5/PWA + Docker GPU (RTX 3090 CUDA 12.0)
-**Quality:** 92% Grade A (ISO 9001/27001 compliant, 464 tests, 50K+ LOC)
-**Architecture:** Modular backends (Hunyuan3D-2.1, multi-LLM orchestration, GPU optimization)
+**Enterprise AI Multimedia Platform** | 2D→3D Generation | Video Composition | Code Development
+
+**Stack:** Python 3.10+/Flask/PyTorch | HTML5/PWA | Docker GPU (RTX 3090 CUDA 12.0)
+**Quality:** 92% Grade A | ISO 9001/27001 | 464 Tests | 50K+ LOC
+**AI Models:** Hunyuan3D-2.1 | DALL-E 3 | Stable Diffusion XL | Multi-LLM Orchestration
+
+---
+
+## 📋 TABLE OF CONTENTS
+
+### Quick Start
+
+- [Immediate Productivity Essentials](#immediate-productivity-essentials) - Start development
+- [Model Caching Pattern](#model-caching-pattern-critical-for-performance) - 94% speed boost
+- [GPU Memory Management](#gpu-memory-management-rtx-3090-specific) - RTX 3090 optimization
+- [Ultra-Fast Development](#ultra-fast-development-workflows) - One-command startup
+
+### Core Systems
+
+- [Local LLM Integration](#-local-llm--vs-code-integration-maximum-optimization) - 10x faster
+- [Multi-Agent Orchestration](#-multi-agent-orchestration-with-local-llm) - AI workflows
+- [2D Image Generation](#212-ai-2d-image-generation--enhancement) - DALL-E 3, SDXL
+- [Multi-Image 3D Generation](#213-multi-image-3d-model-generation) - Photogrammetry
+- [AI Code Development](#214-ai-powered-code-development) - Intelligent code
+
+### Architecture
+
+- [Core Principles](#core-architecture-principles) - Design fundamentals
+- [WebSocket Patterns](#websocket-patterns-real-time-updates) - Real-time updates
+- [Async Job Queue](#async-job-queue-pattern) - Background processing
+- [Security Best Practices](#performance--security-optimization) - Enterprise-grade
+
+### Deployment
+
+- [Docker & Kubernetes](#production-deployment-patterns) - Container orchestration
+- [Testing with Pytest](#testing-pytest-with-markers) - Quality assurance
+- [Configuration Management](#configuration-management) - Environment settings
+- [Monitoring & Logging](#monitoring-and-logging) - Observability
+
+---
 
 ## IMMEDIATE PRODUCTIVITY ESSENTIALS
 
@@ -654,7 +690,10 @@ def get_llm_performance():
 
 ### Enterprise Agent Architecture
 
-The ORFEAS platform implements sophisticated multi-agent orchestration patterns to leverage local LLM capabilities across specialized AI agents working in coordinated workflows. This architecture enables complex task decomposition, parallel processing, and intelligent context sharing with <500ms latency.
+The ORFEAS platform implements sophisticated multi-agent orchestration patterns to leverage
+local LLM capabilities across specialized AI agents working in coordinated workflows. This
+architecture enables complex task decomposition, parallel processing, and intelligent context
+sharing with <500ms latency.
 
 ### Agent Specialization Patterns
 
@@ -1393,12 +1432,24 @@ image = validator.validate_image(request.files['file'])
 ## [1] PROJECT IDENTITY
 
 **PROJECT:** ORFEAS AI 2D→3D Studio
-**PURPOSE:** Enterprise-grade AI-powered multimedia platform for comprehensive AI content generation including 2D→3D model conversion, AI image creation from text prompts, advanced text-to-image synthesis, real-time speech-to-text transcription, cinematic video composition, intelligent code development, and automated DevOps with enterprise HTML5 interfaces, zero-trust security, and cloud-native technologies
-**REPOSITORY:** Tencent-Hunyuan/Hunyuan3D-2.1 (upstream), enterprise ORFEAS integration with Sora-class video generation
+**PURPOSE:** Enterprise-grade AI-powered multimedia platform for comprehensive AI content
+generation including 2D→3D model conversion, AI image creation from text prompts, advanced
+text-to-image synthesis, real-time speech-to-text transcription, cinematic video composition,
+intelligent code development, and automated DevOps with enterprise HTML5 interfaces,
+zero-trust security, and cloud-native technologies
+**REPOSITORY:** Tencent-Hunyuan/Hunyuan3D-2.1 (upstream), enterprise ORFEAS integration
 
 ### CORE ARCHITECTURE
 
-This is an **enterprise-grade Flask backend + cloud-native HTML5/JavaScript frontend + zero-trust SSL/HTTPS + PWA** system that integrates Tencent's Hunyuan3D-2.1 AI model for professional 3D asset generation from 2D images or text prompts, DALL-E 3 and Stable Diffusion XL for high-quality AI image creation from text descriptions, Whisper and Azure Speech Services for real-time speech-to-text transcription and advanced voice processing, plus advanced AI video composition capabilities inspired by OpenAI's Sora for cinematic video creation, intelligent code development platforms, and automated DevOps workflows, all delivered through secure, scalable progressive web applications with enterprise-grade monitoring and observability.
+This is an **enterprise-grade Flask backend + cloud-native HTML5/JavaScript frontend +
+zero-trust SSL/HTTPS + PWA** system that integrates:
+
+- **Tencent Hunyuan3D-2.1 AI** for professional 3D asset generation from 2D images/text
+- **DALL-E 3 and Stable Diffusion XL** for high-quality AI image creation from text
+- **Whisper and Azure Speech Services** for real-time speech-to-text transcription
+- **AI video composition** inspired by OpenAI's Sora for cinematic video creation
+- **Intelligent code development** platforms and automated DevOps workflows
+- **Progressive web applications** with enterprise-grade monitoring and observability
 
 ### TECHNOLOGY STACK
 
@@ -2430,11 +2481,477 @@ video = processor.image_to_video(
 - **Style Transfer:** Apply artistic styles across video sequences
 - **3D Integration:** Seamless integration with generated 3D models
 
-### [2.1.2] AI CODE DEVELOPMENT & DEBUGGING
+### [2.1.2] AI 2D IMAGE GENERATION & ENHANCEMENT
+
+### ADVANCED 2D IMAGE CREATION
+
+The ORFEAS platform includes enterprise-grade 2D image generation capabilities powered by
+multiple AI models including DALL-E 3, Stable Diffusion XL, and Midjourney API integration
+for high-quality image synthesis from text prompts.
+
+### 2D IMAGE GENERATION PIPELINE
+
+```python
+## backend/text_to_image_processor.py
+class TextToImageProcessor:
+    """
+    Enterprise AI-powered 2D image generation from text prompts
+    Supports: DALL-E 3, Stable Diffusion XL, Midjourney API
+    """
+
+    def __init__(self, model="dalle3"):
+        self.model = model
+        self.image_models = {
+            'dalle3': None,           # OpenAI DALL-E 3 (highest quality)
+            'sdxl': None,             # Stable Diffusion XL (open-source)
+            'midjourney': None,       # Midjourney API (artistic)
+            'stable_diffusion': None  # Standard Stable Diffusion
+        }
+        self.enhancement_engine = ImageEnhancementEngine()
+        self.style_transfer = StyleTransferEngine()
+
+    def generate_image(self,
+                      prompt: str,
+                      style: str = "realistic",
+                      resolution: tuple = (1024, 1024),
+                      quality: str = "high",
+                      negative_prompt: str = None,
+                      seed: int = None) -> Dict:
+        """
+        Generate high-quality 2D image from text prompt
+
+        Args:
+            prompt: Text description of desired image
+            style: realistic, artistic, anime, photographic, digital_art
+            resolution: Output image dimensions
+            quality: low, medium, high, ultra
+            negative_prompt: Elements to avoid in generation
+            seed: Random seed for reproducibility
+
+        Returns:
+            Dict with image path, metadata, and generation stats
+        """
+        # 1. Optimize prompt for selected model
+        optimized_prompt = self.optimize_prompt(prompt, style)
+
+        # 2. Generate base image
+        base_image = self.model_generate(
+            prompt=optimized_prompt,
+            negative_prompt=negative_prompt,
+            resolution=resolution,
+            quality=quality,
+            seed=seed
+        )
+
+        # 3. Apply quality enhancement
+        enhanced_image = self.enhancement_engine.enhance(
+            base_image,
+            quality_level=quality,
+            upscale=True if quality == "ultra" else False
+        )
+
+        # 4. Apply style refinement
+        final_image = self.style_transfer.apply_style(
+            enhanced_image,
+            style=style
+        )
+
+        return {
+            'image': final_image,
+            'path': self.save_image(final_image),
+            'metadata': {
+                'prompt': prompt,
+                'model': self.model,
+                'resolution': resolution,
+                'style': style,
+                'seed': seed
+            },
+            'generation_time': self.get_generation_time()
+        }
+
+    def batch_generate_images(self,
+                             prompts: List[str],
+                             batch_size: int = 4,
+                             **kwargs) -> List[Dict]:
+        """Generate multiple images in batch for efficiency"""
+        results = []
+        for i in range(0, len(prompts), batch_size):
+            batch = prompts[i:i + batch_size]
+            batch_results = self.parallel_generate(batch, **kwargs)
+            results.extend(batch_results)
+        return results
+```
+
+### IMAGE ENHANCEMENT & UPSCALING
+
+```python
+## backend/image_enhancement.py
+class ImageEnhancementEngine:
+    """
+    Advanced image quality enhancement and upscaling
+    Supports: ESRGAN, Real-ESRGAN, EDSR, SwinIR
+    """
+
+    def __init__(self):
+        self.upscale_models = {
+            'esrgan': None,      # Enhanced Super-Resolution GAN
+            'real_esrgan': None, # Real-world image super-resolution
+            'edsr': None,        # Enhanced Deep Super-Resolution
+            'swinir': None       # Swin Transformer Image Restoration
+        }
+        self.color_correction = ColorCorrectionEngine()
+        self.noise_reduction = NoiseReductionEngine()
+
+    def enhance(self,
+               image: Image.Image,
+               quality_level: str = "high",
+               upscale: bool = False,
+               denoise: bool = True,
+               color_correct: bool = True) -> Image.Image:
+        """
+        Enhance image quality with AI processing
+
+        Args:
+            image: Input PIL Image
+            quality_level: low, medium, high, ultra
+            upscale: Apply AI upscaling (2x or 4x)
+            denoise: Apply noise reduction
+            color_correct: Apply color correction
+
+        Returns:
+            Enhanced PIL Image
+        """
+        enhanced = image.copy()
+
+        # 1. Noise reduction (if enabled)
+        if denoise:
+            enhanced = self.noise_reduction.reduce_noise(
+                enhanced,
+                strength=self.get_denoise_strength(quality_level)
+            )
+
+        # 2. Upscaling (if enabled)
+        if upscale:
+            scale_factor = 4 if quality_level == "ultra" else 2
+            enhanced = self.upscale_image(enhanced, scale_factor)
+
+        # 3. Color correction (if enabled)
+        if color_correct:
+            enhanced = self.color_correction.correct_colors(
+                enhanced,
+                auto_white_balance=True,
+                contrast_enhancement=True
+            )
+
+        # 4. Sharpening based on quality level
+        enhanced = self.apply_sharpening(enhanced, quality_level)
+
+        return enhanced
+```
+
+### [2.1.3] MULTI-IMAGE 3D MODEL GENERATION
+
+### PHOTOGRAMMETRY-STYLE 3D RECONSTRUCTION
+
+The ORFEAS platform supports advanced multi-image 3D model generation from multiple 2D images using
+photogrammetry, Structure-from-Motion (SfM), and Neural Radiance Fields (NeRF) techniques.
+
+### MULTI-IMAGE 3D PIPELINE
+
+```python
+## backend/multi_image_3d_processor.py
+class MultiImage3DProcessor:
+    """
+    Generate 3D models from multiple 2D images
+    Supports: Photogrammetry, Structure-from-Motion (SfM), Neural Radiance Fields (NeRF)
+    """
+
+    def __init__(self, method="photogrammetry"):
+        self.method = method
+        self.reconstruction_engines = {
+            'photogrammetry': PhotogrammetryEngine(),
+            'sfm': StructureFromMotionEngine(),
+            'nerf': NeuRFEngine(),
+            'gaussian_splatting': GaussianSplattingEngine()
+        }
+        self.mesh_optimizer = MeshOptimizer()
+        self.texture_synthesizer = TextureSynthesizer()
+
+    def generate_3d_from_images(self,
+                                images: List[Union[str, Image.Image]],
+                                camera_params: Dict = None,
+                                quality: str = "high",
+                                output_format: str = "glb",
+                                texture_resolution: int = 2048) -> Dict:
+        """
+        Generate 3D model from multiple 2D images
+
+        Args:
+            images: List of image paths or PIL Images (minimum 3 images recommended)
+            camera_params: Optional camera calibration parameters
+            quality: low, medium, high, ultra (affects point density and detail)
+            output_format: stl, obj, glb, gltf, ply
+            texture_resolution: Texture map resolution (1024, 2048, 4096)
+
+        Returns:
+            Dict with 3D model path, mesh stats, and reconstruction metadata
+        """
+        logger.info(f"[MULTI-IMAGE-3D] Processing {len(images)} images for 3D reconstruction")
+
+        # 1. Validate and preprocess images
+        processed_images = self.preprocess_images(images)
+
+        # 2. Feature detection and matching
+        feature_matches = self.detect_and_match_features(processed_images)
+
+        # 3. Camera pose estimation (if not provided)
+        if camera_params is None:
+            camera_params = self.estimate_camera_poses(
+                processed_images,
+                feature_matches
+            )
+
+        # 4. Point cloud generation
+        point_cloud = self.generate_point_cloud(
+            processed_images,
+            camera_params,
+            feature_matches,
+            quality=quality
+        )
+
+        # 5. Mesh reconstruction
+        mesh = self.reconstruct_mesh(
+            point_cloud,
+            method=self.method,
+            quality=quality
+        )
+
+        # 6. Texture synthesis from images
+        textured_mesh = self.texture_synthesizer.synthesize_texture(
+            mesh,
+            processed_images,
+            camera_params,
+            resolution=texture_resolution
+        )
+
+        # 7. Mesh optimization and cleanup
+        optimized_mesh = self.mesh_optimizer.optimize(
+            textured_mesh,
+            remove_duplicates=True,
+            smooth_normals=True,
+            simplify_if_needed=True
+        )
+
+        # 8. Export to requested format
+        output_path = self.export_mesh(
+            optimized_mesh,
+            format=output_format,
+            include_textures=True
+        )
+
+        return {
+            'model_path': output_path,
+            'format': output_format,
+            'mesh_stats': {
+                'vertices': len(optimized_mesh.vertices),
+                'faces': len(optimized_mesh.faces),
+                'has_texture': True,
+                'texture_resolution': texture_resolution
+            },
+            'reconstruction_metadata': {
+                'num_images': len(images),
+                'reconstruction_method': self.method,
+                'quality': quality,
+                'point_cloud_size': len(point_cloud),
+                'camera_poses_computed': len(camera_params)
+            },
+            'processing_time': self.get_processing_time()
+        }
+
+    def preprocess_images(self, images: List) -> List[Image.Image]:
+        """Preprocess images for optimal feature detection"""
+        processed = []
+        for img in images:
+            if isinstance(img, str):
+                img = Image.open(img)
+
+            # Resize if too large (optimal range: 1024-2048px)
+            if max(img.size) > 2048:
+                img.thumbnail((2048, 2048), Image.Resampling.LANCZOS)
+
+            # Color correction and enhancement
+            img = self.apply_preprocessing(img)
+            processed.append(img)
+
+        return processed
+
+    def detect_and_match_features(self, images: List[Image.Image]) -> Dict:
+        """Detect features and match between images using SIFT/ORB"""
+        import cv2
+        import numpy as np
+
+        # Use SIFT for high-quality feature detection
+        detector = cv2.SIFT_create()
+        matcher = cv2.BFMatcher()
+
+        features = []
+        for img in images:
+            img_array = np.array(img.convert('RGB'))
+            keypoints, descriptors = detector.detectAndCompute(img_array, None)
+            features.append({'keypoints': keypoints, 'descriptors': descriptors})
+
+        # Match features between consecutive images
+        matches = []
+        for i in range(len(features) - 1):
+            match_result = matcher.knnMatch(
+                features[i]['descriptors'],
+                features[i + 1]['descriptors'],
+                k=2
+            )
+            # Apply ratio test (Lowe's ratio test)
+            good_matches = [m for m, n in match_result if m.distance < 0.75 * n.distance]
+            matches.append(good_matches)
+
+        return {
+            'features': features,
+            'matches': matches,
+            'num_matches': sum(len(m) for m in matches)
+        }
+
+    def estimate_camera_poses(self, images, feature_matches) -> Dict:
+        """Estimate camera positions using Structure-from-Motion"""
+        # Implement SfM algorithm or use OpenCV/COLMAP
+        # Returns camera intrinsics and extrinsics for each image
+        return self.reconstruction_engines['sfm'].estimate_poses(images, feature_matches)
+
+    def generate_point_cloud(self, images, camera_params, matches, quality="high") -> np.ndarray:
+        """Generate dense point cloud from images"""
+        density_map = {
+            'low': 1000,
+            'medium': 5000,
+            'high': 20000,
+            'ultra': 50000
+        }
+        target_points = density_map.get(quality, 20000)
+
+        return self.reconstruction_engines[self.method].generate_point_cloud(
+            images,
+            camera_params,
+            matches,
+            target_density=target_points
+        )
+
+    def reconstruct_mesh(self, point_cloud, method="photogrammetry", quality="high") -> trimesh.Trimesh:
+        """Reconstruct mesh from point cloud"""
+        if method == "nerf":
+            # Neural Radiance Fields approach
+            return self.reconstruction_engines['nerf'].reconstruct(point_cloud, quality)
+        elif method == "gaussian_splatting":
+            # 3D Gaussian Splatting approach
+            return self.reconstruction_engines['gaussian_splatting'].reconstruct(point_cloud)
+        else:
+            # Traditional photogrammetry/SfM approach
+            return self.reconstruction_engines['photogrammetry'].poisson_reconstruction(
+                point_cloud,
+                depth=8 if quality == "ultra" else 7
+            )
+```
+
+### MULTI-IMAGE WORKFLOW EXAMPLES
+
+```python
+## Example 1: Basic multi-image 3D generation
+processor = MultiImage3DProcessor(method="photogrammetry")
+
+result = processor.generate_3d_from_images(
+    images=[
+        "photo_front.jpg",
+        "photo_left.jpg",
+        "photo_right.jpg",
+        "photo_top.jpg",
+        "photo_back.jpg"
+    ],
+    quality="high",
+    output_format="glb",
+    texture_resolution=2048
+)
+
+print(f"3D model generated: {result['model_path']}")
+print(f"Vertices: {result['mesh_stats']['vertices']}, Faces: {result['mesh_stats']['faces']}")
+
+## Example 2: Advanced reconstruction with camera parameters
+camera_params = {
+    'focal_length': 35,  # mm
+    'sensor_width': 36,  # mm (full-frame sensor)
+    'image_width': 4032,
+    'image_height': 3024
+}
+
+result = processor.generate_3d_from_images(
+    images=glob.glob("scan_images/*.jpg"),  # All images in directory
+    camera_params=camera_params,
+    quality="ultra",
+    output_format="obj",
+    texture_resolution=4096
+)
+
+## Example 3: Batch processing multiple object scans
+objects_to_scan = [
+    {'name': 'object1', 'images': glob.glob('scans/object1/*.jpg')},
+    {'name': 'object2', 'images': glob.glob('scans/object2/*.jpg')},
+    {'name': 'object3', 'images': glob.glob('scans/object3/*.jpg')}
+]
+
+for obj in objects_to_scan:
+    result = processor.generate_3d_from_images(
+        images=obj['images'],
+        quality="high",
+        output_format="glb"
+    )
+    print(f"{obj['name']} processed: {result['model_path']}")
+
+## Example 4: NeRF-based reconstruction for complex geometry
+nerf_processor = MultiImage3DProcessor(method="nerf")
+
+result = nerf_processor.generate_3d_from_images(
+    images=image_list,  # 20+ images recommended for NeRF
+    quality="ultra",
+    output_format="glb"
+)
+```
+
+### MULTI-IMAGE BEST PRACTICES
+
+**Image Capture Guidelines:**
+
+- **Minimum Images:** 3-5 images (basic), 10-20 images (optimal), 50+ images (photogrammetry/NeRF)
+- **Overlap:** 60-80% overlap between consecutive images
+- **Coverage:** Capture from multiple angles (360° coverage recommended)
+- **Lighting:** Consistent, diffuse lighting (avoid harsh shadows)
+- **Background:** Uniform background or proper masking
+- **Resolution:** High-resolution images (2048px+ per side)
+- **Focus:** Sharp focus on subject (no motion blur)
+
+**Camera Movement Patterns:**
+
+1. **Circular Pattern:** Rotate around object at constant distance
+2. **Spiral Pattern:** Gradually move up/down while rotating
+3. **Grid Pattern:** Capture from regular grid positions
+4. **Free-form:** Random positions with good coverage
+
+**Quality vs Performance Trade-offs:**
+
+- **Low Quality:** 1K-5K points, fast processing (~30s), suitable for previews
+- **Medium Quality:** 5K-20K points, moderate processing (~2min), good for general use
+- **High Quality:** 20K-50K points, longer processing (~5-10min), production quality
+- **Ultra Quality:** 50K+ points, extensive processing (~15-30min), maximum detail
+
+### [2.1.4] AI CODE DEVELOPMENT & DEBUGGING
 
 ### INTELLIGENT CODE GENERATION
 
-The ORFEAS platform includes advanced AI-powered code development capabilities for intelligent code writing, automated debugging, and code quality optimization.
+The ORFEAS platform includes advanced AI-powered code development capabilities for intelligent
+code writing, automated debugging, and code quality optimization.
 
 ### CODE DEVELOPMENT PIPELINE
 
@@ -2834,7 +3351,8 @@ class OrfeasPHPAPI {
 
 ### AI AGENT ARCHITECTURE
 
-The ORFEAS platform includes autonomous AI agents for workflow automation, quality assurance, and intelligent processing decisions.
+The ORFEAS platform includes autonomous AI agents for workflow automation, quality
+assurance, and intelligent processing decisions.
 
 ```python
 ## backend/agent_api.py - Core agent framework
@@ -3057,7 +3575,8 @@ class HuggingFaceModelManager:
 
 ### CONTEXT-AWARE AI PROCESSING
 
-The ORFEAS platform implements intelligent context handling to enhance AI decision-making, optimize processing workflows, and provide contextual awareness across all components.
+The ORFEAS platform implements intelligent context handling to enhance AI decision-making,
+optimize processing workflows, and provide contextual awareness across all components.
 
 ```python
 ## backend/context_manager.py
@@ -5620,7 +6139,9 @@ start htmlcov/index.html  # View coverage
 
 ### COMPREHENSIVE QUALITY AUDIT FRAMEWORK
 
-The ORFEAS platform implements enterprise-grade TQM audit techniques to ensure continuous quality improvement, compliance adherence, and operational excellence across all AI-powered multimedia generation processes.
+The ORFEAS platform implements enterprise-grade TQM audit techniques to ensure continuous
+quality improvement, compliance adherence, and operational excellence across all AI-powered
+multimedia generation processes.
 
 ```python
 
@@ -6047,7 +6568,8 @@ print(gpu_mgr.get_gpu_stats())
 
 **CRITICAL: 7-Level Backend Verification Workflow**
 
-Before running production validation or integration tests, ALWAYS verify backend is operational through this comprehensive workflow:
+Before running production validation or integration tests, ALWAYS verify backend is
+operational through this comprehensive workflow:
 
 **Level 1: Process Verification**
 
@@ -7539,7 +8061,8 @@ def fix_compliance_issue(solution: str, issue: Dict) -> Dict[str, Any]:
 
 ### CRITICAL PERFORMANCE OPTIMIZATION
 
-Hunyuan3D models take 30-36 seconds to load initially. The `_model_cache` singleton pattern reduces subsequent loads to <1 second (94% speed improvement).
+Hunyuan3D models take 30-36 seconds to load initially. The `_model_cache` singleton
+pattern reduces subsequent loads to <1 second (94% speed improvement).
 
 ```python
 
@@ -7692,7 +8215,8 @@ def generate_3d():
 
 **CRITICAL: Abstract Base Classes Cannot Be Instantiated**
 
-Python's Abstract Base Classes (ABC) define interfaces but cannot be directly instantiated. Always use concrete implementations or manager patterns.
+Python's Abstract Base Classes (ABC) define interfaces but cannot be directly instantiated.
+Always use concrete implementations or manager patterns.
 
 ### VECTOR DATABASE ARCHITECTURE EXAMPLE
 
@@ -7894,7 +8418,8 @@ class MyConcreteClass(MyABC):
 
 ### WARMUP STRATEGIES FOR ACCURATE TESTING
 
-Always include warmup requests before performance measurements to handle first-request overhead (SSL handshake, cache initialization, lazy loading).
+Always include warmup requests before performance measurements to handle first-request
+overhead (SSL handshake, cache initialization, lazy loading).
 
 ### CORRECT WARMUP PATTERN
 
@@ -11698,7 +12223,8 @@ def track_context_performance(func):
 
 ### COMPREHENSIVE PRODUCTION DEPLOYMENT GUIDE
 
-For complete production deployment, enterprise sales enablement, industry partnerships, and competitive market positioning documentation, see:
+For complete production deployment, enterprise sales enablement, industry partnerships,
+and competitive market positioning documentation, see:
 
 **`md/ORFEAS_PRODUCTION_DEPLOYMENT_OPTIMIZATION.md`**
 

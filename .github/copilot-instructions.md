@@ -1,4 +1,4 @@
-﻿# ORFEAS AI 2D3D STUDIO - GitHub Copilot Instructions (SLIM CORE)
+# ORFEAS AI 2D3D STUDIO - GitHub Copilot Instructions (SLIM CORE)
 
 **Project:** Enterprise AI multimedia for 2D3D generation + video composition + code development
 **Stack:** Python 3.10+/Flask/PyTorch + HTML5/PWA + Docker GPU (RTX 3090 CUDA 12.0)

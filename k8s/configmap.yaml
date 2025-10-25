@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orfeas-config
+  namespace: orfeas-ai
+data:
+  # Flask configuration
+  FLASK_ENV: "production"
+  FLASK_DEBUG: "0"
+
+  # Server configuration
+  HOST: "0.0.0.0"
+  PORT: "5000"
+  WORKERS: "4"
+
+  # Optimization flags
+  PROGRESSIVE_RENDERING_ENABLED: "true"
+  PROGRESSIVE_ROLLOUT_PERCENTAGE: "100"
+
+  CACHE_ENABLED: "true"
+  CACHE_TTL_SECONDS: "3600"
+  CACHE_MAX_MEMORY_MB: "2048"
+
+  GPU_BATCH_ENABLED: "true"
+  GPU_MAX_BATCH_SIZE: "8"
+  GPU_BATCH_TIMEOUT_MS: "2000"
+  GPU_FP16_ENABLED: "true"
+
+  MODEL_QUANTIZATION_ENABLED: "true"
+  QUANTIZATION_MODE: "adaptive"
+
+  RATE_LIMIT_PER_MINUTE: "60"
+  RATE_LIMIT_BURST: "10"
+  RATE_LIMIT_ADAPTIVE: "true"
+
+  COMPRESS_GZIP_LEVEL: "6"
+  COMPRESS_BROTLI: "1"
+  COMPRESS_MIN_BYTES: "1024"
+
+  WS_EMIT_INTERVAL_MS: "150"
+  WS_BATCH_UPDATES: "true"
+
+  USE_CDN_DOWNLOADS: "1"
+  CDN_URL: "https://cdn.orfeas.ai"
+
+  # Redis configuration
+  REDIS_URL: "redis://orfeas-redis:6379/0"
+
+  # Logging
+  LOG_LEVEL: "INFO"
+  ENABLE_MONITORING: "true"
+
+  # CORS
+  CORS_ORIGINS: "*"
+
+  # Device
+  DEVICE: "cuda"
+  XFORMERS_DISABLED: "1"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: orfeas-secrets
+  namespace: orfeas-ai
+type: Opaque
+stringData:
+  redis-password: "change-me-in-production"
+  database-password: "change-me-in-production"
+  api-key: "change-me-in-production"

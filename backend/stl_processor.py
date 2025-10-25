@@ -33,9 +33,9 @@ except ImportError:
 try:
     import open3d as o3d
     OPEN3D_AVAILABLE = True
-except ImportError:
+except (ImportError, Exception) as e:
     OPEN3D_AVAILABLE = False
-    logging.warning("Open3D not available - some visualization features disabled")
+    logging.warning(f"Open3D not available or import failed ({type(e).__name__}) - some visualization features disabled")
 
 logger = logging.getLogger(__name__)
 

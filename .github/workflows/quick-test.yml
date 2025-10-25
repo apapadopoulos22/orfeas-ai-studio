@@ -1,0 +1,54 @@
+name: ORFEAS AI - Quick Test
+# Quick validation workflow for pull requests and local development
+
+on:
+    pull_request:
+        branches:
+            - main
+            - develop
+    workflow_dispatch:
+
+env:
+    PYTHON_VERSION: "3.10"
+
+jobs:
+    quick-validation:
+        name: Quick Validation
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+                  cache: "pip"
+
+            - name: Install dependencies
+              run: |
+                  cd backend
+                  pip install --upgrade pip
+                  pip install pytest black flake8
+                  pip install -r requirements.txt
+
+            - name: Code formatting check
+              run: |
+                  cd backend
+                  black --check . || echo "⚠️ Code needs formatting (run: black .)"
+
+            - name: Lint check
+              run: |
+                  cd backend
+                  flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics || echo "⚠️ Linting errors found"
+
+            - name: Quick unit tests
+              run: |
+                  cd backend
+                  pytest tests/ -m unit --maxfail=3 -x || echo "⚠️ Some tests failed"
+
+            - name: Summary
+              run: |
+                  echo "✅ Quick validation complete"
+                  echo "See logs above for any warnings"

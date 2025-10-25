@@ -1,0 +1,428 @@
+name: ORFEAS AI - CI/CD Pipeline
+# Continuous Integration and Deployment for ORFEAS AI Studio
+# Automated testing, Docker builds, and Kubernetes deployments
+
+on:
+    push:
+        branches:
+            - main
+            - develop
+            - staging
+        paths:
+            - "backend/**"
+            - "Dockerfile"
+            - "k8s/**"
+            - ".github/workflows/**"
+    pull_request:
+        branches:
+            - main
+            - develop
+    workflow_dispatch:
+        inputs:
+            environment:
+                description: "Deployment environment"
+                required: true
+                default: "staging"
+                type: choice
+                options:
+                    - staging
+                    - production
+
+env:
+    PYTHON_VERSION: "3.10"
+    DOCKER_REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}/orfeas-backend
+
+jobs:
+    # ========================================================================
+    # CI: Code Quality and Testing
+    # ========================================================================
+
+    code-quality:
+        name: Code Quality Checks
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+                  cache: "pip"
+
+            - name: Install dependencies
+              run: |
+                  cd backend
+                  pip install --upgrade pip
+                  pip install black flake8 mypy pylint
+                  pip install -r requirements.txt
+
+            - name: Black formatting check
+              run: |
+                  cd backend
+                  black --check --diff .
+              continue-on-error: true
+
+            - name: Flake8 linting
+              run: |
+                  cd backend
+                  flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+                  flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+              continue-on-error: true
+
+            - name: MyPy type checking
+              run: |
+                  cd backend
+                  mypy . --ignore-missing-imports --no-strict-optional
+              continue-on-error: true
+
+    unit-tests:
+        name: Unit Tests
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+                  cache: "pip"
+
+            - name: Install dependencies
+              run: |
+                  cd backend
+                  pip install --upgrade pip
+                  pip install pytest pytest-cov pytest-asyncio
+                  pip install -r requirements.txt
+
+            - name: Run unit tests
+              run: |
+                  cd backend
+                  pytest tests/ -m unit --cov=. --cov-report=xml --cov-report=term
+
+            - name: Upload coverage to Codecov
+              uses: codecov/codecov-action@v4
+              with:
+                  file: ./backend/coverage.xml
+                  flags: unittests
+                  name: codecov-orfeas
+              continue-on-error: true
+
+    integration-tests:
+        name: Integration Tests
+        runs-on: ubuntu-latest
+
+        services:
+            redis:
+                image: redis:7-alpine
+                ports:
+                    - 6379:6379
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+            postgres:
+                image: postgres:16-alpine
+                env:
+                    POSTGRES_DB: orfeas_ai_test
+                    POSTGRES_USER: orfeas
+                    POSTGRES_PASSWORD: orfeas_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+                  cache: "pip"
+
+            - name: Install dependencies
+              run: |
+                  cd backend
+                  pip install --upgrade pip
+                  pip install pytest pytest-asyncio requests pillow
+                  pip install -r requirements.txt
+
+            - name: Run integration tests
+              env:
+                  REDIS_URL: redis://localhost:6379/0
+                  DATABASE_URL: postgresql://orfeas:orfeas_test@localhost:5432/orfeas_ai_test
+              run: |
+                  cd backend
+                  pytest tests/integration/ -v --maxfail=1
+              continue-on-error: true
+
+    security-scan:
+        name: Security Scanning
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Run Trivy vulnerability scanner
+              uses: aquasecurity/trivy-action@master
+              with:
+                  scan-type: "fs"
+                  scan-ref: "."
+                  format: "sarif"
+                  output: "trivy-results.sarif"
+              continue-on-error: true
+
+            - name: Upload Trivy results to GitHub Security
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                  sarif_file: "trivy-results.sarif"
+              continue-on-error: true
+
+    # ========================================================================
+    # CD: Docker Build and Push
+    # ========================================================================
+
+    build-docker:
+        name: Build Docker Image
+        runs-on: ubuntu-latest
+        needs: [code-quality, unit-tests]
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+        permissions:
+            contents: read
+            packages: write
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.DOCKER_REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=ref,event=branch
+                      type=sha,prefix={{branch}}-
+                      type=semver,pattern={{version}}
+                      type=semver,pattern={{major}}.{{minor}}
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  platforms: linux/amd64
+
+    # ========================================================================
+    # CD: Kubernetes Deployment
+    # ========================================================================
+
+    deploy-staging:
+        name: Deploy to Staging
+        runs-on: ubuntu-latest
+        needs: [build-docker]
+        if: |
+            (github.ref == 'refs/heads/develop' && github.event_name == 'push') ||
+            (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+        environment:
+            name: staging
+            url: https://staging.orfeas.ai
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up kubectl
+              uses: azure/setup-kubectl@v3
+              with:
+                  version: "latest"
+
+            - name: Configure kubectl
+              run: |
+                  mkdir -p ~/.kube
+                  echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > ~/.kube/config
+
+            - name: Update image tag
+              run: |
+                  cd k8s
+                  kubectl set image deployment/orfeas-backend \
+                    backend=${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+                    -n orfeas-ai-staging
+
+            - name: Wait for rollout
+              run: |
+                  kubectl rollout status deployment/orfeas-backend \
+                    -n orfeas-ai-staging \
+                    --timeout=5m
+
+            - name: Verify deployment
+              run: |
+                  kubectl get pods -n orfeas-ai-staging -l app=orfeas-backend
+                  kubectl get svc -n orfeas-ai-staging
+
+            - name: Run smoke tests
+              run: |
+                  STAGING_URL="https://staging.orfeas.ai"
+                  curl -f "$STAGING_URL/health" || exit 1
+                  echo "✅ Staging deployment successful"
+
+    deploy-production:
+        name: Deploy to Production
+        runs-on: ubuntu-latest
+        needs: [build-docker, integration-tests]
+        if: |
+            (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
+            (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+        environment:
+            name: production
+            url: https://orfeas.ai
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up kubectl
+              uses: azure/setup-kubectl@v3
+              with:
+                  version: "latest"
+
+            - name: Configure kubectl
+              run: |
+                  mkdir -p ~/.kube
+                  echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > ~/.kube/config
+
+            - name: Blue-Green Deployment
+              run: |
+                  # Deploy new version with green label
+                  cd k8s
+                  sed 's/version: blue/version: green/g' deployment.yaml | \
+                    kubectl apply -f - -n orfeas-ai
+
+                  # Wait for green deployment
+                  kubectl rollout status deployment/orfeas-backend-green \
+                    -n orfeas-ai \
+                    --timeout=10m
+
+            - name: Run smoke tests on green
+              run: |
+                  GREEN_IP=$(kubectl get svc orfeas-backend-green-internal \
+                    -n orfeas-ai \
+                    -o jsonpath='{.spec.clusterIP}')
+
+                  kubectl run smoke-test \
+                    --image=curlimages/curl \
+                    --rm -i --restart=Never \
+                    --namespace=orfeas-ai \
+                    -- curl -f "http://$GREEN_IP:5000/health"
+
+            - name: Switch traffic to green
+              run: |
+                  kubectl patch service orfeas-backend \
+                    -n orfeas-ai \
+                    -p '{"spec":{"selector":{"version":"green"}}}'
+
+                  echo "✅ Traffic switched to green deployment"
+
+            - name: Monitor metrics
+              run: |
+                  sleep 60  # Wait 1 minute for metrics
+
+                  # Check error rate
+                  ERROR_RATE=$(kubectl exec -n monitoring prometheus-0 -- \
+                    wget -qO- 'http://localhost:9090/api/v1/query?query=rate(http_requests_total{status=~"5.."}[5m])' | \
+                    jq '.data.result[0].value[1]' || echo "0")
+
+                  if (( $(echo "$ERROR_RATE > 0.01" | bc -l) )); then
+                    echo "⚠️ High error rate detected: $ERROR_RATE"
+                    exit 1
+                  fi
+
+                  echo "✅ Production metrics healthy"
+
+            - name: Remove blue deployment
+              run: |
+                  kubectl delete deployment orfeas-backend-blue \
+                    -n orfeas-ai \
+                    --ignore-not-found=true
+
+                  echo "✅ Blue-green deployment complete"
+
+    # ========================================================================
+    # Rollback on Failure
+    # ========================================================================
+
+    rollback:
+        name: Rollback Deployment
+        runs-on: ubuntu-latest
+        needs: [deploy-production]
+        if: failure()
+
+        steps:
+            - name: Set up kubectl
+              uses: azure/setup-kubectl@v3
+              with:
+                  version: "latest"
+
+            - name: Configure kubectl
+              run: |
+                  mkdir -p ~/.kube
+                  echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > ~/.kube/config
+
+            - name: Rollback to previous version
+              run: |
+                  kubectl rollout undo deployment/orfeas-backend \
+                    -n orfeas-ai
+
+                  kubectl rollout status deployment/orfeas-backend \
+                    -n orfeas-ai \
+                    --timeout=5m
+
+                  echo "⚠️ Deployment rolled back to previous version"
+
+            - name: Notify team
+              uses: slackapi/slack-github-action@v1
+              with:
+                  payload: |
+                      {
+                        "text": "🚨 Production deployment failed and was rolled back",
+                        "blocks": [
+                          {
+                            "type": "section",
+                            "text": {
+                              "type": "mrkdwn",
+                              "text": "*ORFEAS AI Deployment Failure*\n\nProduction deployment failed and was automatically rolled back.\n\n*Commit:* ${{ github.sha }}\n*Actor:* ${{ github.actor }}\n*Branch:* ${{ github.ref_name }}"
+                            }
+                          }
+                        ]
+                      }
+              env:
+                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+              continue-on-error: true

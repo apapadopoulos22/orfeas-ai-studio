@@ -1,151 +1,213 @@
-# â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-# â•‘ âš”ï¸ THERION ORFEAS - PRODUCTION DEPLOYMENT SCRIPT âš”ï¸                        â•‘
-# â•‘ One-command deployment for LOCAL GPU production environment                â•‘
-# â•‘ MAXIMUM PERFORMANCE                                             â•‘
-# â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ORFEAS AI - Production Deployment Script
+# Automated blue-green deployment to production
 
-Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host "  THERION ORFEAS - PHASE 5 PRODUCTION DEPLOYMENT" -ForegroundColor Cyan
-Write-Host "  LOCAL GPU INFRASTRUCTURE ACTIVATION" -ForegroundColor Cyan
-Write-Host "================================================================" -ForegroundColor Cyan
+Write-Host "=====================================" -ForegroundColor Cyan
+Write-Host "ORFEAS AI - Production Deployment" -ForegroundColor Cyan
+Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Check Docker installation
-Write-Host "[1/8] Checking Docker installation..." -ForegroundColor Yellow
-try {
-    $dockerVersion = docker --version
-    Write-Host "[OK] Docker installed: $dockerVersion" -ForegroundColor Green
-} catch {
-    Write-Host "[ERROR] Docker not found! Install Docker Desktop for Windows." -ForegroundColor Red
-    Write-Host "Download: https://www.docker.com/products/docker-desktop/" -ForegroundColor Yellow
-    exit 1
+$ErrorActionPreference = "Stop"
+
+# Safety confirmation
+Write-Host "⚠⚠⚠ PRODUCTION DEPLOYMENT ⚠⚠⚠" -ForegroundColor Red
+Write-Host ""
+Write-Host "This will deploy to production using blue-green strategy." -ForegroundColor Yellow
+Write-Host "Are you sure you want to continue? (yes/no)" -ForegroundColor Yellow
+$confirmation = Read-Host
+if ($confirmation -ne "yes") {
+    Write-Host "✗ Deployment cancelled" -ForegroundColor Red
+    exit 0
 }
 
-# Check Docker Compose
-Write-Host "[2/8] Checking Docker Compose..." -ForegroundColor Yellow
-try {
-    $composeVersion = docker-compose --version
-    Write-Host "[OK] Docker Compose installed: $composeVersion" -ForegroundColor Green
-} catch {
-    Write-Host "[ERROR] Docker Compose not found!" -ForegroundColor Red
+# Step 1: Check git status
+Write-Host "[1/9] Checking git status..." -ForegroundColor Yellow
+$gitStatus = git status --porcelain
+if ($gitStatus) {
+    Write-Host "✗ Uncommitted changes detected - commit first!" -ForegroundColor Red
+    git status --short
     exit 1
 }
+else {
+    Write-Host "✓ Working directory clean" -ForegroundColor Green
+}
 
-# Check NVIDIA Docker runtime
-Write-Host "[3/8] Checking NVIDIA Docker runtime..." -ForegroundColor Yellow
-try {
-    $nvidiaRuntime = docker run --rm --gpus all nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-smi
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "âœ… NVIDIA Docker runtime available" -ForegroundColor Green
-    } else {
-        Write-Host "âš ï¸ NVIDIA Docker runtime may have issues" -ForegroundColor Yellow
+# Step 2: Verify we're on main branch
+Write-Host "[2/9] Verifying branch..." -ForegroundColor Yellow
+$currentBranch = git branch --show-current
+if ($currentBranch -ne "main") {
+    Write-Host "⚠ Current branch: $currentBranch" -ForegroundColor Yellow
+    Write-Host "Switch to main branch? (y/n)" -ForegroundColor Yellow
+    $switch = Read-Host
+    if ($switch -eq "y") {
+        git checkout main
+        Write-Host "✓ Switched to main branch" -ForegroundColor Green
     }
-} catch {
-    Write-Host "âš ï¸ Cannot verify NVIDIA Docker runtime" -ForegroundColor Yellow
-    Write-Host "Install NVIDIA Container Toolkit if you have NVIDIA GPU" -ForegroundColor Yellow
-}
-
-# Stop existing containers
-Write-Host "[4/8] Stopping existing containers..." -ForegroundColor Yellow
-docker-compose down 2>$null
-Write-Host "âœ… Existing containers stopped" -ForegroundColor Green
-
-# Build Docker images
-Write-Host "[5/8] Building Docker images (this may take 10-15 minutes)..." -ForegroundColor Yellow
-docker-compose build --no-cache
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "âœ… Docker images built successfully" -ForegroundColor Green
-} else {
-    Write-Host "âŒ Docker build failed!" -ForegroundColor Red
-    exit 1
-}
-
-# Create necessary directories
-Write-Host "[6/8] Creating required directories..." -ForegroundColor Yellow
-$directories = @(
-    "outputs",
-    "uploads",
-    "temp",
-    "models"
-)
-
-foreach ($dir in $directories) {
-    if (-not (Test-Path $dir)) {
-        New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        Write-Host "   Created: $dir" -ForegroundColor Gray
+    else {
+        Write-Host "✗ Must be on main branch for production deployment" -ForegroundColor Red
+        exit 1
     }
 }
-Write-Host "âœ… Directories ready" -ForegroundColor Green
+else {
+    Write-Host "✓ On main branch" -ForegroundColor Green
+}
 
-# Start production environment
-Write-Host "[7/8] Starting production environment..." -ForegroundColor Yellow
-docker-compose up -d
-
+# Step 3: Pull latest changes
+Write-Host "[3/9] Pulling latest changes..." -ForegroundColor Yellow
+git pull origin main
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "âœ… All services started successfully!" -ForegroundColor Green
-} else {
-    Write-Host "âŒ Failed to start services" -ForegroundColor Red
+    Write-Host "✓ Latest changes pulled" -ForegroundColor Green
+}
+else {
+    Write-Host "✗ Failed to pull changes" -ForegroundColor Red
     exit 1
 }
 
-# Wait for services to be ready
-Write-Host "[8/8] Waiting for services to be ready..." -ForegroundColor Yellow
-Start-Sleep -Seconds 10
-
-# Check service health
-Write-Host ""
-Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘                        ðŸŽ¯ SERVICE STATUS CHECK                              â•‘" -ForegroundColor Cyan
-Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
-Write-Host ""
-
-$services = @(
-    @{ Name = "Backend API"; URL = "http://localhost:5000/health"; Port = 5000 },
-    @{ Name = "Frontend"; URL = "http://localhost:8000"; Port = 8000 },
-    @{ Name = "Prometheus"; URL = "http://localhost:9090"; Port = 9090 },
-    @{ Name = "Grafana"; URL = "http://localhost:3000"; Port = 3000 },
-    @{ Name = "Redis"; Port = 6379; NoHTTP = $true }
-)
-
-foreach ($service in $services) {
-    Write-Host "Checking $($service.Name)..." -ForegroundColor Yellow
-
-    if ($service.NoHTTP) {
-        $container = docker ps --filter "expose=$($service.Port)" --format "{{.Names}}"
-        if ($container) {
-            Write-Host "âœ… $($service.Name) is running" -ForegroundColor Green
-        } else {
-            Write-Host "âŒ $($service.Name) is not running" -ForegroundColor Red
+# Step 4: Check if develop should be merged
+Write-Host "[4/9] Checking develop branch..." -ForegroundColor Yellow
+$developCommits = git log main..develop --oneline
+if ($developCommits) {
+    Write-Host "⚠ Develop branch has commits not in main:" -ForegroundColor Yellow
+    Write-Host $developCommits
+    Write-Host ""
+    Write-Host "Merge develop into main? (y/n)" -ForegroundColor Yellow
+    $merge = Read-Host
+    if ($merge -eq "y") {
+        git merge develop -m "Merge develop into main for production deployment"
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "✓ Merged develop into main" -ForegroundColor Green
         }
-    } else {
-        try {
-            $response = Invoke-WebRequest -Uri $service.URL -TimeoutSec 5 -UseBasicParsing
-            if ($response.StatusCode -eq 200) {
-                Write-Host "âœ… $($service.Name) is healthy: $($service.URL)" -ForegroundColor Green
-            }
-        } catch {
-            Write-Host "âš ï¸ $($service.Name) may still be starting: $($service.URL)" -ForegroundColor Yellow
+        else {
+            Write-Host "✗ Merge failed - resolve conflicts first" -ForegroundColor Red
+            exit 1
         }
     }
 }
+else {
+    Write-Host "✓ Main is up to date with develop" -ForegroundColor Green
+}
 
-# Display access information
+# Step 5: Run all tests
+Write-Host "[5/9] Running full test suite..." -ForegroundColor Yellow
+pytest tests/ --tb=short -q
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✓ All tests passed" -ForegroundColor Green
+}
+else {
+    Write-Host "✗ Tests failed" -ForegroundColor Red
+    Write-Host "Deploy to production anyway? (yes/no)" -ForegroundColor Red
+    $continue = Read-Host
+    if ($continue -ne "yes") {
+        exit 1
+    }
+}
+
+# Step 6: Create git tag
+Write-Host "[6/9] Creating git tag..." -ForegroundColor Yellow
+$timestamp = Get-Date -Format "yyyy.MM.dd-HHmm"
+$tagName = "v$timestamp"
+Write-Host "Tag name: $tagName" -ForegroundColor Cyan
+Write-Host "Enter release notes (optional):" -ForegroundColor Yellow
+$releaseNotes = Read-Host
+if ($releaseNotes) {
+    git tag -a $tagName -m $releaseNotes
+}
+else {
+    git tag -a $tagName -m "Production deployment $timestamp"
+}
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✓ Tag created: $tagName" -ForegroundColor Green
+}
+else {
+    Write-Host "⚠ Failed to create tag (continuing)" -ForegroundColor Yellow
+}
+
+# Step 7: Push to main branch (triggers GitHub Actions)
+Write-Host "[7/9] Pushing to main branch..." -ForegroundColor Yellow
+Write-Host "This will trigger blue-green production deployment!" -ForegroundColor Red
+Write-Host "Continue? (yes/no)" -ForegroundColor Yellow
+$finalConfirm = Read-Host
+if ($finalConfirm -ne "yes") {
+    Write-Host "✗ Deployment cancelled" -ForegroundColor Red
+    exit 0
+}
+
+git push origin main
+git push origin $tagName
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "✓ Pushed to main" -ForegroundColor Green
+}
+else {
+    Write-Host "✗ Failed to push" -ForegroundColor Red
+    exit 1
+}
+
+# Step 8: Monitor GitHub Actions workflow
+Write-Host "[8/9] Monitoring GitHub Actions workflow..." -ForegroundColor Yellow
+Write-Host "Opening GitHub Actions in browser..." -ForegroundColor Cyan
+Start-Process "https://github.com/apapadopoulos22/orfeas-ai-studio/actions"
+
 Write-Host ""
-Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Green
-Write-Host "â•‘              ðŸš€ THERION ORFEAS PRODUCTION DEPLOYMENT COMPLETE! ðŸš€           â•‘" -ForegroundColor Green
-Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Green
+Write-Host "Waiting for workflow to start..." -ForegroundColor Yellow
+Start-Sleep -Seconds 5
+
+# Try to use gh CLI to watch the workflow
+$ghInstalled = Get-Command gh -ErrorAction SilentlyContinue
+if ($ghInstalled) {
+    Write-Host "Watching workflow with gh CLI..." -ForegroundColor Cyan
+    Write-Host "(This will show progress of blue-green deployment)" -ForegroundColor Yellow
+    gh run watch
+}
+else {
+    Write-Host "⚠ GitHub CLI (gh) not installed" -ForegroundColor Yellow
+    Write-Host "Install: winget install GitHub.cli" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Manually check: https://github.com/apapadopoulos22/orfeas-ai-studio/actions" -ForegroundColor Cyan
+}
+
+# Step 9: Verify production deployment
+Write-Host "[9/9] Verifying production deployment..." -ForegroundColor Yellow
+Write-Host "Waiting 60 seconds for blue-green deployment..." -ForegroundColor Yellow
+Start-Sleep -Seconds 60
+
+# Check production health endpoint
+$productionUrl = "https://orfeas.ai/health"
+Write-Host "Checking production health: $productionUrl" -ForegroundColor Cyan
+try {
+    $healthCheck = Invoke-RestMethod -Uri $productionUrl -TimeoutSec 10
+    if ($healthCheck.status -eq "healthy") {
+        Write-Host "✓ Production deployment successful!" -ForegroundColor Green
+    }
+    else {
+        Write-Host "⚠ Production health check returned: $($healthCheck.status)" -ForegroundColor Yellow
+    }
+}
+catch {
+    Write-Host "⚠ Production health check failed" -ForegroundColor Yellow
+    Write-Host "Check manually: $productionUrl" -ForegroundColor Cyan
+}
+
+# Summary
 Write-Host ""
-Write-Host "ðŸ“Š ACCESS URLS:" -ForegroundColor Cyan
-Write-Host "   Frontend:    http://localhost:8000" -ForegroundColor White
-Write-Host "   Backend API: http://localhost:5000" -ForegroundColor White
-Write-Host "   Grafana:     http://localhost:3000 (admin / orfeas_admin_2025)" -ForegroundColor White
-Write-Host "   Prometheus:  http://localhost:9090" -ForegroundColor White
+Write-Host "=====================================" -ForegroundColor Cyan
+Write-Host "Production Deployment Complete!" -ForegroundColor Green
+Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "ðŸ”§ MANAGEMENT COMMANDS:" -ForegroundColor Cyan
-Write-Host "   View logs:    docker-compose logs -f" -ForegroundColor White
-Write-Host "   Stop all:     docker-compose down" -ForegroundColor White
-Write-Host "   Restart:      docker-compose restart" -ForegroundColor White
-Write-Host "   GPU stats:    docker exec orfeas-backend-production nvidia-smi" -ForegroundColor White
+Write-Host "Deployment Details:" -ForegroundColor White
+Write-Host "  • Branch:      main" -ForegroundColor Cyan
+Write-Host "  • Tag:         $tagName" -ForegroundColor Cyan
+Write-Host "  • Environment: production" -ForegroundColor Cyan
+Write-Host "  • Strategy:    blue-green" -ForegroundColor Cyan
+Write-Host "  • URL:         https://orfeas.ai" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "PRODUCTION READY!" -ForegroundColor Green
+Write-Host "Post-Deployment Checklist:" -ForegroundColor White
+Write-Host "  ☐ Verify production: https://orfeas.ai" -ForegroundColor Yellow
+Write-Host "  ☐ Check metrics: https://grafana.orfeas.ai" -ForegroundColor Yellow
+Write-Host "  ☐ Monitor logs: kubectl logs -n orfeas-production -l app=orfeas-backend" -ForegroundColor Yellow
+Write-Host "  ☐ Watch error rate: <1% expected" -ForegroundColor Yellow
+Write-Host "  ☐ Verify response times: <15s expected" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Rollback (if needed):" -ForegroundColor White
+Write-Host "  kubectl rollout undo deployment/orfeas-backend-green -n orfeas-production" -ForegroundColor Red
+Write-Host ""
+Write-Host "🎉 Congratulations on the production deployment! 🎉" -ForegroundColor Green
 Write-Host ""

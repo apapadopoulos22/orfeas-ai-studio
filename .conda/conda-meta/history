@@ -105,3 +105,21 @@
 +defaults/win-64::typing_extensions-4.15.0-py312haa95532_0
 +defaults/win-64::wrapt-1.17.0-py312h827c3e9_0
 # update specs: ['flask-limiter']
+==> 2025-10-25 23:12:12 <==
+# cmd: C:\Users\johng\anaconda3\Scripts\conda-script.py install --prefix C:/Users/johng/Documents/oscar/.conda flask-compress -y
+# conda version: 25.5.1
++defaults/win-64::brotli-python-1.0.9-py312h5da7b33_9
++defaults/win-64::cffi-2.0.0-py312h02ab6af_0
++defaults/win-64::flask-compress-1.17-py312haa95532_0
++defaults/win-64::pycparser-2.23-py312haa95532_0
++defaults/win-64::zstandard-0.24.0-py312he335c29_0
+# update specs: ['flask-compress']
+==> 2025-10-25 23:27:24 <==
+# cmd: C:\Users\johng\anaconda3\Scripts\conda-script.py install --prefix C:/Users/johng/Documents/oscar/.conda brotli -y
+# conda version: 25.5.1
++defaults/win-64::brotli-1.0.9-h827c3e9_9
++defaults/win-64::brotli-bin-1.0.9-h827c3e9_9
++defaults/win-64::libbrotlicommon-1.0.9-h827c3e9_9
++defaults/win-64::libbrotlidec-1.0.9-h827c3e9_9
++defaults/win-64::libbrotlienc-1.0.9-h827c3e9_9
+# update specs: ['brotli']
