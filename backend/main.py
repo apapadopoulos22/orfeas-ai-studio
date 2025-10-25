@@ -62,8 +62,8 @@ from gpu_optimization_advanced import (
 
 # [ORFEAS OPTIMIZATION] Tier-1 Performance Optimizations
 from progressive_renderer import get_progressive_renderer
-from intelligent_cache import get_intelligent_cache
-from gpu_batch_processor import get_gpu_batch_processor
+from intelligent_cache import get_cache
+from gpu_batch_processor import get_parallel_processor
 from model_quantization import get_quantization_manager, get_adaptive_quantization
 from advanced_rate_limiter import get_rate_limiter as get_advanced_rate_limiter, RateLimitTier
 
@@ -952,7 +952,8 @@ class OrfeasUnifiedServer:
 
             # Intelligent Caching: Redis + in-memory dual-tier cache
             try:
-                self.intelligent_cache = get_intelligent_cache()
+                from intelligent_cache import get_cache as cache_getter
+                self.intelligent_cache = cache_getter()
                 cache_config = {
                     'redis_url': os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
                     'ttl_seconds': int(os.getenv('CACHE_TTL_SECONDS', '3600')),
@@ -965,7 +966,7 @@ class OrfeasUnifiedServer:
 
             # Parallel GPU Batch Processor: 8-12 concurrent jobs with FP16
             try:
-                self.gpu_batch_processor = get_gpu_batch_processor()
+                self.gpu_batch_processor = get_parallel_processor()
                 logger.info("[ORFEAS OPTIMIZATION] GPU Batch Processor initialized (4x GPU utilization)")
             except Exception as e:
                 logger.warning(f"[ORFEAS OPTIMIZATION] GPU Batch Processor failed: {e}")
