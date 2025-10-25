@@ -20,7 +20,7 @@
 
 ### Path 2: Step-by-Step Deployment
 
-**Step 1 - Test Locally**
+#### Step 1 - Test Locally
 
 ```powershell
 .\DEPLOY_TEST_LOCAL.ps1
@@ -32,7 +32,7 @@
 
 ---
 
-**Step 2 - Deploy to Staging**
+#### Step 2 - Deploy to Staging
 
 ```powershell
 .\DEPLOY_STAGING.ps1
@@ -44,7 +44,7 @@
 
 ---
 
-**Step 3 - Deploy to Production**
+#### Step 3 - Deploy to Production
 
 ```powershell
 .\DEPLOY_PRODUCTION.ps1
@@ -58,7 +58,7 @@
 
 ### Path 3: Manual Deployment
 
-**Option A - Test Locally**
+#### Option A - Test Locally
 
 ```powershell
 # Start services
@@ -77,7 +77,7 @@ curl http://localhost:5000/health
 
 ---
 
-**Option B - Deploy to Staging**
+#### Option B - Deploy to Staging
 
 ```powershell
 git checkout develop
@@ -87,7 +87,7 @@ gh run watch
 
 ---
 
-**Option C - Deploy to Production**
+#### Option C - Deploy to Production
 
 ```powershell
 git checkout main

@@ -1,0 +1,116 @@
+/* CORS Test Frontend Styles */
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f5f5f5;
+}
+
+.container {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 10px;
+}
+
+.test-section {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f9f9f9;
+  border-left: 4px solid #007bff;
+  border-radius: 4px;
+}
+
+.test-title {
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 5px 5px 5px 0;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.response {
+  background: #f0f0f0;
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+}
+
+.response.hidden {
+  display: none;
+}
+
+.response.log-view {
+  display: block;
+  height: 200px;
+}
+
+.success {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.error {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.info {
+  color: #17a2b8;
+  font-weight: bold;
+}
+
+.loading {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.endpoint-input {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
+}
+

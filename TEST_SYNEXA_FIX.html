@@ -4,114 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Synexa CORS Fix - Verification Test</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        background: #0a0e1a;
-        color: #e0e7ff;
-        padding: 2rem;
-        line-height: 1.6;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-      h1 {
-        color: #00d4ff;
-        margin-bottom: 0.5rem;
-      }
-      .subtitle {
-        color: #94a3b8;
-        margin-bottom: 2rem;
-      }
-      .test-box {
-        background: #141824;
-        border: 1px solid #1e293b;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .test-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #00d4ff;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      .test-content {
-        background: #050810;
-        border: 1px solid #1e293b;
-        border-radius: 4px;
-        padding: 1rem;
-        border-left: 3px solid #3b82f6;
-        font-family: "Monaco", "SF Mono", monospace;
-        font-size: 0.9rem;
-        line-height: 1.5;
-      }
-      .test-content.pass {
-        border-left-color: #10b981;
-      }
-      .test-content.fail {
-        border-left-color: #ef4444;
-      }
-      .test-content.pending {
-        border-left-color: #f59e0b;
-      }
-      .spinner {
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        border: 2px solid rgba(0, 212, 255, 0.3);
-        border-top-color: #00d4ff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      button {
-        background: linear-gradient(135deg, #00d4ff, #7c3aed);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        font-size: 0.95rem;
-        margin-top: 1rem;
-      }
-      button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-      .summary {
-        font-size: 1rem;
-        margin: 1rem 0;
-      }
-      .pass-text {
-        color: #10b981;
-        font-weight: 600;
-      }
-      .fail-text {
-        color: #ef4444;
-        font-weight: 600;
-      }
-    </style>
+    <link rel="stylesheet" href="synexa-test-styles.css" />
   </head>
   <body>
     <div class="container">
@@ -158,11 +51,7 @@
 
       <div class="test-box">
         <div class="test-title">📋 Summary</div>
-        <div
-          id="summary-content"
-          class="test-content"
-          style="border-left-color: #3b82f6"
-        >
+        <div id="summary-content" class="test-content">
           <div class="summary">Waiting for tests...</div>
         </div>
         <button onclick="runTests()">Re-run Tests</button>
