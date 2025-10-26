@@ -1084,23 +1084,65 @@
 
             <!-- Bob AI Text-to-Image Section -->
             <div class="form-group">
-              <label class="form-label">🤖 Bob AI Text-to-Image</label>
+              <label class="form-label">🤖 Bob AI Studio Integration</label>
               <p class="api-description">
-                Describe what you want to see, and Bob AI will generate an image
+                Describe what you want, Bob AI generates an image, convert to 3D
               </p>
+
+              <!-- Bob AI Prompt Input -->
               <textarea
-                id="bob-ai-prompt"
+                id="bob-ai-prompt-3d"
                 class="form-input textarea-input"
-                placeholder="E.g., 'A futuristic spaceship with glowing neon lights'"
+                placeholder="E.g., 'A futuristic spaceship with glowing neon lights, high quality, detailed'"
               ></textarea>
-              <button
-                type="button"
-                class="btn btn-secondary btn-full-width bob-ai-button-spacing"
-                onclick="generateWithBobAI()"
-                id="bob-ai-btn"
+
+              <!-- Bob AI Controls -->
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 0.5rem;
+                  margin-top: 0.5rem;
+                "
               >
-                <span>✨</span> Generate Image with Bob AI
-              </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="enhancePrompt3D()"
+                  id="enhance-prompt-3d-btn"
+                >
+                  <span>✏️</span> Enhance Prompt
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="generateImageBobAI3D()"
+                  id="generate-image-bob-ai-btn"
+                >
+                  <span>🎨</span> Generate Image
+                </button>
+              </div>
+
+              <!-- Bob AI Progress (hidden by default) -->
+              <div
+                id="bob-ai-progress-3d"
+                class="hidden progress-container-spacing"
+                style="margin-top: 1rem"
+              >
+                <div class="throbber-container">
+                  <div class="throbber-pulse"></div>
+                  <div class="throbber-large"></div>
+                  <p id="bob-ai-status-3d" class="throbber-status">
+                    Bob AI is thinking...
+                  </p>
+                </div>
+                <div class="progress-bar">
+                  <div
+                    class="progress-fill progress-initial"
+                    id="bob-ai-progress-fill-3d"
+                  ></div>
+                </div>
+              </div>
             </div>
 
             <button
@@ -2752,6 +2794,204 @@
           alert(`❌ Bob AI Error: ${error.message}`);
         } finally {
           bobAiBtn.disabled = false;
+        }
+      }
+
+      // ============================================
+      // BOB AI FOR 3D STUDIO (ENHANCED INTEGRATION)
+      // ============================================
+
+      async function enhancePrompt3D() {
+        const promptTextarea = document.getElementById("bob-ai-prompt-3d");
+        const currentPrompt = promptTextarea.value.trim();
+
+        if (!currentPrompt) {
+          alert("❌ Please enter a prompt first");
+          return;
+        }
+
+        const btn = document.getElementById("enhance-prompt-3d-btn");
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "🔄 Enhancing...";
+
+        try {
+          console.log("[BOB-AI-3D] Original prompt:", currentPrompt);
+
+          // Call local LLM to enhance the prompt
+          const response = await fetch(`${API_BASE}/api/enhance-prompt`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: currentPrompt }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          const enhancedPrompt = data.enhanced_prompt || data.prompt;
+
+          console.log("[BOB-AI-3D] Enhanced prompt:", enhancedPrompt);
+
+          // Update the textarea with enhanced prompt
+          promptTextarea.value = enhancedPrompt;
+
+          // Show success feedback
+          btn.textContent = "✅ Enhanced!";
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }, 2000);
+        } catch (error) {
+          console.error("[BOB-AI-3D] Error:", error);
+          alert(`❌ Prompt enhancement failed: ${error.message}`);
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }
+      }
+
+      async function generateImageBobAI3D() {
+        const prompt = document.getElementById("bob-ai-prompt-3d").value.trim();
+
+        if (!prompt) {
+          alert("❌ Please enter a prompt first");
+          return;
+        }
+
+        const btn = document.getElementById("generate-image-bob-ai-btn");
+        const progressDiv = document.getElementById("bob-ai-progress-3d");
+        const progressFill = document.getElementById("bob-ai-progress-fill-3d");
+
+        btn.disabled = true;
+        btn.textContent = "🎨 Generating...";
+        progressDiv.classList.remove("hidden");
+        progressFill.style.width = "0%";
+
+        try {
+          console.log("[BOB-AI-3D-IMAGE] Starting generation:", prompt);
+
+          // Call text-to-image endpoint
+          const response = await fetch(`${API_BASE}/api/text-to-image`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: prompt,
+              steps: 20,
+              guidance_scale: 7.5,
+              size: 512,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              `HTTP ${response.status}: Failed to start generation`
+            );
+          }
+
+          const data = await response.json();
+          console.log("[BOB-AI-3D-IMAGE] Generation started:", data);
+
+          if (!data.job_id) {
+            throw new Error("No job_id returned from server");
+          }
+
+          const jobId = data.job_id;
+          let jobComplete = false;
+          let pollAttempts = 0;
+          const maxPolls = 120; // 2 minutes
+          let imageUrl = null;
+
+          // Poll for completion
+          while (!jobComplete && pollAttempts < maxPolls) {
+            pollAttempts++;
+            progressFill.style.width = `${(pollAttempts / maxPolls) * 100}%`;
+
+            const statusResponse = await fetch(
+              `${API_BASE}/api/text-to-image-status/${jobId}`
+            );
+
+            if (!statusResponse.ok) break;
+
+            const statusData = await statusResponse.json();
+
+            if (statusData.status === "completed") {
+              jobComplete = true;
+              imageUrl = statusData.image_url;
+              console.log("[BOB-AI-3D-IMAGE] Generation complete:", imageUrl);
+            } else if (statusData.status === "failed") {
+              throw new Error(statusData.error || "Generation failed");
+            }
+
+            if (!jobComplete) {
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+            }
+          }
+
+          if (!jobComplete) {
+            throw new Error("Generation timeout (2+ minutes)");
+          }
+
+          if (!imageUrl) {
+            throw new Error("No image URL returned");
+          }
+
+          // Load generated image and auto-upload for 3D generation
+          console.log("[BOB-AI-3D-IMAGE] Loading image from URL:", imageUrl);
+
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            console.log("[BOB-AI-3D-IMAGE] Image loaded successfully");
+
+            // Create a canvas and convert to blob
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            // Convert to blob and upload
+            canvas.toBlob(async (blob) => {
+              const file = new File([blob], "bob-ai-generated.png", {
+                type: "image/png",
+              });
+
+              console.log(
+                "[BOB-AI-3D-IMAGE] Created file from image, uploading..."
+              );
+              await handleFile(file);
+
+              // Auto-click generate button after upload
+              setTimeout(() => {
+                if (currentJobId) {
+                  console.log("[BOB-AI-3D-IMAGE] Auto-generating 3D model...");
+                  generate3D();
+                }
+              }, 1000);
+            }, "image/png");
+          };
+
+          img.onerror = () => {
+            throw new Error("Failed to load generated image");
+          };
+
+          img.src = imageUrl;
+
+          // Update UI
+          progressFill.style.width = "100%";
+          btn.textContent = "✅ Generated!";
+          setTimeout(() => {
+            progressDiv.classList.add("hidden");
+            btn.disabled = false;
+            btn.textContent = "🎨 Generate Image";
+          }, 2000);
+        } catch (error) {
+          console.error("[BOB-AI-3D-IMAGE] Error:", error);
+          alert(`❌ Image generation failed: ${error.message}`);
+          btn.disabled = false;
+          btn.textContent = "🎨 Generate Image";
+          progressDiv.classList.add("hidden");
         }
       }
 
