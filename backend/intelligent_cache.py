@@ -313,6 +313,21 @@ def get_cache() -> IntelligentCache:
     """Get or create singleton cache instance"""
     global _cache_instance
     if _cache_instance is None:
+        # Check if Redis cache is enabled
+        redis_enabled = os.getenv('REDIS_CACHE_ENABLED', 'true').lower() == 'true'
+        
+        if not redis_enabled:
+            logger.info("[CACHE] Redis caching disabled via REDIS_CACHE_ENABLED=false")
+            _cache_instance = IntelligentCache(
+                redis_host='localhost',
+                redis_port=6379,
+                ttl_seconds=86400,
+                enable_fallback=True  # Use in-memory fallback only
+            )
+            # Disable Redis connection attempt
+            _cache_instance.redis_client = None
+            return _cache_instance
+        
         redis_host = os.getenv('REDIS_HOST', 'localhost')
         redis_port = int(os.getenv('REDIS_PORT', 6379))
         ttl = int(os.getenv('CACHE_TTL_SECONDS', 86400))
