@@ -2126,7 +2126,6 @@
             headers: {
               "Cache-Control": "no-cache",
               Pragma: "no-cache",
-              "ngrok-skip-browser-warning": "true",
             },
           });
 
@@ -2273,9 +2272,6 @@
           const response = await fetch(`${API_BASE}/api/upload-image`, {
             method: "POST",
             body: formData,
-            headers: {
-              "ngrok-skip-browser-warning": "true",
-            },
           });
 
           console.log(
@@ -2353,7 +2349,6 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "ngrok-skip-browser-warning": "true",
             },
             body: JSON.stringify({
               job_id: currentJobId,
@@ -2410,9 +2405,7 @@
           try {
             const response = await fetch(
               `${API_BASE}/api/job-status/${currentJobId}`,
-              {
-                headers: { "ngrok-skip-browser-warning": "true" },
-              }
+              {}
             );
             if (!response.ok) {
               console.warn("[POLLING] Response not OK:", response.status);
