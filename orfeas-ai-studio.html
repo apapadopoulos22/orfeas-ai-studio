@@ -2122,11 +2122,6 @@
 
           let response = await fetch(`${API_BASE}/api/models-info`, {
             method: "GET",
-            cache: "no-cache",
-            headers: {
-              "Cache-Control": "no-cache",
-              Pragma: "no-cache",
-            },
           });
 
           console.log("[HEALTH] Response status:", response.status);

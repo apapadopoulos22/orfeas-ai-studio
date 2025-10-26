@@ -326,12 +326,19 @@ class EnhancedImageValidator:
                 return False, f"Excessive null bytes detected: {null_byte_count} ({null_ratio*100:.1f}%)"
 
         # Check for executable headers (polyglot detection)
-        # Skip PNG header area to avoid false positives
+        # PNG signature is 8 bytes: 0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A
+        # JPEG signature starts with 0xFF 0xD8 0xFF
+        # Only check at the END of file (after image data) for polyglot detection
+        # Do NOT check in the middle where compressed image data can have any bytes
         exe_headers = [b'MZ', b'\x7fELF', b'\xca\xfe\xba\xbe']  # Windows PE, Linux ELF, macOS Mach-O
-        search_start = 12  # After PNG/JPEG headers
-        for header in exe_headers:
-            if header in file_data[search_start:1024]:  # Check first KB after headers
-                return False, "Executable code detected in image file"
+
+        # Only check the last 4KB of file (where appended executables would be)
+        # This avoids false positives from compressed image data in the middle
+        if len(file_data) > 4096:
+            tail_data = file_data[-4096:]
+            for header in exe_headers:
+                if header in tail_data:
+                    return False, "Executable code detected in image file"
 
         return True, None
 

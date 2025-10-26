@@ -315,7 +315,7 @@ def get_cache() -> IntelligentCache:
     if _cache_instance is None:
         # Check if Redis cache is enabled
         redis_enabled = os.getenv('REDIS_CACHE_ENABLED', 'true').lower() == 'true'
-        
+
         if not redis_enabled:
             logger.info("[CACHE] Redis caching disabled via REDIS_CACHE_ENABLED=false")
             _cache_instance = IntelligentCache(
@@ -327,7 +327,7 @@ def get_cache() -> IntelligentCache:
             # Disable Redis connection attempt
             _cache_instance.redis_client = None
             return _cache_instance
-        
+
         redis_host = os.getenv('REDIS_HOST', 'localhost')
         redis_port = int(os.getenv('REDIS_PORT', 6379))
         ttl = int(os.getenv('CACHE_TTL_SECONDS', 86400))

@@ -1,36 +1,40 @@
 # GitHub Deployment & Netlify Connection Guide
 
-**Date:** October 26, 2025  
-**Goal:** Connect GitHub repository and enable automatic Netlify deployments  
+**Date:** October 26, 2025
+**Goal:** Connect GitHub repository and enable automatic Netlify deployments
 
 ---
 
 ## Step 1: Commit All Changes to Git
 
 ### Check Git Status
+
 ```powershell
 cd C:\Users\johng\Documents\oscar
 git status
 ```
 
 **Expected Output:**
+
 ```
 On branch main
 Changes not staged for commit:
   modified:   orfeas-ai-studio.html
   modified:   backend/main.py
-  
+
 Untracked files:
   PROMPT_ENHANCEMENT_*.md
   TEST_ENHANCEMENT_*.md
 ```
 
 ### Stage All Changes
+
 ```powershell
 git add -A
 ```
 
 ### Commit with Clear Message
+
 ```powershell
 git commit -m "feat: Add prompt enhancement feature with LLM support + test enhancement functions
 
@@ -42,6 +46,7 @@ git commit -m "feat: Add prompt enhancement feature with LLM support + test enha
 ```
 
 ### Verify Commit
+
 ```powershell
 git log --oneline -5
 ```
@@ -51,27 +56,32 @@ git log --oneline -5
 ## Step 2: Push to GitHub
 
 ### Add GitHub Remote (if not exists)
+
 ```powershell
 git remote add origin https://github.com/apapadopoulos22/orfeas-ai-studio.git
 ```
 
 ### Verify Remote
+
 ```powershell
 git remote -v
 ```
 
 **Expected:**
+
 ```
 origin  https://github.com/apapadopoulos22/orfeas-ai-studio.git (fetch)
 origin  https://github.com/apapadopoulos22/orfeas-ai-studio.git (push)
 ```
 
 ### Push to Main Branch
+
 ```powershell
 git push -u origin main
 ```
 
 **Expected Output:**
+
 ```
 Enumerating objects: 45, done.
 Counting objects: 100% (45/45), done.
@@ -83,21 +93,24 @@ To https://github.com/apapadopoulos22/orfeas-ai-studio.git
 ```
 
 ### Verify Push
-Visit: https://github.com/apapadopoulos22/orfeas-ai-studio
 
-✅ Should see all files pushed  
-✅ Latest commit message should be visible  
+Visit: <https://github.com/apapadopoulos22/orfeas-ai-studio>
+
+✅ Should see all files pushed
+✅ Latest commit message should be visible
 
 ---
 
 ## Step 3: Create Netlify Deployment
 
 ### Login to Netlify
-1. Go to https://netlify.com
+
+1. Go to <https://netlify.com>
 2. Sign in with your account
 3. Click **"Add new site"** → **"Import an existing project"**
 
 ### Connect GitHub Repository
+
 1. Click **"GitHub"** as your Git provider
 2. Authorize Netlify to access your GitHub account
 3. Select repository: **orfeas-ai-studio**
@@ -106,20 +119,24 @@ Visit: https://github.com/apapadopoulos22/orfeas-ai-studio
 ### Configure Build Settings
 
 **Build Command:**
+
 ```bash
 # Leave empty or use:
 # (no build needed - static HTML)
 ```
 
 **Publish Directory:**
+
 ```
 .
 (current directory - all HTML files)
 ```
 
 **Advanced Settings:**
+
 - Click "Show advanced"
 - Add environment variables (if needed):
+
   ```
   REACT_APP_API_BASE=https://your-backend.com/api
   ```
@@ -150,6 +167,7 @@ Once deployed:
 5. **Auto-publish branch:** Set to **main**
 
 **Now:**
+
 - ✅ Every push to `main` branch triggers build
 - ✅ Netlify automatically deploys changes
 - ✅ Live URL updates within 1-2 minutes
@@ -163,6 +181,7 @@ For testing features before production:
 3. Pattern: `develop`, `staging`, etc.
 
 **Now you can:**
+
 - Push to `develop` branch
 - Get separate preview URL
 - Test before merging to `main`
@@ -184,12 +203,14 @@ For testing features before production:
 ## Verification Checklist
 
 ### GitHub
+
 - [ ] Repository created and visible
 - [ ] All files pushed successfully
 - [ ] Commit history shows all changes
 - [ ] Latest commit is visible
 
 ### Netlify
+
 - [ ] Site deployed successfully
 - [ ] Live URL working
 - [ ] Can access orfeas-ai-studio.html
@@ -197,6 +218,7 @@ For testing features before production:
 - [ ] Branch deploys enabled (optional)
 
 ### Testing Production Deployment
+
 - [ ] Visit Netlify URL
 - [ ] Generate image from text
 - [ ] Apply filter
@@ -209,11 +231,13 @@ For testing features before production:
 ## Troubleshooting
 
 ### Issue: Push fails with authentication error
+
 ```
 fatal: Authentication failed
 ```
 
 **Solution:**
+
 ```powershell
 # Use Personal Access Token instead of password
 git remote set-url origin https://[TOKEN]@github.com/apapadopoulos22/orfeas-ai-studio.git
@@ -225,16 +249,19 @@ ssh-keygen -t ed25519
 ```
 
 ### Issue: Netlify shows "No builds"
+
 - Verify branch deploy context is set to `main`
 - Check GitHub connection under Settings
 - Manually trigger build: **Deploys** → **Trigger deploy**
 
 ### Issue: Site shows 404 on index
+
 - Verify publish directory is `.` (current directory)
 - Check that `orfeas-ai-studio.html` is in root
 - Manually set `orfeas-ai-studio.html` as index
 
 ### Issue: API calls return 404
+
 - Backend endpoint missing
 - Check CORS headers set correctly
 - Verify API_BASE in HTML matches backend URL
@@ -244,16 +271,19 @@ ssh-keygen -t ed25519
 ## Post-Deployment Monitoring
 
 ### Enable Notifications
+
 1. Netlify → Site settings → Notifications
 2. Add Slack/Email notification for deployments
 3. Get alerts when builds fail
 
 ### Monitor Performance
+
 1. Netlify Analytics
 2. Check build times
 3. Monitor bandwidth usage
 
 ### Check Logs
+
 1. **Deploy logs:** Netlify → Deploys → click build
 2. **Function logs:** (if using serverless)
 3. **Browser console:** F12 on live site
@@ -298,6 +328,6 @@ After successful deployment:
 
 ---
 
-**Created:** October 26, 2025  
-**Guide Version:** 1.0  
+**Created:** October 26, 2025
+**Guide Version:** 1.0
 **Status:** Ready to follow
