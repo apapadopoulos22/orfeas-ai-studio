@@ -94,26 +94,56 @@ def smart_load_model(
 ):
     original_model_path = model_path
     # try local path
-    base_dir = os.environ.get('HY3DGEN_MODELS', '~/.cache/hy3dgen')
-    model_path = os.path.expanduser(os.path.join(base_dir, model_path, subfolder))
-    logger.info(f'Try to load model from local path: {model_path}')
-    if not os.path.exists(model_path):
+    # [ORFEAS FIX] Use explicit path with backslashes instead of ~/. cache to prevent mixed separators on Windows
+    home_dir = os.path.expanduser('~')
+    hy3dgen_default = os.path.join(home_dir, '.cache', 'hy3dgen')  # Properly expand with backslashes
+    base_dir = os.environ.get('HY3DGEN_MODELS', hy3dgen_default)
+
+    # Convert repo_id format (tencent/Hunyuan3D-2) to HuggingFace cache format (models--tencent--Hunyuan3D-2)
+    # This is the format HuggingFace hub uses when caching models
+    model_repo_cache_name = f'models--{model_path.replace("/", "--")}'
+
+    # First, try to find model in HuggingFace hub cache if base_dir points to hub
+    if 'hub' in base_dir:
+        # Looking in HuggingFace hub directory - need to find the snapshot
+        repo_cache_dir = os.path.join(base_dir, model_repo_cache_name, 'snapshots')
+        if os.path.exists(repo_cache_dir):
+            # Find the first (and usually only) snapshot directory
+            snapshots = os.listdir(repo_cache_dir)
+            if snapshots:
+                snapshot_dir = os.path.join(repo_cache_dir, snapshots[0])
+                model_path_check = os.path.join(snapshot_dir, subfolder)
+            else:
+                model_path_check = None
+        else:
+            model_path_check = None
+    else:
+        # Looking in old-style hy3dgen cache directory
+        # Convert forward slashes in model_path to backslashes for Windows compatibility
+        model_path_normalized = model_path.replace('/', os.sep)
+        subfolder_normalized = subfolder.replace('/', os.sep) if subfolder else ''
+        model_path_check = os.path.join(base_dir, model_path_normalized, subfolder_normalized)
+
+    logger.info(f'Try to load model from local path: {model_path_check if model_path_check else "not found"}')
+    if not model_path_check or not os.path.exists(model_path_check):
         logger.info('Model path not exists, try to download from huggingface')
         try:
             from huggingface_hub import snapshot_download
-            # 
+            #
             path = snapshot_download(
                 repo_id=original_model_path,
                 allow_patterns=[f"{subfolder}/*"],  # :
             )
-            model_path = os.path.join(path, subfolder)  # 
+            model_path = os.path.join(path, subfolder)  #
         except ImportError:
             logger.warning(
                 "You need to install HuggingFace Hub to load models from the hub."
             )
-            raise RuntimeError(f"Model path {model_path} not found")
+            raise RuntimeError(f"Model path {model_path_check} not found")
         except Exception as e:
             raise e
+    else:
+        model_path = model_path_check
 
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model path {original_model_path} not found")

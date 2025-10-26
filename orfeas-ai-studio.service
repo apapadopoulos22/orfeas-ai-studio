@@ -1,0 +1,55 @@
+[Unit]
+Description=ORFEAS AI 2D3D Studio Backend Service
+Documentation=https://github.com/apapadopoulos22/orfeas-ai-studio
+After=network.target redis.service
+Wants=redis.service
+
+[Service]
+Type=notify
+User=orfeas
+Group=orfeas
+WorkingDirectory=/opt/orfeas-ai-studio
+
+# Environment variables
+EnvironmentFile=/etc/orfeas/orfeas.env
+Environment="PATH=/opt/orfeas-ai-studio/venv/bin"
+
+# Pre-start commands
+ExecStartPre=/bin/mkdir -p /opt/orfeas-ai-studio/logs
+ExecStartPre=/bin/chmod 755 /opt/orfeas-ai-studio/logs
+
+# Main service command
+ExecStart=/opt/orfeas-ai-studio/venv/bin/gunicorn \
+    --config /opt/orfeas-ai-studio/gunicorn.conf.py \
+    --workers 8 \
+    --timeout 120 \
+    --access-logfile /opt/orfeas-ai-studio/logs/gunicorn_access.log \
+    --error-logfile /opt/orfeas-ai-studio/logs/gunicorn_error.log \
+    --log-level info \
+    --max-requests 1000 \
+    --max-requests-jitter 50 \
+    backend.main:app
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=partial
+ProtectHome=yes
+ReadWritePaths=/opt/orfeas-ai-studio/logs /opt/orfeas-ai-studio/outputs
+
+# Resource limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Timeouts
+TimeoutStartSec=30
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

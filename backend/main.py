@@ -28,16 +28,33 @@ from typing import Dict, Any, Optional
 from enum import Enum
 from dataclasses import asdict
 
-# [ORFEAS] ORFEAS FIX: Load .env file BEFORE accessing environment variables
+# [ORFEAS] CRITICAL: Environment initialization MUST happen BEFORE any imports
+# This is the most critical pattern in the codebase - wrong order causes startup failures
+
+# 1. Set BEFORE any imports to prevent ONNX Runtime TensorRT crash (Error E)
+os.environ.setdefault('ORT_TENSORRT_UNAVAILABLE', '1')
+
+# 2. Set BEFORE any imports to prevent xformers Windows DLL error
+os.environ.setdefault('XFORMERS_DISABLED', '1')
+os.environ.setdefault('DISABLE_XFORMERS', '1')
+
+# 3. Set HOME for Windows path resolution (critical before hy3dgen import)
+home_dir = os.getenv('HOME', os.path.expanduser('~'))
+os.environ['HOME'] = home_dir
+
+# 4. Set HY3DGEN_MODELS BEFORE hy3dgen module import (reads at import time, not runtime)
+hy3dgen_models = os.getenv('HY3DGEN_MODELS')
+if hy3dgen_models:
+    os.environ['HY3DGEN_MODELS'] = hy3dgen_models
+
+# 5. Set CUDA lazy loading
+os.environ.setdefault('CUDA_MODULE_LOADING', 'LAZY')
+
+# 6. THEN load .env file (overrides with file values if present)
 from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
 
-# [ORFEAS] CRITICAL FIX: Disable TensorRT to prevent CUDA initialization crash (Error Code 35)
-# ONNX Runtime tries to use TensorRT execution provider which fails with CUDA error
-# This must be set BEFORE any torch/ONNX imports
-os.environ.setdefault('ORT_TENSORRT_UNAVAILABLE', '1')  # Tell ONNX Runtime TensorRT is unavailable
-os.environ.setdefault('CUDA_MODULE_LOADING', 'LAZY')  # Lazy CUDA loading to prevent early failures
-
+# 7. THEN import heavy libraries
 import torch
 import numpy as np
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont
@@ -73,6 +90,7 @@ from stl_processor import AdvancedSTLProcessor, analyze_stl, repair_stl, optimiz
 from halotbox_optimizer import HalotBoxOptimizer, HalotMaterial, HalotQualityPreset, optimize_for_halotbox  # [ORFEAS] HalotBox X1 SLA Printer Optimization
 from material_processor import MaterialProcessor, get_material_preset, get_lighting_preset, create_complete_metadata  # [ORFEAS] ORFEAS PHASE 2.3: Material & Lighting
 from camera_processor import CameraProcessor, get_camera_preset, create_turntable_animation, create_orbital_animation  # [ORFEAS] ORFEAS PHASE 2.4: Advanced Camera System
+from llm_local_integration import initialize_local_llm, get_ollama_manager, shutdown_local_llm  # [ORFEAS] Local LLM Integration
 from validation import (
     Generate3DRequest, FileUploadValidator,
     get_rate_limiter, SecurityHeaders
@@ -1225,6 +1243,16 @@ class OrfeasUnifiedServer:
         if self.socketio:
             self.setup_socketio_handlers()
 
+        # [ORFEAS] Register shutdown handler for graceful LLM cleanup
+        @self.app.teardown_appcontext
+        def shutdown_llm(exception=None):
+            """Gracefully shutdown Local LLM on server exit"""
+            try:
+                shutdown_local_llm()
+                logger.info("[SHUTDOWN] Local LLM cleanup complete")
+            except Exception as e:
+                logger.warning(f"[SHUTDOWN] Error during LLM cleanup: {e}")
+
         logger.info("[OK] ORFEAS Unified Server initialization complete")
 
     def emit_event(self, event_name, data):
@@ -1665,6 +1693,28 @@ class OrfeasUnifiedServer:
 
         # NOTE: /health-detailed endpoint already exists in monitoring.py
         # No need to duplicate it here
+
+        # [ORFEAS] Job Status Endpoint - for polling job completion
+        @self.app.route('/api/job/<job_id>', methods=['GET'])
+        @track_request_metrics('/api/job/<job_id>')
+        def get_job_status(job_id):
+            """Get status of a processing job"""
+            try:
+                # Validate job_id format (UUID)
+                if not is_valid_uuid(job_id):
+                    return jsonify({"error": "Invalid job_id format"}), 400
+
+                # Check if job exists in progress tracker
+                if job_id not in self.job_progress:
+                    return jsonify({"error": "Job not found"}), 404
+
+                # Return current job status
+                job_data = self.job_progress[job_id]
+                return jsonify(job_data)
+
+            except Exception as e:
+                logger.error(f"[API] Error getting job status: {e}")
+                return jsonify({"error": str(e)}), 500
 
         # [ORFEAS PHASE 6C] Cache Management Endpoints
         @self.app.route('/api/cache/stats', methods=['GET'])
@@ -2685,6 +2735,75 @@ class OrfeasUnifiedServer:
             except Exception as e:
                 logger.error(f"Upload error: {str(e)}")
                 return jsonify({"error": "Upload failed"}), 500
+
+        @self.app.route('/api/enhance-prompt', methods=['POST'])
+        @track_request_metrics('/api/enhance-prompt')
+        def enhance_prompt():
+            """Enhance a text prompt using local LLM (Ollama)"""
+            try:
+                data = request.get_json()
+                if not data or 'prompt' not in data:
+                    return jsonify({"error": "No prompt provided"}), 400
+
+                prompt = data.get('prompt', '').strip()
+                if not prompt:
+                    return jsonify({"error": "Prompt cannot be empty"}), 400
+
+                logger.info(f"[ENHANCE-PROMPT] Original prompt: {prompt}")
+
+                # Use local LLM to enhance the prompt
+                if self.local_llm_enabled and self.local_llm_endpoint:
+                    try:
+                        enhancement_instruction = f"""You are an expert at improving image generation prompts.
+Take the following prompt and enhance it to be more descriptive, detailed, and suitable for high-quality image generation.
+Add specific details about style, lighting, composition, and visual elements.
+Keep it concise but rich in visual information.
+Return ONLY the enhanced prompt, no explanation.
+
+Original prompt: {prompt}
+
+Enhanced prompt:"""
+
+                        response = requests.post(
+                            f"{self.local_llm_endpoint}/api/generate",
+                            json={
+                                "model": self.local_llm_model,
+                                "prompt": enhancement_instruction,
+                                "stream": False,
+                                "temperature": 0.7,
+                            },
+                            timeout=30
+                        )
+
+                        if response.status_code == 200:
+                            result = response.json()
+                            enhanced = result.get('response', '').strip()
+                            if enhanced:
+                                logger.info(f"[ENHANCE-PROMPT] Enhanced prompt: {enhanced}")
+                                return jsonify({
+                                    "prompt": prompt,
+                                    "enhanced_prompt": enhanced,
+                                    "status": "success"
+                                })
+                        else:
+                            logger.warning(f"LLM enhancement failed: {response.status_code}")
+                    except Exception as e:
+                        logger.warning(f"LLM enhancement error: {str(e)}")
+
+                # Fallback: Simple enhancement without LLM
+                enhanced_prompt = self._simple_prompt_enhancement(prompt)
+                logger.info(f"[ENHANCE-PROMPT] Fallback enhanced: {enhanced_prompt}")
+
+                return jsonify({
+                    "prompt": prompt,
+                    "enhanced_prompt": enhanced_prompt,
+                    "status": "success",
+                    "method": "fallback"
+                })
+
+            except Exception as e:
+                logger.error(f"[ENHANCE-PROMPT] Error: {str(e)}")
+                return jsonify({"error": str(e)}), 500
 
         @self.app.route('/api/text-to-image', methods=['POST'])
         @track_request_metrics('/api/text-to-image')
@@ -5634,6 +5753,22 @@ class OrfeasUnifiedServer:
 
         return base_capabilities
 
+    def _simple_prompt_enhancement(self, prompt):
+        """Fallback prompt enhancement without LLM"""
+        # Add descriptive enhancement words
+        enhancement_words = [
+            "high quality",
+            "detailed",
+            "professional",
+            "masterpiece",
+            "sharp focus",
+            "well-lit",
+        ]
+
+        # Build enhanced prompt
+        enhanced = f"{prompt}, {', '.join(enhancement_words[:3])}"
+        return enhanced
+
     def run(self, host='0.0.0.0', port=5000, debug=False):
         """Run the unified server"""
 
@@ -5930,6 +6065,19 @@ def main():
         else:
             logger.warning("[WARN] Some RTX optimizations unavailable - check GPU compatibility")
         logger.info("=" * 80)
+        logger.info("")
+
+        # [ORFEAS] Initialize Local LLM (Ollama) for Text-to-Image
+        logger.info("")
+        llm_result = initialize_local_llm()
+        if llm_result['status'] == 'ready':
+            logger.info("[ORFEAS] Local LLM initialized successfully!")
+            logger.info(f"   Endpoint: {llm_result.get('endpoint', 'N/A')}")
+            logger.info(f"   Model: {llm_result.get('model', 'N/A')}")
+        elif llm_result['status'] == 'disabled':
+            logger.info("[ORFEAS] Local LLM disabled in configuration")
+        else:
+            logger.warning(f"[ORFEAS] Local LLM initialization: {llm_result['message']}")
         logger.info("")
     else:
         logger.info("[TEST MODE] Skipping RTX initialization and environment validation")

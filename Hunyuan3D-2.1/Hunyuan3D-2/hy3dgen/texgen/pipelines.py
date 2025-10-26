@@ -56,11 +56,35 @@ class Hunyuan3DPaintPipeline:
         original_model_path = model_path
         if not os.path.exists(model_path):
             # try local path
-            base_dir = os.environ.get('HY3DGEN_MODELS', '~/.cache/hy3dgen')
-            model_path = os.path.expanduser(os.path.join(base_dir, model_path))
+            # [ORFEAS FIX] Use explicit path with backslashes instead of ~/.cache to prevent mixed separators on Windows
+            home_dir = os.path.expanduser('~')
+            hy3dgen_default = os.path.join(home_dir, '.cache', 'hy3dgen')  # Properly expand with backslashes
+            base_dir = os.environ.get('HY3DGEN_MODELS', hy3dgen_default)
 
-            delight_model_path = os.path.join(model_path, 'hunyuan3d-delight-v2-0')
-            multiview_model_path = os.path.join(model_path, subfolder)
+            # Convert repo_id format (tencent/Hunyuan3D-2) to HuggingFace cache format (models--tencent--Hunyuan3D-2)
+            model_repo_cache_name = f'models--{model_path.replace("/", "--")}'
+
+            # First, try to find model in HuggingFace hub cache if base_dir points to hub
+            if 'hub' in base_dir:
+                # Looking in HuggingFace hub directory - need to find the snapshot
+                repo_cache_dir = os.path.join(base_dir, model_repo_cache_name, 'snapshots')
+                if os.path.exists(repo_cache_dir):
+                    # Find the first (and usually only) snapshot directory
+                    snapshots = os.listdir(repo_cache_dir)
+                    if snapshots:
+                        snapshot_dir = os.path.join(repo_cache_dir, snapshots[0])
+                        model_path = snapshot_dir
+                    else:
+                        model_path = None
+                else:
+                    model_path = None
+            else:
+                # Looking in old-style hy3dgen cache directory
+                model_path_normalized = model_path.replace('/', os.sep)
+                model_path = os.path.join(base_dir, model_path_normalized)
+
+            delight_model_path = os.path.join(model_path, 'hunyuan3d-delight-v2-0') if model_path else None
+            multiview_model_path = os.path.join(model_path, subfolder) if model_path else None
 
             if not os.path.exists(delight_model_path) or not os.path.exists(multiview_model_path):
                 try:
@@ -85,7 +109,7 @@ class Hunyuan3DPaintPipeline:
             delight_model_path = os.path.join(model_path, 'hunyuan3d-delight-v2-0')
             multiview_model_path = os.path.join(model_path, subfolder)
             return cls(Hunyuan3DTexGenConfig(delight_model_path, multiview_model_path, subfolder))
-            
+
     def __init__(self, config):
         self.config = config
         self.models = {}
@@ -199,7 +223,7 @@ class Hunyuan3DPaintPipeline:
             else:
                 image_prompt = image[i]
             images_prompt.append(image_prompt)
-            
+
         images_prompt = [self.recenter_image(image_prompt) for image_prompt in images_prompt]
 
         images_prompt = [self.models['delight_model'](image_prompt) for image_prompt in images_prompt]

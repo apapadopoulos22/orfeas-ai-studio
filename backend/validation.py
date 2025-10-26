@@ -211,6 +211,13 @@ class SecurityHeaders:
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
 
+        # [FIX] Add CORS headers for canvas image access
+        # This allows frontend JavaScript to use images in canvas operations
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS, HEAD'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Accept'
+        response.headers['Access-Control-Expose-Headers'] = 'Content-Length, Content-Type'
+
         # HSTS only for production HTTPS (commented out for local dev)
         # response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 

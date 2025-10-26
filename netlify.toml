@@ -1,0 +1,110 @@
+# ============================================
+# NETLIFY CONFIGURATION FOR ORFEAS AI STUDIO
+# ============================================
+
+[build]
+  # Directory to deploy (frontend static files)
+  publish = "."
+
+  # Build command (prepares static assets)
+  command = "echo 'Frontend ready for deployment'"
+
+  # Functions directory for serverless backend
+  functions = "netlify/functions"
+
+  # Environment variables during build
+  [build.environment]
+    PYTHON_RUNTIME = "3.11"
+    NODE_VERSION = "20"
+
+# ============================================
+# REDIRECTS & REWRITES
+# ============================================
+
+# API proxy - redirect API calls to backend
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = false
+
+# SPA fallback - route unknown paths to index.html
+[[redirects]]
+  from = "/*"
+  to = "index.html"
+  status = 200
+
+# ============================================
+# HEADERS (Security & Performance)
+# ============================================
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # CORS for API access
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
+
+    # Security headers
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Performance headers
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+# Static assets - long cache
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML files - no cache
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ============================================
+# CONTEXT: PRODUCTION
+# ============================================
+
+[context.production]
+  command = "echo 'Production frontend ready'"
+  publish = "."
+  functions = "netlify/functions"
+
+  [context.production.environment]
+    API_BASE = "https://orfeas-api.example.com"
+    ENVIRONMENT = "production"
+    NODE_ENV = "production"
+
+# ============================================
+# CONTEXT: STAGING
+# ============================================
+
+[context.staging]
+  command = "echo 'Staging frontend ready'"
+  publish = "."
+  functions = "netlify/functions"
+
+  [context.staging.environment]
+    API_BASE = "https://staging-api.example.com"
+    ENVIRONMENT = "staging"
+    NODE_ENV = "production"
+
+# ============================================
+# CONTEXT: DEVELOPMENT
+# ============================================
+
+[context.develop]
+  command = "echo 'Development frontend ready'"
+  publish = "."
+  functions = "netlify/functions"
+
+  [context.develop.environment]
+    API_BASE = "http://localhost:5000"
+    ENVIRONMENT = "development"
+    NODE_ENV = "development"

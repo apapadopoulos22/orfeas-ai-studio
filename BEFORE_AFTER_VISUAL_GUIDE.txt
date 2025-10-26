@@ -1,0 +1,255 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    IMAGE SECTION - BEFORE vs AFTER                         ║
+║                         Visual Comparison                                   ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+IMAGE PROCESSING STUDIO - INTERFACE LAYOUT
+════════════════════════════════════════════════════════════════════════════════
+
+BEFORE (Old Structure):
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🖼️ Image Processing Studio                                                  │
+│ Professional image editing and enhancement tools                             │
+├─────────────────────────────────────┬──────────────────────────────────────┤
+│ LEFT PANEL (Tools)                  │ RIGHT PANEL (Canvas/Preview)         │
+├─────────────────────────────────────┼──────────────────────────────────────┤
+│                                     │                                      │
+│ 1. 📷 UPLOAD & IMPORT ← FIRST       │ ┌──────────────────────────────────┐ │
+│    [Drop zone]                      │ │                                  │ │
+│    File: no image                   │ │   IMAGE CANVAS                   │ │
+│                                     │ │                                  │ │
+│ ─────────────────────────────────   │ │ Original: No image               │ │
+│                                     │ │ Current: No image                │ │
+│ 2. ✂️ CROP IMAGE (hidden)           │ │                                  │ │
+│                                     │ │ (Before image upload, empty)     │ │
+│ ─────────────────────────────────   │ │                                  │ │
+│                                     │ │                                  │ │
+│ 3. 🎨 FILTERS & EFFECTS (hidden)   │ └──────────────────────────────────┘ │
+│                                     │                                      │
+│ ─────────────────────────────────   │ Before/After Comparison:             │
+│                                     │ [Hidden until image loaded]          │
+│ 4. 📐 RESIZE & SCALE (hidden)       │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 5. 🎨 MATERIAL COLORS (hidden)      │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 6. 🤖 BOB AI ENHANCEMENT (hidden)   │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 7. 🎭 FIGURINE ENHANCE (hidden)     │                                      │
+│    [B&W Conversion]                 │                                      │
+│    [Output: B&W, no colors]         │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 8. 🖼️ TEXT TO IMAGE (hidden)        │                                      │
+│    [Appears at END]                 │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 9. 💾 EXPORT OPTIONS (hidden)       │                                      │
+│                                     │                                      │
+└─────────────────────────────────────┴──────────────────────────────────────┘
+
+
+AFTER (New Structure):
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🖼️ Image Processing Studio                                                  │
+│ Professional image editing and enhancement tools                             │
+├─────────────────────────────────────┬──────────────────────────────────────┤
+│ LEFT PANEL (Tools)                  │ RIGHT PANEL (Canvas/Preview)         │
+├─────────────────────────────────────┼──────────────────────────────────────┤
+│                                     │                                      │
+│ 1. 🖼️ TEXT TO IMAGE (Bob AI) ✓     │ ┌──────────────────────────────────┐ │
+│    [VISIBLE AT START]               │ │                                  │ │
+│    Prompt: [text area]              │ │   IMAGE CANVAS                   │ │
+│    Steps: [slider]                  │ │                                  │ │
+│    Guidance: [slider]               │ │ Ready to generate or upload      │ │
+│    Size: [dropdown]                 │ │                                  │ │
+│    [✨ Generate Image]              │ │ (No image needed to start!)      │ │
+│    Progress: [bar]                  │ │                                  │ │
+│                                     │ │                                  │ │
+│ ─────────────────────────────────   │ │ Can generate images first,       │ │
+│                                     │ │ then use other tools             │ │
+│ 2. 📷 UPLOAD & IMPORT               │ │                                  │ │
+│    [Drop zone]                      │ └──────────────────────────────────┘ │
+│    File: no image                   │                                      │
+│                                     │ Before/After Comparison:             │
+│ ─────────────────────────────────   │ [Shows when image changes]           │
+│                                     │                                      │
+│ 3. ✂️ CROP IMAGE (hidden)           │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 4. 🎨 FILTERS & EFFECTS (hidden)   │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 5. 📐 RESIZE & SCALE (hidden)       │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 6. 🎨 MATERIAL COLORS (hidden)      │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 7. 🤖 BOB AI ENHANCEMENT (hidden)   │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 8. 🎭 FIGURINE ENHANCE (hidden)     │                                      │
+│    [BACKGROUND REMOVAL] ✓ NEW       │                                      │
+│    Threshold: [slider]              │                                      │
+│    [🎭 Remove Background]           │                                      │
+│    [Output: Colors, transparent] ✓  │                                      │
+│                                     │                                      │
+│ ─────────────────────────────────   │                                      │
+│                                     │                                      │
+│ 9. 💾 EXPORT OPTIONS (hidden)       │                                      │
+│                                     │                                      │
+└─────────────────────────────────────┴──────────────────────────────────────┘
+
+
+KEY DIFFERENCES
+════════════════════════════════════════════════════════════════════════════════
+
+FEATURE                     BEFORE              →  AFTER
+────────────────────────────────────────────────────────────────────────────────
+Text to Image Position      At end (hidden)     →  At start (visible)
+Text to Image Access        After image upload  →  Anytime (no upload needed)
+Tool Access Workflow        Upload first        →  Generate first OR upload
+
+Figurine Function           B&W Conversion      →  Background Removal
+Figurine Output             Black & White       →  Colors + Transparent BG
+Figurine Quality            B&W pixels only     →  Detailed colors preserved
+Figurine Use Case           Limited             →  3D prep + subject extract
+Figurine Button             "Generate Figuring  →  "Remove Background"
+                            (BW PNG)"
+
+User Experience             1. Upload required  →  1. Generate text or upload
+First Step                  2. Edit tools       →  2. Edit tools
+                            3. Export           →  3. Export
+
+Number of Workflows         1 main path         →  2 paths (flexible)
+AI Generation Visibility    End tool            →  Primary tool
+
+Panel Organization          Upload first        →  Generate first
+Left Panel Start            Upload panel        →  Text to Image section
+
+
+WORKFLOW CHANGES
+════════════════════════════════════════════════════════════════════════════════
+
+BEFORE - Single Workflow:
+┌──────────────────────────────────────┐
+│     1. UPLOAD IMAGE (Required)       │
+└──────────────────────────────────────┘
+              ↓
+┌──────────────────────────────────────┐
+│    2. USE EDITING TOOLS              │
+│    • Crop • Filter • Resize          │
+│    • Colors • Bob AI                 │
+└──────────────────────────────────────┘
+              ↓
+┌──────────────────────────────────────┐
+│  3. FIGURINE ENHANCE (B&W)           │
+│     [Only B&W output]                │
+└──────────────────────────────────────┘
+              ↓
+┌──────────────────────────────────────┐
+│  4. EXPORT (PNG/JPG/WebP)            │
+│     [Result: B&W figurine]           │
+└──────────────────────────────────────┘
+
+
+AFTER - Dual Workflow (More Flexible):
+
+WORKFLOW A: Generate First
+┌──────────────────────────────────────┐
+│  1. GENERATE IMAGE FROM TEXT (NEW!)  │
+│     "Describe what you want..."      │
+└──────────────────────────────────────┘
+              ↓
+┌──────────────────────────────────────┐
+│  2. USE EDITING TOOLS                │
+│     • Crop • Filter • Resize         │
+│     • Colors • Bob AI                │
+└──────────────────────────────────────┘
+              ↓
+┌──────────────────────────────────────┐
+│ 3. FIGURINE ENHANCE (Remove BG) ✓   │
+│    [Output: Colors + Transparent]    │
+└──────────────────────────────────────┘
+              ↓
+┌──────────────────────────────────────┐
+│  4. EXPORT (PNG/JPG/WebP)            │
+│     [Result: Subject + Colors]       │
+└──────────────────────────────────────┘
+
+WORKFLOW B: Upload First (Traditional)
+┌──────────────────────────────────────┐
+│     1. UPLOAD IMAGE (Traditional)    │
+└──────────────────────────────────────┘
+              ↓
+      [Same as Workflow A, steps 2-4]
+
+
+FIGURINE ENHANCE COMPARISON
+════════════════════════════════════════════════════════════════════════════════
+
+ASPECT              BEFORE (B&W)            AFTER (Remove BG)
+────────────────────────────────────────────────────────────────
+Input               Color image             Color image
+Algorithm           Grayscale + threshold   Luminosity + alpha
+Output Colors       Black & White           Original colors (preserved)
+Output Background   Black (#000000)         Transparent (alpha=0)
+Threshold Purpose   Set B&W level           Control BG removal
+Visual Quality      Limited detail          Full detail + colors
+3D Model Prep       Basic (low info)        Better (full colors)
+Export Format       PNG (B&W)               PNG (transparent)
+Use Case            Simple extraction       Professional prep
+
+BEFORE Example:
+  Original: [Red apple on wood table]
+             ↓ (Figurine Enhance)
+  Output: [White apple on black] ← Limited info
+
+AFTER Example:
+  Original: [Red apple on wood table]
+             ↓ (Figurine Enhance)
+  Output: [Red apple on transparent] ← Full colors preserved
+
+
+TECHNICAL CHANGES SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+
+HTML LOCATION CHANGES:
+  Before: Text to Image at line ~1790 (after Figurine)
+  After:  Text to Image at line ~1208 (before Upload)
+  Result: Top of panel → Always visible first
+
+FUNCTION LOGIC CHANGES:
+  Before: For each pixel: RGB → Grayscale → B&W (0 or 255)
+  After:  For each pixel: RGB → Grayscale → Check threshold
+                          if (gray > threshold): alpha = 0 (transparent)
+                          else: alpha = 255 (opaque)
+  Result: Transparent BG instead of B&W
+
+UI TEXT CHANGES:
+  Before: "Generate Figurine (BW PNG)"
+  After:  "Remove Background"
+
+  Before: "Extract single element with clear background & B&W colors"
+  After:  "Remove background and extract subject with transparency"
+
+  Result: Clear intent + better description
+
+
+════════════════════════════════════════════════════════════════════════════════
+                           CHANGES COMPLETE ✅
+════════════════════════════════════════════════════════════════════════════════

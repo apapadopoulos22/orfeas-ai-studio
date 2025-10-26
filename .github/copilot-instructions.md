@@ -1,177 +1,274 @@
-# ORFEAS AI 2D3D STUDIO - GitHub Copilot Instructions (SLIM CORE)
+﻿# ORFEAS AI 2D3D STUDIO - GitHub Copilot Instructions
 
-**Project:** Enterprise AI multimedia for 2D3D generation + video composition + code development
-**Stack:** Python 3.10+/Flask/PyTorch + HTML5/PWA + Docker GPU (RTX 3090 CUDA 12.0)
+**Project:** Enterprise AI multimedia platform for 2D3D generation
+
+**Stack:** Python 3.10+/Flask/PyTorch + Next.js + Docker GPU (RTX 3090)
+
 **Quality:** 92% Grade A (ISO 9001/27001, 464 tests, 50K+ LOC)
+
+## Architecture Overview
+
+ORFEAS uses a 3-layer service architecture:
+
+```
+Frontend (HTML5/Next.js) -> REST + WebSocket
+Backend (Flask + SocketIO + PyTorch)
+  - Hunyuan3D-2.1 (3D generation)
+  - GPU Manager (VRAM allocation)
+  - Progress Tracker (real-time updates)
+  - LLM Router (local + cloud)
+Hunyuan3D Model (submodule)
+  - ShapeGen (mesh generation)
+  - TexGen (texture synthesis)
+```
+
+**Key Design Principle**: Defer model loading until first request (avoid startup crash).
 
 ## 5-MINUTE QUICKSTART
 
-### Backend
-
 ```powershell
 cd backend
-python main.py  # Runs on http://127.0.0.1:5000
+python main.py  # http://127.0.0.1:5000
+```
 
-```text
+## CRITICAL PATTERNS (MUST KNOW)
 
-### Local LLM (Recommended)
+### 0. Environment Initialization (MUST be first, BEFORE any imports)
 
-```powershell
-.\ps1\START_LOCAL_LLM_AUTO.ps1  # Ollama + Mistral
+**This is the most critical pattern in the entire codebase.**
 
-```text
-
-### Docker Stack
-
-```powershell
-docker-compose up -d  # Full 7-service stack with GPU
-
-```text
-
-## CRITICAL PATTERNS (Must Know)
-
-### 1. Model Caching (94% Speed Gain)
+In `backend/main.py`, **before importing torch, hy3dgen, or any ML libraries**:
 
 ```python
-class Hunyuan3DProcessor:
-    _model_cache = {'pipeline': None, 'initialized': False}
-    _cache_lock = threading.Lock()
+import os
+import sys
+from pathlib import Path
 
-    def __init__(self):
-        with self._cache_lock:
-            if self._model_cache['initialized']:
-                self.pipeline = self._model_cache['pipeline']
-                return
-        self.initialize_model()
+# 1. Set BEFORE any imports to prevent ONNX Runtime crash
+os.environ['ORT_TENSORRT_UNAVAILABLE'] = '1'
 
-```text
+# 2. Set BEFORE any imports to prevent xformers Windows DLL error
+os.environ['XFORMERS_DISABLED'] = '1'
+os.environ['DISABLE_XFORMERS'] = '1'
 
-### 2. GPU Memory (RTX 3090: 24GB total)
+# 3. Set BEFORE hy3dgen import (it reads at module load time)
+hy3dgen_models = os.getenv('HY3DGEN_MODELS')
+if hy3dgen_models:
+    os.environ['HY3DGEN_MODELS'] = hy3dgen_models
+
+# 4. Set HOME for Windows path resolution (critical on Windows)
+home_dir = os.getenv('HOME', os.path.expanduser('~'))
+os.environ['HOME'] = home_dir
+
+# 5. THEN load .env and other settings
+from dotenv import load_dotenv
+load_dotenv()
+
+# 6. THEN import heavy libraries
+import torch
+from hunyuan_integration import get_3d_processor
+```
+
+**Why this matters:**
+
+- `ORT_TENSORRT_UNAVAILABLE=1` prevents ONNX Runtime from trying TensorRT (Error E)
+- `XFORMERS_DISABLED=1` prevents Windows DLL crash during torch initialization
+- `HY3DGEN_MODELS` must be set before hy3dgen module import (reads at import time)
+- `HOME` must be set for proper ~/.cache resolution on Windows
+- **Wrong order = startup failures that look unrelated**
+
+### 1. Lazy Model Loading (prevents 50s startup delays)
+
+Models load on first request, not at startup.
+
+**In hunyuan_integration.py:**
+
+- Hunyuan3DProcessor._model_cache - thread-safe singleton
+- Cache initialized on first generate_3d() call via_load_from_cache()
+- TORCH_AVAILABLE flag handles environments without GPU
+
+**Critical init sequence in main.py:**
 
 ```python
-try:
-    result = processor.generate_shape(image)
-finally:
-    torch.cuda.empty_cache()
+os.environ['ORT_TENSORRT_UNAVAILABLE'] = '1'
+os.environ['XFORMERS_DISABLED'] = '1'
+os.environ['HY3DGEN_MODELS'] = model_path
+home_dir = os.getenv('HOME', os.path.expanduser('~'))
+os.environ['HOME'] = home_dir
+```
 
+### 2. GPU Memory Management (24GB RTX 3090)
+
+Pattern: Try-finally with explicit cleanup.
+
+```python
+from gpu_manager import get_gpu_manager
 gpu_mgr = get_gpu_manager()
-if not gpu_mgr.can_process_job(estimated_vram=6000):
-    raise ResourceError('Insufficient GPU memory')
 
-```text
-
-### 3. Async Jobs (for operations >10s)
-
-```python
-async_queue = get_async_queue()
-job = async_queue.submit_job('3d_generation',
-                              image=image, quality=7)
-return jsonify({'job_id': job.id, 'status': 'queued'})
-
-```text
-
-### 4. Error Handling
-
-```python
 try:
-    result = processor.generate(image)
-except torch.cuda.OutOfMemoryError as e:
-    logger.error(f'GPU OOM: {e}')
-    torch.cuda.empty_cache()
+    if not gpu_mgr.can_process_job(estimated_vram=6000):
+        raise ResourceError('Insufficient VRAM')
+    result = processor.generate_3d(image)
 finally:
-    torch.cuda.empty_cache()
+    torch.cuda.empty_cache()  # ALWAYS cleanup
+```
 
-```text
+### 3. WebSocket Real-Time Progress (for 10s+ operations)
 
-## Key Files
+Flow: Client subscribes -> Progress events stream -> UI updates
 
-| File | Purpose |
-|------|---------|
-| backend/main.py | Flask API entry (WebSocket + REST) |
-| backend/hunyuan_integration.py | 3D generation (model cache, GPU) |
-| backend/gpu_manager.py | GPU resource management |
-| backend/batch_processor.py | Async job queue |
-| backend/llm_local_integration.py | Local Ollama integration |
-| Hunyuan3D-2.1/ | Model submodule |
+Backend (main.py):
 
-## Environment Variables
+```python
+from websocket_manager import initialize_websocket_manager
+from progress_tracker import ProgressTracker
 
-```bash
+ws_manager = initialize_websocket_manager(socketio)
+tracker = ProgressTracker(job_id, total_steps=100)
+
+tracker.start_stage('shape_generation', weight=0.60)
+tracker.update_stage_progress('shape_generation', 45)
+tracker.complete_stage('shape_generation')
+```
+
+Frontend (JavaScript):
+
+```javascript
+const socket = io('http://localhost:5000');
+socket.emit('subscribe_to_job', {job_id: 'xyz'});
+socket.on('generation_progress', (data) => {
+    updateProgressBar(data.progress);
+    updateStage(data.stage);
+    updateETA(data.eta_seconds);
+});
+```
+
+### 4. Error Handling & Fallbacks
+
+All GPU operations degrade gracefully.
+
+```python
+from hunyuan_integration import get_3d_processor, FallbackProcessor
+
+try:
+    processor = get_3d_processor()
+    result = processor.generate_3d(image)
+except Exception as e:
+    logger.warning(f"Full generation failed: {e}, using fallback")
+    fallback = FallbackProcessor()
+    result = fallback.generate_shape(image)
+```
+
+## Key Files & Responsibilities
+
+- main.py (6000+ lines) - Flask app, WebSocket init
+- hunyuan_integration.py (886 lines) - 3D generation (lazy-loaded)
+- gpu_manager.py (566 lines) - VRAM tracking, device selection
+- websocket_manager.py (350+ lines) - Connection pool, room messaging
+- progress_tracker.py (400+ lines) - Job tracking, ETA calculation
+- batch_processor.py - Async job queue
+- validation.py - 6-layer image validation
+
+## Environment Variables (Critical)
+
 DEVICE=cuda
 XFORMERS_DISABLED=1
+ORT_TENSORRT_UNAVAILABLE=1
 GPU_MEMORY_LIMIT=0.8
-MAX_CONCURRENT_JOBS=3
+HY3DGEN_MODELS=/path/to/models
+HOME=/path/to/home
+FLASK_ENV=production
+CORS_ORIGINS=*
 LOCAL_LLM_ENABLED=true
-LOCAL_LLM_ENDPOINT=http://localhost:11434
+LOCAL_LLM_ENDPOINT=<http://localhost:11434>
 LOCAL_LLM_MODEL=mistral
-ENABLE_MONITORING=true
 LOG_LEVEL=INFO
-
-```text
+ENABLE_MONITORING=true
 
 ## Testing & Validation
 
 ```powershell
-pytest tests/ -m unit
-pytest tests/ -m integration
 curl http://localhost:5000/health
+pytest backend/tests/ -m unit -v
+pytest backend/tests/ -m integration -v
+python backend/test_websocket_progress.py --with-generation
+locust -f load/locustfile.py --host http://localhost:5000
+```
 
-```text
+## Common Issues & Solutions
 
-## Troubleshooting
+### TensorRT Error + Model Path Not Found
 
-| Problem | Solution |
-|---------|----------|
-| xformers DLL error | Set XFORMERS_DISABLED=1 |
-| CUDA out of memory | Set GPU_MEMORY_LIMIT=0.7 |
-| Model not found | Run download_models.py |
-| WebSocket timeout | Check CORS_ORIGINS in .env |
-| Ollama unresponsive | Restart ollama container |
+**Error Pattern:**
 
-## Markdownlint Prevention (Repo Standard)
+```
+onnxruntime::python::RegisterTensorRTPluginsAsCustomOps
+Please install TensorRT libraries...
+Falling back to ['CPUExecutionProvider']
+Model path not exists, try to download from huggingface
+```
 
-Keep markdown clean and lint-free by following repo rules:
+**Root Cause:** ONNX Runtime tries TensorRT first (unavailable on most systems),
+then falls back to CPU. Model path resolution fails on Windows due to mixed
+path separators (/ and \).
 
-- Surround headings and lists with blank lines above and below
-- Use fenced code blocks with allowed languages: powershell, bash,
-  python, json, yaml, text, html, ini
-- Keep lines under 80 characters
-- Avoid trailing spaces
+**Solution:**
 
-For exceptions, use pragmas:
+1. Ensure `ORT_TENSORRT_UNAVAILABLE=1` is set BEFORE any imports
+2. Ensure `HY3DGEN_MODELS` environment variable points to valid model directory
+3. Ensure `HOME` is set to proper Windows path (backslashes only, no forward slashes)
+4. Verify model files exist at `$HY3DGEN_MODELS/shapegen` and `$HY3DGEN_MODELS/texgen`
 
-```text
-<!-- markdownlint-disable MD022 MD032 MD040 -->
-<!-- content that needs exceptions -->
-<!-- markdownlint-enable -->
+**Check in main.py (before any imports):**
 
-```text
+```python
+# These MUST be before: import torch, import hy3dgen, etc.
+os.environ['ORT_TENSORRT_UNAVAILABLE'] = '1'
+os.environ['XFORMERS_DISABLED'] = '1'
+home_dir = os.getenv('HOME', os.path.expanduser('~'))
+os.environ['HOME'] = home_dir
+hy3dgen_models = os.getenv('HY3DGEN_MODELS')
+if hy3dgen_models:
+    os.environ['HY3DGEN_MODELS'] = hy3dgen_models
+```
 
-Quick checks and auto-fixes:
+### Other Common Issues
 
-```powershell
-.\fix_markdown_lint.ps1 -Mode check
-.\fix_markdown_lint.ps1 -Mode fix
+- Startup hangs (50s) - Models load on first request
+- CUDA OOM during generation - Use torch.cuda.empty_cache()
+- xformers DLL crash - Set XFORMERS_DISABLED=1
+- WebSocket timeout - Check /socket.io endpoint
+- STL export corruption - Use stl_processor.py
 
-```text
+## Development Workflow
 
-## Extended Documentation
+1. Make changes in isolated backend module
+2. Run unit tests: pytest backend/tests/unit/test_xyz.py -v
+3. Test with real generation: python backend/test_xyz.py
+4. Check WebSocket logs: docker-compose logs -f backend | grep WebSocket
+5. Do not modify hunyuan_integration.py lightly
+
+## Advanced: Progressive Rendering (4-6x speedup)
+
+ORFEAS returns results in 3 progressive stages:
+
+```python
+from progressive_renderer import get_progressive_renderer
+renderer = get_progressive_renderer()
+# Stage 1: Low-quality mesh (0.5s)
+# Stage 2: Medium-quality (15s)
+# Stage 3: High-quality final (60s)
+```
+
+Files: backend/progressive_renderer.py, backend/intelligent_cache.py
+
+## Documentation References
 
 - Advanced Patterns: md/COPILOT_ADVANCED_PATTERNS.md
-- Deployment Guide: md/COPILOT_DEPLOYMENT_GUIDE.md
-- TQM/Quality: md/COPILOT_TQM_REFERENCE.md
+- Deployment: md/COPILOT_DEPLOYMENT_GUIDE.md
 - LLM Integration: md/COPILOT_LLM_PATTERNS.md
-- Full Original: .github/copilot-instructions-full.md
-
-## Development Tips
-
-1. **Focus on one component** - Not whole project
-2. **Ask specific questions** - Not broad requests
-3. **Check logs first** - docker-compose logs -f backend
-4. **Test incrementally** - Run pytest -m unit frequently
-5. **Use WebSocket monitor** - Watch real-time progress
+- Full Instructions: .github/copilot-instructions-full.md
 
 ---
 
-**This is the SLIM CORE version. All ORFEAS work uses these**
-**instructions + extended reference docs.**
+Last Updated: October 26, 2025

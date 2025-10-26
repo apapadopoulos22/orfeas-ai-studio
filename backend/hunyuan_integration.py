@@ -276,6 +276,46 @@ class Hunyuan3DProcessor:
             logger.error(f"[ORFEAS] ❌ Emergency load failed: {e}")
             return False
 
+    def _analyze_mesh(self, mesh: Any, label: str = "Mesh") -> None:
+        """Log comprehensive mesh geometry information for debugging."""
+        try:
+            logger.info(f"[ORFEAS] 📊 Analyzing {label}:")
+            logger.info(f"[ORFEAS]    Type: {type(mesh).__name__}")
+
+            # Try to get vertex/face info
+            if hasattr(mesh, 'vertices') and hasattr(mesh, 'faces'):
+                v_count = len(mesh.vertices) if mesh.vertices is not None else 0
+                f_count = len(mesh.faces) if mesh.faces is not None else 0
+                logger.info(f"[ORFEAS]    Vertices: {v_count}")
+                logger.info(f"[ORFEAS]    Faces/Triangles: {f_count}")
+
+                if v_count > 0 and mesh.vertices is not None:
+                    vertices = np.asarray(mesh.vertices)
+                    bounds_min = np.min(vertices, axis=0)
+                    bounds_max = np.max(vertices, axis=0)
+                    logger.info(f"[ORFEAS]    Bounds: min={bounds_min.tolist()}, max={bounds_max.tolist()}")
+                    logger.info(f"[ORFEAS]    Size: {(bounds_max - bounds_min).tolist()}")
+
+            # Check other common attributes
+            attrs = dir(mesh)
+            if 'is_watertight' in attrs:
+                try:
+                    is_wt = mesh.is_watertight
+                    logger.info(f"[ORFEAS]    Watertight: {is_wt}")
+                except:
+                    pass
+
+            if 'volume' in attrs:
+                try:
+                    vol = mesh.volume
+                    logger.info(f"[ORFEAS]    Volume: {vol}")
+                except:
+                    pass
+
+            logger.info(f"[ORFEAS]    ✅ {label} analysis complete")
+        except Exception as e:
+            logger.warning(f"[ORFEAS] Could not analyze {label}: {e}")
+
     def image_to_3d_generation(self, image_path: Path, output_path: Path, **kwargs: Any):
         """Generate true volumetric 3D model from image using Hunyuan3D AI."""
         # Check if model is loaded; if not, this is a critical error
@@ -291,28 +331,36 @@ class Hunyuan3DProcessor:
             from PIL import Image
 
             # Load and prepare image
-            logger.info(f"[ORFEAS] Loading image: {image_path}")
+            logger.info(f"[ORFEAS] 📸 Loading image: {image_path}")
             image = Image.open(image_path)
+            logger.info(f"[ORFEAS]    Original size: {image.size}, mode: {image.mode}")
 
             # Convert to RGB first (required by rembg and Hunyuan3D)
             if image.mode != 'RGB':
                 image = image.convert("RGB")
-                logger.info("[ORFEAS] Converted image to RGB mode")
+                logger.info("[ORFEAS]    ✓ Converted to RGB mode")
 
             # Remove background if needed (BEFORE other conversions)
             if self.rembg is not None:
-                logger.info("[ORFEAS] Removing background...")
+                logger.info("[ORFEAS] 🎨 Removing background with rembg...")
                 image = self.rembg(image)
+                logger.info(f"[ORFEAS]    ✓ Background removed, new mode: {image.mode}")
+            else:
+                logger.info("[ORFEAS] ⚠️  rembg not available, skipping background removal")
 
             # Convert to RGBA for Hunyuan3D pipeline (ensures proper alpha channel handling)
             if image.mode != 'RGBA':
                 image = image.convert("RGBA")
-                logger.info("[ORFEAS] Converted image to RGBA mode for generation")
+                logger.info("[ORFEAS]    ✓ Converted to RGBA mode for pipeline")
+
+            logger.info(f"[ORFEAS]    Final image: {image.size}, mode: {image.mode}")
 
             # Generate volumetric 3D mesh using Hunyuan3D AI
-            logger.info("[ORFEAS] Generating volumetric 3D mesh with Hunyuan3D...")
+            logger.info("[ORFEAS] 🚀 Calling Hunyuan3D shapegen_pipeline...")
+            logger.info(f"[ORFEAS]    Pipeline type: {type(self.shapegen_pipeline).__name__}")
+
             result = self.shapegen_pipeline(image=image)
-            logger.info(f"[ORFEAS] Pipeline returned result type: {type(result).__name__}")
+            logger.info(f"[ORFEAS] 📦 Pipeline returned: {type(result).__name__}")
 
             if result is None:
                 raise Exception("Pipeline returned None")
@@ -321,7 +369,10 @@ class Hunyuan3DProcessor:
                 raise Exception(f"Pipeline returned invalid result: {type(result).__name__}, expected list/tuple with mesh")
 
             mesh = result[0]
-            logger.info(f"[ORFEAS] Extracted mesh object: {type(mesh).__name__}")
+            logger.info(f"[ORFEAS]    Extracted mesh object: {type(mesh).__name__}")
+
+            # Analyze mesh before validation
+            self._analyze_mesh(mesh, "Generated mesh from pipeline")
 
             # Validate mesh object
             if mesh is None:
@@ -335,10 +386,10 @@ class Hunyuan3DProcessor:
             if output_path.suffix.lower() not in ['.stl', '.obj', '.gltf', '.glb', '.ply']:
                 output_path = output_path.with_suffix('.stl')
 
-            logger.info(f"[ORFEAS] Exporting 3D model to: {output_path}")
+            logger.info(f"[ORFEAS] 💾 Exporting 3D model to: {output_path}")
             try:
                 mesh.export(str(output_path))
-                logger.info(f"[ORFEAS] mesh.export() completed successfully")
+                logger.info(f"[ORFEAS]    ✓ mesh.export() completed successfully")
             except Exception as export_err:
                 logger.error(f"[ORFEAS] ❌ mesh.export() FAILED: {type(export_err).__name__}: {export_err}")
                 raise Exception(f"mesh.export() failed: {export_err}") from export_err
@@ -355,7 +406,7 @@ class Hunyuan3DProcessor:
             if file_size == 0:
                 raise Exception("STL export failed - file is empty (0 bytes)")
 
-            logger.info(f"[ORFEAS] File exported: {file_size} bytes")
+            logger.info(f"[ORFEAS]    File exported: {file_size} bytes")
 
             # 2. Validate STL format (binary format expected)
             if str(output_path).lower().endswith('.stl'):
@@ -372,7 +423,9 @@ class Hunyuan3DProcessor:
                             raise Exception("STL triangle count incomplete")
 
                         triangle_count = struct.unpack('<I', triangle_count_bytes)[0]
-                        logger.info(f"[ORFEAS] STL contains {triangle_count} triangles")
+                        logger.info(f"[ORFEAS] 📊 STL Format Validation:")
+                        logger.info(f"[ORFEAS]    Triangles: {triangle_count}")
+                        logger.info(f"[ORFEAS]    File size: {file_size} bytes")
 
                         # Sanity check: reasonable triangle count
                         if triangle_count == 0:
@@ -393,7 +446,7 @@ class Hunyuan3DProcessor:
                         if len(first_triangle) < 50:
                             raise Exception("First triangle incomplete - file may be corrupted")
 
-                        logger.info(f"[ORFEAS] STL format validation passed: {triangle_count} triangles, {file_size} bytes")
+                        logger.info(f"[ORFEAS]    ✓ STL format validation passed")
 
                 except struct.error as e:
                     raise Exception(f"STL format validation failed: {e}")
@@ -557,6 +610,158 @@ class FallbackProcessor:
 
         except Exception as e:
             logger.error(f"Error in fallback generate_3d: {e}")
+            return False
+
+    def _icosphere_vertices(self, subdivisions: int = 4) -> tuple:
+        """Generate icosphere geometry (geodesic polyhedron).
+
+        Creates a sphere-like polyhedron starting from a base icosahedron
+        and recursively subdividing to desired level. Much better fallback
+        than cube (12 vs ~1280 triangles at subdivision 4).
+
+        Args:
+            subdivisions: Level of subdivision (1=12 triangles, 4=1280 triangles)
+
+        Returns:
+            tuple: (vertices_array, faces_array) for STL/OBJ export
+        """
+        logger.info(f"[ORFEAS] Generating icosphere (subdivisions={subdivisions})...")
+
+        # Golden ratio
+        t = (1.0 + np.sqrt(5.0)) / 2.0
+
+        # Base icosahedron vertices (12 points)
+        vertices = np.array(
+            [
+                [-1, t, -1],
+                [1, t, -1],
+                [-1, t, 1],
+                [1, t, 1],
+                [-1, -t, -1],
+                [1, -t, -1],
+                [-1, -t, 1],
+                [1, -t, 1],
+                [-t, -1, 1],
+                [t, -1, 1],
+                [-t, 1, 1],
+                [t, 1, 1],
+                [-t, -1, -1],
+                [t, -1, -1],
+                [-t, 1, -1],
+                [t, 1, -1],
+            ],
+            dtype=np.float32,
+        )
+
+        # Base icosahedron faces (20 triangles)
+        faces = np.array(
+            [
+                [0, 11, 5],
+                [0, 5, 1],
+                [0, 1, 7],
+                [0, 7, 10],
+                [0, 10, 11],
+                [1, 5, 13],
+                [5, 11, 13],
+                [11, 7, 13],
+                [7, 1, 13],
+                [1, 3, 7],
+                [7, 3, 9],
+                [3, 1, 15],
+                [1, 5, 15],
+                [5, 13, 15],
+                [13, 9, 15],
+                [9, 3, 15],
+                [4, 8, 12],
+                [8, 0, 12],
+                [0, 4, 12],
+                [4, 6, 8],
+                [6, 10, 8],
+                [10, 0, 8],
+                [12, 2, 4],
+                [4, 2, 6],
+                [6, 2, 10],
+                [2, 14, 10],
+                [10, 14, 11],
+                [11, 14, 5],
+                [5, 14, 13],
+                [13, 14, 9],
+                [9, 14, 3],
+                [3, 14, 15],
+                [15, 14, 5],
+                [14, 2, 11],
+                [2, 8, 10],
+                [8, 6, 4],
+                [12, 8, 2],
+            ],
+            dtype=np.int32,
+        )
+
+        # Subdivide recursively
+        for sub_level in range(subdivisions):
+            logger.info(f"[ORFEAS]    Subdivision level {sub_level + 1}/{subdivisions}...")
+            faces_list = faces.tolist()
+            new_faces = []
+            midpoint_cache = {}
+
+            def midpoint(v1_idx: int, v2_idx: int) -> int:
+                """Get or create midpoint vertex between two vertices."""
+                nonlocal vertices
+                key = tuple(sorted([v1_idx, v2_idx]))
+                if key not in midpoint_cache:
+                    v1 = vertices[v1_idx]
+                    v2 = vertices[v2_idx]
+                    midpoint_vertex = (v1 + v2) / 2.0
+                    # Normalize to sphere surface
+                    midpoint_vertex = midpoint_vertex / np.linalg.norm(midpoint_vertex)
+                    midpoint_cache[key] = len(vertices)
+                    vertices = np.vstack([vertices, midpoint_vertex])
+                return midpoint_cache[key]
+
+            # Subdivide each triangle
+            for face in faces_list:
+                v1, v2, v3 = face
+                a = midpoint(v1, v2)
+                b = midpoint(v2, v3)
+                c = midpoint(v3, v1)
+                new_faces.extend(
+                    [[v1, a, c], [v2, b, a], [v3, c, b], [a, b, c]]
+                )
+
+            faces = np.array(new_faces, dtype=np.int32)
+
+        logger.info(
+            f"[ORFEAS]    ✅ Icosphere generated: {len(vertices)} vertices, "
+            f"{len(faces)} triangles"
+        )
+        return vertices, faces
+
+    def create_icosphere(self, output_path: Path, **kwargs: Any) -> bool:
+        """Create icosphere fallback geometry (much better than cube)."""
+        try:
+            scale = float(kwargs.get("scale", 50.0))
+            subdivisions = int(kwargs.get("subdivisions", 4))
+
+            logger.info(f"[ORFEAS] Creating icosphere fallback (scale={scale}, subdivisions={subdivisions})...")
+            vertices, faces = self._icosphere_vertices(subdivisions=subdivisions)
+
+            # Scale vertices
+            vertices = vertices * scale
+
+            # Generate proper STL file with valid geometry
+            output_format = str(output_path).lower()
+            if output_format.endswith(".stl"):
+                self.save_stl(vertices, faces, output_path)
+            else:
+                self.save_obj(vertices, faces, output_path.with_suffix(".obj"))
+
+            logger.info(
+                f"[ORFEAS] ✅ Icosphere fallback created: {output_path} "
+                f"({len(vertices)} vertices, {len(faces)} triangles)"
+            )
+            return True
+        except Exception as e:
+            logger.error(f"[ORFEAS] ❌ Icosphere creation failed: {e}", exc_info=True)
             return False
 
     def create_cube(self, output_path: Path, **kwargs: Any) -> bool:

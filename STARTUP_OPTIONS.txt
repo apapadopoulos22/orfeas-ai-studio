@@ -1,0 +1,180 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║           ORFEAS BACKEND STARTUP - QUICK REFERENCE                        ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+STARTUP OPTIONS (Pick One)
+═════════════════════════════════════════════════════════════════════════════
+
+1️⃣  SIMPLEST - Double-Click
+───────────────────────────────────────────────────────────────────────────────
+   Location: c:\Users\johng\Documents\oscar\
+   File:     START_BACKEND.bat
+   Method:   Double-click it!
+   Result:   Server starts with cache configured
+
+
+2️⃣  COMMAND LINE - Windows Batch
+───────────────────────────────────────────────────────────────────────────────
+   cd c:\Users\johng\Documents\oscar\backend
+   start_backend.bat
+   Result:   Server starts with cache configured
+
+
+3️⃣  POWERSHELL - Smart Startup
+───────────────────────────────────────────────────────────────────────────────
+   cd c:\Users\johng\Documents\oscar\backend
+   .\start_backend.ps1
+   Result:   Server starts with validation + colored output
+
+
+4️⃣  DIRECT PYTHON - Manual Setup Required
+───────────────────────────────────────────────────────────────────────────────
+   First time only:
+     cd c:\Users\johng\Documents\oscar\backend
+     python setup_model_cache.py
+
+   Every time:
+     python main.py
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+RECOMMENDED STARTUP METHOD
+───────────────────────────────────────────────────────────────────────────────
+
+✅ BEST FOR MOST USERS:
+   Option 1 (Double-click) or Option 2 (Batch)
+
+   → Fastest and simplest
+   → Automatically configures cache paths
+   → Works every time
+   → No typing required
+
+
+✅ BEST FOR DEVELOPERS:
+   Option 3 (PowerShell script)
+
+   → Shows detailed configuration
+   → Colored output
+   → Validation included
+   → Good for debugging
+
+
+✅ BEST FOR ADVANCED USERS:
+   Option 4 (Manual)
+
+   → Full control
+   → Can customize paths
+   → Good for scripts/automation
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+FILES CREATED FOR STARTUP
+───────────────────────────────────────────────────────────────────────────────
+
+At Project Root:
+  START_BACKEND.bat              ← Main startup (double-click this!)
+
+In backend/:
+  start_backend.bat              ← Windows batch startup
+  start_backend.ps1              ← PowerShell startup
+  setup_model_cache.py           ← Setup script (run once)
+  main.py                        ← Server executable
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+WHAT HAPPENS WHEN YOU START
+───────────────────────────────────────────────────────────────────────────────
+
+1. Cache directories created (if missing)
+2. Environment variables configured
+3. Cache paths validated
+4. Server starts
+5. Look for: "[SUCCESS] Hunyuan3D model FULLY LOADED"
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+QUICK TEST AFTER STARTUP
+───────────────────────────────────────────────────────────────────────────────
+
+In browser:
+  http://localhost:5000/
+  http://localhost:5000/studio
+
+In command line (with server running):
+  curl http://localhost:5000/health
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING
+───────────────────────────────────────────────────────────────────────────────
+
+Server won't start?
+  → Check logs: backend/logs/backend_requests.log
+  → Run validation: python validate_model_cache.py
+
+Models still downloading?
+  → Re-run: python setup_model_cache.py
+  → Or restart with: .\start_backend.ps1 (shows more details)
+
+Port 5000 already in use?
+  → Find process: netstat -ano | findstr :5000
+  → Kill it: taskkill /F /PID <PID>
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+ADVANCED OPTIONS
+───────────────────────────────────────────────────────────────────────────────
+
+Pre-download models (optional):
+  python download_models.py
+
+Offline mode (prevent downloads):
+  $env:HF_HUB_OFFLINE = '1'
+  python main.py
+
+Validate cache configuration:
+  python validate_model_cache.py
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+KEYBOARD SHORTCUTS
+───────────────────────────────────────────────────────────────────────────────
+
+While server is running:
+  Ctrl+C              Stop server gracefully
+  Ctrl+Break          Force stop
+
+In batch/PowerShell window:
+  Ctrl+L              Clear screen
+  Up Arrow            Previous command
+  Tab                 Auto-complete
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+PERFORMANCE
+───────────────────────────────────────────────────────────────────────────────
+
+Startup Time:    30-60 seconds
+Models Cache:    Instant load (no downloads)
+Bandwidth Use:   0 bytes
+API Ready:       After "FULLY LOADED" message
+
+
+═════════════════════════════════════════════════════════════════════════════
+
+THAT'S IT! 🚀
+
+Just run: START_BACKEND.bat
+          (double-click or run from command line)
+
+Server starts with cache configured automatically!
+
+═════════════════════════════════════════════════════════════════════════════

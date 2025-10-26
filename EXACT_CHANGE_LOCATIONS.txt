@@ -1,0 +1,251 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    EXACT CHANGE LOCATIONS IN CODE                          ║
+║                         Quick Reference Map                                 ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+FILE: orfeas-ai-studio.html (3,551 total lines)
+════════════════════════════════════════════════════════════════════════════════
+
+CHANGE #1: TEXT TO IMAGE MOVED TO START
+────────────────────────────────────────────────────────────────────────────────
+
+LOCATION 1: HTML Structure - TOP OF LEFT PANEL
+  Lines: 1201-1357 (approximately 157 lines)
+  Action: MOVED (from end to start)
+  Content:
+    • Line 1204: <div class="image-editor-panel">
+    • Line 1208: <div id="text-to-image-section-start">
+    • Line 1209: <h3 class="studio-panel-title">🖼️ Text to Image (Bob AI)</h3>
+    • Line 1220: <textarea id="tti-prompt">
+    • Line 1239: <input id="tti-steps" type="range" min="10" max="100">
+    • Line 1254: <input id="tti-guidance" type="range" min="1" max="20">
+    • Line 1271: <select id="tti-size">
+    • Line 1279: <button onclick="generateTextToImage()">
+    • Line 1309: <div id="tti-progress" class="hidden">
+
+  Before: This section was at end of left panel (around line 1790+)
+  After:  This section is at start (line 1208)
+  Result: Text to Image now FIRST tool users see
+
+LOCATION 2: Upload Section - NOW AFTER TEXT TO IMAGE
+  Lines: 1365+ (approximately)
+  Changed: Position only (moved after Text to Image)
+  Content:
+    • <h3 class="studio-panel-title">📷 Upload & Import</h3>
+    • <div class="image-upload-zone" id="image-upload-zone">
+
+LOCATION 3: Removed - OLD TEXT TO IMAGE DUPLICATE
+  Lines: ~1790+ (approximate, DELETED)
+  Content: Entire old Text to Image section
+  Action: DELETED completely (was duplicate)
+  Result: No redundant code
+
+LOCATION 4: JavaScript - handleImageFile()
+  Lines: 2839-2855 (approximately)
+  Changed: Line removed that referenced old section ID
+  OLD CODE: document.getElementById("text-to-image-section").classList.remove("hidden");
+  NEW CODE: (Line deleted - section now always visible)
+  Result: Text to Image always visible at top
+
+
+CHANGE #2: FIGURINE ENHANCE - BACKGROUND REMOVAL
+────────────────────────────────────────────────────────────────────────────────
+
+LOCATION 1: HTML - Figurine Section Description
+  Lines: 1758-1808 (approximately 50 lines)
+  Changed: Description, button text, help text
+
+  Details:
+    • Line 1758: <h3 class="studio-panel-title">🎭 Figurine Enhance</h3>
+    • Line 1763: Description text CHANGED
+      OLD: "Extract single element with clear background & B&W colors..."
+      NEW: "Remove background and extract subject with transparency"
+    • Line 1771: Help text ADDED
+      NEW: "Lower = More kept | Higher = More removed"
+    • Line 1789: Button text CHANGED
+      OLD: <span>🎭</span> Generate Figurine (BW PNG)
+      NEW: <span>🎭</span> Remove Background
+    • Line 1800: Output description UPDATED
+      OLD: "Output: Single element, clear background, B&W"
+      NEW: "Output: Single element, clear background"
+
+LOCATION 2: JavaScript - applyFigurineEnhance() Function
+  Lines: 3113-3200 (approximately 87 lines)
+  Changed: Complete function rewritten
+
+  Header Comment:
+    OLD: // FIGURINE ENHANCE (Black & White Single Element)
+    NEW: // FIGURINE ENHANCE (Remove Background - Extract Subject)
+
+  Algorithm Section (Lines 3158-3170):
+    OLD CODE:
+      // Convert to grayscale and apply threshold
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        const bw = gray > threshold ? 255 : 0;
+        data[i] = bw;
+        data[i + 1] = bw;
+        data[i + 2] = bw;
+        data[i + 3] = 255; // Alpha always opaque
+      }
+
+    NEW CODE:
+      // Remove background by making it transparent
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        if (gray > threshold) {
+          data[i + 3] = 0; // Set alpha to 0 (transparent)
+        } else {
+          data[i + 3] = 255; // Set alpha to 255 (opaque)
+        }
+      }
+
+    Result: RGB colors preserved, alpha controlled
+
+  Canvas Operations:
+    Line 3183: ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+    Line 3184: ctx.drawImage(originalImage, 0, 0);
+    Effect: Proper transparency rendering
+
+  Console Log (Line 3126):
+    OLD: "[FIGURINE] Applying enhancement with threshold:"
+    NEW: "[FIGURINE] Applying background removal with threshold:"
+
+  Alert Message (Line 3190):
+    OLD: "✅ Figurine enhancement applied!\n\nBlack & White conversion..."
+    NEW: "✅ Background removed!\n\nSubject isolated with transparent BG..."
+
+  Button Text (Line 3198):
+    OLD: btn.textContent = "🎭 Generate Figurine (BW PNG)";
+    NEW: btn.textContent = "🎭 Remove Background";
+
+
+EXACT LINE NUMBERS REFERENCE
+════════════════════════════════════════════════════════════════════════════════
+
+PRIMARY CHANGES:
+
+1. Text to Image Section Move:
+   From: ~1790 (end of panel)
+   To:   1208 (start of panel)
+
+2. Figurine HTML Updates:
+   Lines 1758-1808:
+   • 1758: Title (no change needed)
+   • 1763: Description text (CHANGED)
+   • 1771: Help text (ADDED)
+   • 1789: Button text (CHANGED)
+   • 1800: Output description (CHANGED)
+
+3. Figurine Function Rewrite:
+   Lines 3113-3200:
+   • 3113: Comment header (CHANGED)
+   • 3126: Console log (CHANGED)
+   • 3158-3170: Algorithm (REWRITTEN - CRITICAL CHANGE)
+   • 3183: Canvas clear operation (ADDED)
+   • 3190: Alert message (CHANGED)
+   • 3198: Button text restoration (CHANGED)
+
+4. JavaScript Reference Cleanup:
+   Lines 2839-2855:
+   • Removed reference to old text-to-image-section ID
+   • handleImageFile() function updated
+
+
+VERIFICATION POINTS
+════════════════════════════════════════════════════════════════════════════════
+
+Verify Text to Image at Start:
+  □ Line 1208: Check for <div id="text-to-image-section-start">
+  □ Line 1209: Check for title "🖼️ Text to Image (Bob AI)"
+  □ Line 1365: Upload section should follow shortly after
+
+Verify No Duplicate Text to Image:
+  □ Search for "text-to-image-section" (should find only "section-start")
+  □ Search for "tti-prompt" (should find only one)
+  □ Count occurrences should = 1 only
+
+Verify Figurine Changes:
+  □ Line 1758: Title unchanged
+  □ Line 1763: Description mentions "remove background"
+  □ Line 1771: Help text present
+  □ Line 1789: Button says "Remove Background"
+  □ Line 3113: Comment says "Remove Background - Extract Subject"
+  □ Line 3166-3170: Check alpha values (0 and 255, not RGB values)
+  □ Line 3198: Button restoration text correct
+
+Verify Algorithm Correctness:
+  □ Line 3166: if (gray > threshold): Check condition
+  □ Line 3167: data[i + 3] = 0; Check alpha transparency
+  □ Line 3170: data[i + 3] = 255; Check alpha opaque
+  □ RGB channels (i, i+1, i+2): NOT modified (colors preserved)
+
+
+SEARCH PATTERNS FOR VERIFICATION
+════════════════════════════════════════════════════════════════════════════════
+
+Find Text to Image Section:
+  Search: "text-to-image-section-start"
+  Should find: 1 occurrence (line ~1208)
+
+Find Upload Section:
+  Search: "image-upload-zone"
+  Should find: After Text to Image section
+
+Find Figurine Background Removal:
+  Search: "Remove background by making it transparent"
+  Should find: Line ~3158
+
+Find Alpha Transparency Code:
+  Search: "data[i + 3] = 0"
+  Should find: Line ~3167
+
+Find Button Text:
+  Search: "Remove Background" (in Figurine)
+  Should find: Lines ~1789 and ~3198
+
+
+SIDE-BY-SIDE COMPARISON
+════════════════════════════════════════════════════════════════════════════════
+
+BEFORE:
+  Line 1208: <h3 class="studio-panel-title">📷 Upload & Import</h3>
+  Line 1790: <div id="text-to-image-section" class="hidden">
+             <h3 class="studio-panel-title">🖼️ Text to Image (Bob AI)</h3>
+
+AFTER:
+  Line 1208: <div id="text-to-image-section-start">
+             <h3 class="studio-panel-title">🖼️ Text to Image (Bob AI)</h3>
+  Line 1365: <h3 class="studio-panel-title">📷 Upload & Import</h3>
+
+
+BEFORE:
+  function applyFigurineEnhance() {
+    ...
+    const bw = gray > threshold ? 255 : 0;
+    data[i] = bw;      // Red = B&W
+    data[i + 1] = bw;  // Green = B&W
+    data[i + 2] = bw;  // Blue = B&W
+    data[i + 3] = 255; // Alpha always opaque
+    ...
+    btn.textContent = "🎭 Generate Figurine (BW PNG)";
+  }
+
+AFTER:
+  function applyFigurineEnhance() {
+    ...
+    if (gray > threshold) {
+      data[i + 3] = 0;  // Alpha = transparent (background)
+    } else {
+      data[i + 3] = 255; // Alpha = opaque (subject)
+    }
+    // RGB channels NOT modified (colors preserved)
+    ...
+    btn.textContent = "🎭 Remove Background";
+  }
+
+
+════════════════════════════════════════════════════════════════════════════════
+All changes implemented at exact locations above. Ready for verification.
+════════════════════════════════════════════════════════════════════════════════

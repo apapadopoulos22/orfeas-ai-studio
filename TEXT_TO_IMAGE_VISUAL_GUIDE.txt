@@ -1,0 +1,422 @@
+TEXT TO IMAGE TOOL - VISUAL REFERENCE & USAGE GUIDE
+
+================================================================================
+WHERE IS IT LOCATED?
+================================================================================
+
+ORFEAS AI STUDIO
+   ↓
+Image Section (🖼️ on navigation)
+   ↓
+Scroll down left panel
+   ↓
+Find: "🖼️ Text to Image (Bob AI)"
+   ↓
+(It's located after Figurine Enhance tool)
+
+================================================================================
+WHAT DOES IT LOOK LIKE?
+================================================================================
+
+┌─────────────────────────────────────────────────────────┐
+│                                                           │
+│  🖼️ Text to Image (Bob AI)                              │
+│  ─────────────────────────────────────────────────────   │
+│  Generate images from text descriptions                 │
+│  using local LLM                                         │
+│                                                           │
+│  Prompt:                                                 │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │ Describe the image you want to generate...          │ │
+│  │                                                      │ │
+│  │                                                      │ │
+│  └─────────────────────────────────────────────────────┘ │
+│                                                           │
+│  Generation Steps: 50                                    │
+│  ○━━━━━━━━━━━━━━━━━ (More = Better but slower)         │
+│                                                           │
+│  Guidance Scale: 7.5                                     │
+│  ○━━━━━━━━━━━ (Higher = Stricter to prompt)            │
+│                                                           │
+│  Output Size:                                            │
+│  [512×512 (Fast) ▼]                                      │
+│                                                           │
+│  [✨ Generate Image from Text]                          │
+│                                                           │
+│  ⚙️ Requires local LLM (Ollama) running                 │
+│                                                           │
+│  (Progress bar appears during generation)               │
+│                                                           │
+└─────────────────────────────────────────────────────────┘
+
+================================================================================
+STEP-BY-STEP USAGE
+================================================================================
+
+STEP 1: WRITE PROMPT
+────────────────────────────────────────────────────────
+
+Click in the prompt textarea and type what you want to generate:
+
+Examples:
+  • "A red apple on a wooden table"
+  • "Modern office with windows and plants"
+  • "Fantasy dragon on mountain at sunset"
+  • "Professional smartphone mockup on minimalist desk"
+
+KEY TIPS:
+✓ Be specific and detailed
+✓ Include style, lighting, mood
+✓ Use quality descriptors ("high quality", "detailed")
+✓ The better the prompt, the better the result
+
+
+STEP 2: ADJUST GENERATION STEPS
+────────────────────────────────────────────────────────
+
+Move the "Generation Steps" slider (10-100):
+
+For QUICK PREVIEW (fast, less detail):
+  Slider position: Left side (around 30)
+  Result: 1-2 minutes
+  Use: Quick concept testing
+
+For BALANCED (recommended) ⭐:
+  Slider position: Middle (around 50)
+  Result: 3-5 minutes
+  Use: Most projects
+
+For HIGH QUALITY (slow, more detail):
+  Slider position: Right side (75+)
+  Result: 5-10 minutes
+  Use: Final renders
+
+
+STEP 3: ADJUST GUIDANCE SCALE
+────────────────────────────────────────────────────────
+
+Move the "Guidance Scale" slider (1-20):
+
+For CREATIVE interpretation:
+  Slider position: Left (around 5-6)
+  Result: More creative, less accurate
+  Use: Artistic concepts
+
+For BALANCED (recommended) ⭐:
+  Slider position: Middle (around 7.5)
+  Result: Good mix of accuracy and creativity
+  Use: Most cases
+
+For STRICT adherence to prompt:
+  Slider position: Right (around 10+)
+  Result: Very accurate to prompt
+  Use: Product photography, specific looks
+
+
+STEP 4: SELECT OUTPUT SIZE
+────────────────────────────────────────────────────────
+
+Click the dropdown to choose size:
+
+512×512 - FAST
+  Time: 1-2 minutes
+  Quality: Good for previews
+  Use: Testing ideas quickly
+
+768×768 - BALANCED ⭐ RECOMMENDED
+  Time: 3-5 minutes
+  Quality: Very good
+  Use: Most projects
+
+1024×1024 - HIGH QUALITY
+  Time: 5-10 minutes
+  Quality: Excellent
+  Use: Final renders, printing
+
+
+STEP 5: CLICK GENERATE
+────────────────────────────────────────────────────────
+
+Click the big blue button: [✨ Generate Image from Text]
+
+What happens:
+1. Button becomes disabled (shows "⏳ Generating...")
+2. Progress bar appears
+3. Status message shows "Generating..."
+4. Wait for image to complete
+
+
+STEP 6: GENERATED IMAGE APPEARS
+────────────────────────────────────────────────────────
+
+Once generation completes:
+  ✓ Image displays on canvas (right side)
+  ✓ "Success" alert appears
+  ✓ Canvas dimensions show (e.g., 768×768px)
+  ✓ All tool sections become visible
+  ✓ You can now edit!
+
+
+STEP 7: EDIT YOUR IMAGE
+────────────────────────────────────────────────────────
+
+Now all editing tools are available:
+
+✂️ CROP
+   Select aspect ratio and crop composition
+
+🎨 FILTERS
+   Adjust brightness, contrast, saturation
+   Add artistic effects
+
+📐 RESIZE
+   Change dimensions
+   Upscale or downscale
+
+🎨 COLORS
+   Apply material color overlays
+   8 presets + custom color picker
+
+🎭 FIGURINE ENHANCE
+   Convert to black & white
+   Extract single element
+
+📊 COMPARE
+   See before (original generated) vs after (edited)
+   Track statistics and changes
+
+💾 EXPORT
+   Choose format: PNG, JPG, WebP
+   Set quality level
+   Download to computer
+
+
+================================================================================
+QUICK REFERENCE CHART
+================================================================================
+
+┌──────────────┬─────────┬──────────┬──────────┬────────┐
+│ Use Case     │ Steps   │ Size     │ Guidance │ Time   │
+├──────────────┼─────────┼──────────┼──────────┼────────┤
+│ Quick Test   │ 30      │ 512×512  │ 7.5      │ 1 min  │
+│ Balanced ⭐   │ 50      │ 768×768  │ 7.5      │ 4 min  │
+│ High Quality │ 75      │ 1024×1024│ 8        │ 8 min  │
+│ Creative     │ 50      │ 768×768  │ 6        │ 4 min  │
+│ Strict       │ 50      │ 768×768  │ 10       │ 4 min  │
+└──────────────┴─────────┴──────────┴──────────┴────────┘
+
+================================================================================
+COMMON ISSUES & SOLUTIONS
+================================================================================
+
+❌ ISSUE: "Generation failed - Make sure local LLM is running"
+────────────────────────────────────────────────────────────
+
+CAUSE: Ollama is not running
+
+SOLUTION:
+1. Open terminal/command prompt
+2. Type: ollama serve
+3. Press Enter
+4. Wait for startup message
+5. Go back to studio
+6. Try generating again
+
+Expected terminal output:
+    $ ollama serve
+    time=2024-01-15T10:30:45.123Z level=INFO msg="Ollama is running"
+
+
+❌ ISSUE: Generation takes a VERY long time
+────────────────────────────────────────────
+
+CAUSE: Running on CPU or GPU overloaded
+
+SOLUTION:
+1. Try smaller settings first:
+   - Steps: 30 (instead of 50)
+   - Size: 512×512 (instead of 1024)
+2. Close other applications
+3. Check GPU usage (should see activity)
+4. If still slow, CPU-based generation is happening
+
+
+❌ ISSUE: "Out of memory" error
+────────────────────────────────
+
+CAUSE: Not enough GPU memory for selected size
+
+SOLUTION:
+1. Use smaller size: 512×512 instead of 1024×1024
+2. Reduce steps: 30 instead of 50
+3. Close other GPU applications
+4. Restart Ollama service
+
+
+❌ ISSUE: Generated image doesn't appear on canvas
+────────────────────────────────────────────────
+
+CAUSE: Image decoding error or display issue
+
+SOLUTION:
+1. Refresh the page
+2. Try generating again with smaller settings
+3. Check browser console for errors (F12)
+4. Try different size first (512×512)
+
+
+✅ SUCCESS: Image appears on canvas and ready to edit!
+
+================================================================================
+EXAMPLE WORKFLOWS
+================================================================================
+
+WORKFLOW 1: Product Mockup (5 minutes total)
+─────────────────────────────────────────────
+
+1. Prompt: "White smartphone mockup on minimalist desk with plant"
+2. Steps: 40
+3. Size: 512×512
+4. Guidance: 7.5
+   ↓
+   Generation: ~2 minutes
+   ↓
+5. Crop to focus on phone
+6. Apply bright filter
+7. Add teal material color
+8. Export as PNG
+   ↓
+   Result: Quick product mockup ready for review
+
+
+WORKFLOW 2: Professional Render (8 minutes total)
+──────────────────────────────────────────────────
+
+1. Prompt: "Luxury watch, professional product photography,
+            cinematic lighting, clean background, 8K quality"
+2. Steps: 75
+3. Size: 1024×1024
+4. Guidance: 8.5
+   ↓
+   Generation: ~8 minutes
+   ↓
+5. Enhance with filters (slight saturation boost)
+6. Crop to ideal composition
+7. Resize for web (768×768)
+8. Export as WebP
+   ↓
+   Result: High-quality product image for publication
+
+
+WORKFLOW 3: Concept Art (6 minutes total)
+──────────────────────────────────────────
+
+1. Prompt: "Fantasy landscape with ancient ruins,
+            magical glowing crystals, ethereal atmosphere"
+2. Steps: 60
+3. Size: 768×768
+4. Guidance: 6.5 (more creative)
+   ↓
+   Generation: ~4 minutes
+   ↓
+5. Adjust colors (add purple material overlay)
+6. Crop to best composition
+7. Apply slight blur for dreamy effect
+8. Export as PNG
+   ↓
+   Result: Concept art ready for design work
+
+================================================================================
+SETTINGS CHEAT SHEET
+================================================================================
+
+Want it FASTER?
+  Steps: 30
+  Size: 512×512
+  → ~1 minute
+
+Want BALANCED QUALITY? ⭐ RECOMMENDED
+  Steps: 50
+  Size: 768×768
+  → ~4 minutes
+
+Want HIGH QUALITY?
+  Steps: 75
+  Size: 1024×1024
+  → ~8 minutes
+
+Want MORE CREATIVE?
+  Guidance: 5-6 (more interpretation)
+
+Want MORE ACCURATE?
+  Guidance: 10+ (strict to prompt)
+
+================================================================================
+KEYBOARD SHORTCUTS
+================================================================================
+
+Tab = Move to next field
+Enter = In textarea, newline (Ctrl+Enter for submit)
+Arrow Keys = Adjust sliders
+Escape = Close error dialogs
+
+================================================================================
+TIPS FOR SUCCESS
+================================================================================
+
+📝 PROMPT WRITING
+   ✓ Specific > Vague
+     BAD:  "A dog"
+     GOOD: "A golden retriever sitting in a sunny park"
+
+   ✓ Include style/mood
+     BAD:  "A chair"
+     GOOD: "Modern minimalist wooden chair, Scandinavian design,
+            natural wood color, clean lines"
+
+   ✓ Use quality descriptors
+     ADD: "high quality", "detailed", "professional", "8K"
+
+   ✓ Reference known styles
+     EXAMPLES: "photorealistic", "3D render", "digital art",
+               "oil painting", "anime", "cartoon"
+
+⚙️ PARAMETER TUNING
+   ✓ Start with defaults (50 steps, 7.5 guidance, 768×768)
+   ✓ For more detail: increase steps to 60-75
+   ✓ For more creativity: decrease guidance to 5-6
+   ✓ For faster: use 512×512 with 30 steps
+   ✓ For better: use 1024×1024 with 75 steps
+
+🎯 WORKFLOW
+   ✓ Make quick 512×512 preview first
+   ✓ Verify you like the style
+   ✓ If good, generate final at 1024×1024
+   ✓ Apply finishing edits (crop, filter)
+   ✓ Export for use
+
+💡 QUALITY TIPS
+   ✓ Better prompt = Better result (spend time writing!)
+   ✓ More steps = More detail (but diminishing returns after 70)
+   ✓ Larger size = Higher fidelity
+   ✓ Consistent style in prompt = Consistent results
+
+================================================================================
+READY TO CREATE!
+================================================================================
+
+You now have everything you need to:
+
+1. ✍️ Write creative prompts
+2. ⚙️ Tune generation parameters
+3. 🚀 Generate amazing images
+4. 🎨 Edit and enhance
+5. 📤 Export and share
+
+Let's get started!
+
+Image Section → Text to Image Tool → Enter Prompt → Generate → Create!
+
+Enjoy! 🎉
+
+================================================================================

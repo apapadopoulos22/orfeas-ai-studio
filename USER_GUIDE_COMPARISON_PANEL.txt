@@ -1,0 +1,264 @@
+================================================================================
+                    BEFORE/AFTER COMPARISON PANEL
+                         READY FOR USE
+================================================================================
+
+USER EXPERIENCE OVERVIEW
+
+When using the Image Studio, you will now see:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                              │
+│  [Upload Image Zone or Drag & Drop]                                         │
+│                                                                              │
+│  ┌──────────────────────────────────┐  Canvas Area:                         │
+│  │  Crop Tool                       │  ┌──────────────────────────────┐    │
+│  │  Filters                         │  │  Live Edited Image           │    │
+│  │  Resize                          │  │  (Your current work)         │    │
+│  │  Materials                       │  │                              │    │
+│  │  Bob AI                          │  │  [Current Canvas Display]    │    │
+│  │  Figurine                        │  │                              │    │
+│  │  Export                          │  └──────────────────────────────┘    │
+│  └──────────────────────────────────┘                                      │
+│                                       [Before & After Comparison Panel] ⭐ NEW │
+│                                       │                                     │
+│                                       │  ┌──────────────┬──────────────┐    │
+│                                       │  │ 📸 Original  │ ✨ Generated │    │
+│                                       │  │   (Before)   │   (After)    │    │
+│                                       │  │              │              │    │
+│                                       │  │  [BEFORE IMG]│  [AFTER IMG] │    │
+│                                       │  │              │              │    │
+│                                       │  │  1920×1080px │  1920×1080px │    │
+│                                       │  └──────────────┴──────────────┘    │
+│                                       │                                     │
+│                                       │  ┌─────────┬─────────┬────────────┐ │
+│                                       │  │Compress │ Dims    │ Mods      │ │
+│                                       │  │ -5.2%   │ 0×0     │ 2 ops     │ │
+│                                       │  └─────────┴─────────┴────────────┘ │
+│                                       │                                     │
+│                                       └─────────────────────────────────────┘
+│                                                                              │
+│  Original: 1920×1080px | Current: 1920×1080px                              │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+WHAT YOU SEE
+================================================================================
+
+1. BEFORE (Left Side) - 📸 Original
+   • Shows your original uploaded image
+   • Dimensions displayed below
+   • Updated when you upload a new image
+   • Never changes during editing
+
+2. AFTER (Right Side) - ✨ Generated
+   • Shows your current edited image
+   • Updates in real-time as you edit
+   • Displays current dimensions
+   • Reflects all applied changes
+
+3. STATISTICS (Bottom)
+   • Compression: Shows file size change
+     Example: "-5.2%" (smaller) or "+2.1%" (larger)
+
+   • Dimensions: Shows size change
+     Example: "-100×50" (cropped) or "+200×0" (wider)
+
+   • Mods: Shows number of edits
+     Example: "2 operations" (2 edits applied)
+
+================================================================================
+TYPICAL USER WORKFLOW
+================================================================================
+
+STEP 1: UPLOAD
+┌─ Drag and drop image or click upload
+└─→ Comparison panel appears automatically
+    ├─ Before shows your original
+    ├─ After shows "No result yet"
+    └─ Ready for editing
+
+STEP 2: CROP
+┌─ Select crop aspect ratio
+├─ Click "Apply Crop"
+└─→ Comparison panel updates
+    ├─ After image shows cropped version
+    ├─ Dimensions change displayed
+    ├─ Compression calculated
+    └─ Mods shows "1 operation"
+
+STEP 3: APPLY FILTERS
+┌─ Adjust filter sliders (brightness, contrast, etc.)
+└─→ Comparison updates in real-time
+    ├─ After image shows filtered version
+    ├─ Stats recalculate
+    └─ Mods shows "2 operations"
+
+STEP 4: RESIZE
+┌─ Enter new width and height
+├─ Click "Apply Resize"
+└─→ Comparison panel updates
+    ├─ After image rescaled
+    ├─ Dimension change shows new delta
+    └─ Mods shows "3 operations"
+
+STEP 5: VIEW COMPARISON
+┌─ Side-by-side before/after visible
+├─ Statistics show cumulative changes
+└─ Professional feedback on edits
+
+STEP 6: EXPORT
+┌─ Choose format (PNG, JPG, WebP)
+├─ Set quality
+├─ Click "Download"
+└─→ Edited image (after) downloaded
+    Original (before) remains unchanged
+
+================================================================================
+EXAMPLE SCENARIOS
+================================================================================
+
+SCENARIO 1: Simple Crop
+Before:         After:          Stats:
+1920×1080 px    1000×1000 px    Dimensions: -920×-80
+                                Mods: 1 operation
+
+SCENARIO 2: Crop + Filters
+Before:         After:          Stats:
+1920×1080 px    1000×1000 px    Compression: -2.1%
+                                Dimensions: -920×-80
+                                Mods: 2 operations
+
+SCENARIO 3: Multiple Edits
+Before:         After:          Stats:
+2560×1440 px    640×360 px      Compression: -8.5%
+(RGB)           (B&W)           Dimensions: -1920×-1080
+                                Mods: 5 operations
+                                (Crop + Filters + Resize + Color + Figurine)
+
+================================================================================
+KEY BENEFITS
+================================================================================
+
+✅ VISUAL FEEDBACK
+   See exactly what your edits are doing to the image
+
+✅ REAL-TIME UPDATES
+   After image updates instantly as you adjust tools
+
+✅ STATISTICS TRACKING
+   Know how much you're changing the image
+
+✅ ORIGINAL PRESERVATION
+   Your original always safe, never modified
+
+✅ PROGRESS INDICATOR
+   Modification counter shows total edits applied
+
+✅ PROFESSIONAL COMPARISON
+   Side-by-side layout makes differences obvious
+
+✅ DIMENSION TRACKING
+   See exactly how resize/crop changes dimensions
+
+✅ COMPRESSION INFO
+   Understand file size impact of your edits
+
+================================================================================
+TIPS FOR BEST RESULTS
+================================================================================
+
+1. VIEW FULL COMPARISON
+   Scroll down after uploading to see both panels
+   Make sure original and edited images are both visible
+
+2. COMPARE CLOSELY
+   Look at both images side-by-side
+   Reference the statistics for exact changes
+
+3. APPLY EDITS GRADUALLY
+   Make one or two edits, check comparison
+   Then apply more edits
+   This helps you see the impact of each operation
+
+4. WATCH THE STATS
+   Compression shows if you're making image larger/smaller
+   Dimensions show exact crop/resize amounts
+   Mods count helps track your workflow
+
+5. RESET IF NEEDED
+   Upload a new image anytime to start fresh
+   All previous edits are cleared
+   Comparison resets automatically
+
+================================================================================
+COMMON QUESTIONS
+================================================================================
+
+Q: Why is "After" empty when I first upload?
+A: It shows "No result yet" because you haven't applied any edits.
+   After you crop, filter, or resize, it will show your edited image.
+
+Q: Does the original image change?
+A: No! The original (Before) never changes. Only the edited (After)
+   updates as you apply edits. When you export, only the edited
+   version is downloaded.
+
+Q: Why do dimensions show 0×0 initially?
+A: That's the dimension CHANGE (delta). When you first upload,
+   there's no change yet. After cropping or resizing, it shows
+   how much the dimensions changed.
+
+Q: What does compression mean?
+A: It's the file size change percentage. "-5.2%" means the file
+   is 5.2% smaller after edits. "+2.1%" means it's 2.1% larger.
+
+Q: How does the operation counter work?
+A: It shows total edits applied. Each time you crop, filter,
+   resize, apply color, or enhance figurine, it increments by 1.
+   Useful to see how many changes you've made.
+
+Q: Can I undo changes?
+A: Currently, you can reset by uploading a new image. Or manually
+   undo each edit using the tool reset buttons (Reset Crop, etc.).
+   Full undo/redo may be added in future updates.
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+PROBLEM: Comparison panel not showing
+SOLUTION: Upload an image first. Panel appears after upload.
+
+PROBLEM: Before and After images look the same
+SOLUTION: Check Mods count. If it says "None yet", apply an edit first.
+
+PROBLEM: Dimensions show strange numbers
+SOLUTION: This is the CHANGE (delta), not absolute size.
+          Use the dimension displays under each image for absolute size.
+
+PROBLEM: Stats not updating
+SOLUTION: Make sure you're clicking "Apply" buttons, not just adjusting sliders.
+          Click the action button to trigger the update.
+
+PROBLEM: After image is blurry
+SOLUTION: If you've zoomed way in, the canvas display may compress.
+          This is just the preview - export quality is controlled by format/quality.
+
+================================================================================
+READY TO USE
+================================================================================
+
+Everything is set up and ready to go!
+
+Just upload an image and start editing. The before/after comparison panel
+will automatically appear and show you:
+
+  📸 Before: Your original upload (never changes)
+  ✨ After: Your edited version (updates in real-time)
+  📊 Stats: Compression %, dimension changes, modification count
+
+Professional feedback on every edit you make!
+
+================================================================================
