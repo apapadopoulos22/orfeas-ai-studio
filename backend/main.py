@@ -2751,8 +2751,13 @@ class OrfeasUnifiedServer:
 
                 logger.info(f"[ENHANCE-PROMPT] Original prompt: {prompt}")
 
+                # Check if local LLM is configured and available
+                local_llm_enabled = getattr(self, 'local_llm_enabled', False) or os.getenv('LOCAL_LLM_ENABLED', 'true').lower() == 'true'
+                local_llm_endpoint = getattr(self, 'local_llm_endpoint', None) or os.getenv('LOCAL_LLM_ENDPOINT', 'http://localhost:11434')
+                local_llm_model = getattr(self, 'local_llm_model', None) or os.getenv('LOCAL_LLM_MODEL', 'mistral')
+
                 # Use local LLM to enhance the prompt
-                if self.local_llm_enabled and self.local_llm_endpoint:
+                if local_llm_enabled and local_llm_endpoint:
                     try:
                         enhancement_instruction = f"""You are an expert at improving image generation prompts.
 Take the following prompt and enhance it to be more descriptive, detailed, and suitable for high-quality image generation.
@@ -2765,9 +2770,9 @@ Original prompt: {prompt}
 Enhanced prompt:"""
 
                         response = requests.post(
-                            f"{self.local_llm_endpoint}/api/generate",
+                            f"{local_llm_endpoint}/api/generate",
                             json={
-                                "model": self.local_llm_model,
+                                "model": local_llm_model,
                                 "prompt": enhancement_instruction,
                                 "stream": False,
                                 "temperature": 0.7,
