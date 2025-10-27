@@ -318,14 +318,20 @@ def get_cache() -> IntelligentCache:
 
         if not redis_enabled:
             logger.info("[CACHE] Redis caching disabled via REDIS_CACHE_ENABLED=false")
-            _cache_instance = IntelligentCache(
-                redis_host='localhost',
-                redis_port=6379,
-                ttl_seconds=86400,
-                enable_fallback=True  # Use in-memory fallback only
-            )
-            # Disable Redis connection attempt
+            # Create minimal cache without Redis attempt
+            _cache_instance = IntelligentCache.__new__(IntelligentCache)
+            _cache_instance.ttl = 86400
+            _cache_instance.enable_fallback = True
             _cache_instance.redis_client = None
+            _cache_instance.fallback_cache = {}
+            _cache_instance.stats = {
+                'hits': 0,
+                'misses': 0,
+                'stores': 0,
+                'errors': 0,
+                'last_reset': datetime.utcnow()
+            }
+            logger.info("[CACHE] Fallback in-memory cache initialized (no Redis connection attempted)")
             return _cache_instance
 
         redis_host = os.getenv('REDIS_HOST', 'localhost')

@@ -17,7 +17,7 @@ WHAT WAS WRONG
 2. Backend CORS Configuration:
    ❌ BEFORE: Backend didn't allow ngrok-skip-browser-warning header
    ✅ FIXED: Backend CORS now whitelists this header
-   
+
 3. Backend Process:
    ❌ BEFORE: Running old code without CORS fix
    ⏳ STATUS: Waiting for restart to load new code
@@ -52,18 +52,18 @@ WHAT YOU NEED TO DO (⏳ CRITICAL - DO THIS NOW)
 IMMEDIATE ACTIONS:
 
 1. ⏳ RESTART BACKEND PROCESS (CRITICAL)
-   
+
    In terminal running "python main.py":
    → Press: Ctrl+C (stop the process)
    → Wait 2 seconds (let it fully stop)
    → Type: python main.py (restart)
    → Wait 10-15 seconds for startup messages
 
-   Why: The new CORS headers are in the code but the old process 
+   Why: The new CORS headers are in the code but the old process
    hasn't reloaded them yet.
 
 2. ⏳ HARD REFRESH BROWSER
-   
+
    In browser with https://orfeas-ai-studio.vercel.app:
    → Press: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
    → Wait 5-10 seconds for page to load
@@ -72,7 +72,7 @@ IMMEDIATE ACTIONS:
    Why: Forces browser to clear cache and fetch latest code.
 
 3. ⏳ CHECK BROWSER CONSOLE
-   
+
    After hard refresh:
    → Press F12 (or right-click → Inspect → Console)
    → Look for success messages:
