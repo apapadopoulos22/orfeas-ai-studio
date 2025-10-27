@@ -51,18 +51,18 @@ file_mtimes = {}
 class DevServerHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=WORKSPACE, **kwargs)
-    
+
     def do_GET(self):
         """Handle GET requests with logging"""
         timestamp = datetime.now().strftime("%H:%M:%S")
         method_color = "\033[92m"  # Green
-        
+
         # Log request
         print(f"[{timestamp}] {method_color}GET{'\033[0m'} {self.path}")
-        
+
         # Serve file
         super().do_GET()
-    
+
     def log_message(self, format, *args):
         """Override to reduce verbose logging"""
         pass  # Suppress default logging
@@ -74,21 +74,21 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
 def watch_files():
     """Monitor HTML files for changes"""
     global file_mtimes
-    
+
     print("\n📁 Monitoring HTML files for changes...")
     print("-" * 60)
-    
+
     while True:
         time.sleep(2)
-        
+
         for html_file in HTML_FILES:
             path = os.path.join(WORKSPACE, html_file)
-            
+
             if not os.path.exists(path):
                 continue
-            
+
             current_mtime = os.path.getmtime(path)
-            
+
             if html_file not in file_mtimes:
                 file_mtimes[html_file] = current_mtime
             elif file_mtimes[html_file] != current_mtime:
@@ -104,11 +104,11 @@ def watch_files():
 
 def main():
     os.chdir(WORKSPACE)
-    
+
     print("\n" + "=" * 60)
     print("🚀 ORFEAS LOCAL DEVELOPMENT SERVER")
     print("=" * 60 + "\n")
-    
+
     # Print startup info
     print("📍 Configuration:")
     print(f"   Directory: {WORKSPACE}")
@@ -119,17 +119,17 @@ def main():
         path = os.path.join(WORKSPACE, html_file)
         status = "✅" if os.path.exists(path) else "❌"
         print(f"   {status} http://localhost:{PORT}/{html_file}")
-    
+
     print("\n🔗 Backend URLs:")
     print(f"   Local:  http://127.0.0.1:5000")
     print(f"   ngrok:  https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev")
-    
+
     print("\n" + "=" * 60)
-    
+
     # Start file watcher in background thread
     watcher_thread = threading.Thread(target=watch_files, daemon=True)
     watcher_thread.start()
-    
+
     # Start HTTP server
     try:
         with socketserver.TCPServer(("", PORT), DevServerHandler) as httpd:
@@ -139,13 +139,13 @@ def main():
             print("   • Check browser F12 Console for backend connection status")
             print("   • File changes are monitored (watch terminal for updates)")
             print("\n🛑 Press Ctrl+C to stop server\n")
-            
+
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:
                 print("\n\n🛑 Shutting down server...")
                 sys.exit(0)
-    
+
     except OSError as e:
         if e.errno == 48:  # Port already in use
             print(f"\n❌ ERROR: Port {PORT} is already in use!")

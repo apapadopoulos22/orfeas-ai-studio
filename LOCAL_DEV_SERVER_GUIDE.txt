@@ -13,7 +13,7 @@ Advantages:
     ✅ No dependencies needed
     ✅ Works on any Windows machine
     ✅ Shows real-time server logs
-    
+
 Stop:
     Press Ctrl+C
 
@@ -132,7 +132,7 @@ A: Press hard refresh:
 Q: "Where do I edit files?"
 A: All files in:
    c:\Users\johng\Documents\oscar\
-   
+
    Main files:
    - orfeas-ai-studio.html
    - synexa-style-studio.html
@@ -186,7 +186,7 @@ KEY ADVANTAGES OF LOCAL DEV SERVER:
 
 Before (Vercel only):
     Edit HTML → git push → Vercel deploys (2-5 min) → Refresh browser → See changes
-    
+
 After (Local Server):
     Edit HTML → Refresh browser (1 sec) → See changes ✅
     When ready: git push → Vercel deploys (2-5 min)

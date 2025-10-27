@@ -47,7 +47,8 @@ Write-Host "[2/3] Checking backend..." -ForegroundColor Cyan
 $backendCheck = netstat -ano | Select-String "5000.*LISTENING" | Measure-Object
 if ($backendCheck.Count -gt 0) {
     Write-Host "✅ Backend running on port 5000" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "⚠️  Backend not running on port 5000" -ForegroundColor Yellow
     Write-Host "   Start it separately: cd backend ; python main.py" -ForegroundColor Gray
 }
@@ -57,7 +58,8 @@ Write-Host "[3/3] Checking ngrok tunnel..." -ForegroundColor Cyan
 $ngrokCheck = netstat -ano | Select-String "4040.*LISTENING" | Measure-Object
 if ($ngrokCheck.Count -gt 0) {
     Write-Host "✅ ngrok tunnel running on port 4040" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "⚠️  ngrok not running" -ForegroundColor Yellow
     Write-Host "   Start it separately: ngrok http 5000" -ForegroundColor Gray
 }
