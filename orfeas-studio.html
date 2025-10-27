@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <!--  ORFEAS OPTIMIZATION 9: Content Security Policy -->
     <!--  NOTE: 'frame-ancestors' removed - must be set via HTTP headers, not meta tags -->
     <!--  NOTE: Both localhost AND 127.0.0.1 required (CSP treats them as different origins) -->
-    <!-- âš¡ ORFEAS FIX: Added CDN domains to connect-src for source maps (.js.map files) -->
+    <!-- ¡ ORFEAS FIX: Added CDN domains to connect-src for source maps (.js.map files) -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-inline' https://cdn.socket.io https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.babylonjs.com;
@@ -1625,7 +1625,7 @@
                             <!-- Quality Settings -->
                             <div class="option-group">
                                 <label class="option-label">
-                                    <span>âš¡</span>
+                                    <span>¡</span>
                                     Generation Quality
                                 </label>
                                 <div class="quality-slider">
@@ -1761,7 +1761,7 @@
             </div>
 
             <div class="project-card animate-fade-in">
-                <div class="project-image">âš¡</div>
+                <div class="project-image">¡</div>
                 <div class="project-content">
                     <h3 class="project-title">Automated Build System</h3>
                     <p class="project-description">
@@ -2488,7 +2488,7 @@
                     <button class="viewer-btn" title="Zoom In" onclick="zoom3D('in')"></button>
                     <button class="viewer-btn" title="Zoom Out" onclick="zoom3D('out')"></button>
                     <button class="viewer-btn" title="Reset View" onclick="reset3DView()"></button>
-                    <button class="viewer-btn" title="Wireframe" onclick="toggleWireframe()">âš¡</button>
+                    <button class="viewer-btn" title="Wireframe" onclick="toggleWireframe()">¡</button>
                 </div>
                 <canvas id="threejs-canvas" style="width: 100%; height: 100%;"></canvas>
                 <div id="model-info" style="position: absolute; bottom: 10px; left: 10px; color: white; font-size: 0.8rem; background: rgba(0,0,0,0.5); padding: 0.5rem; border-radius: 5px;">
@@ -2513,7 +2513,7 @@
                     <button class="viewer-btn" title="Zoom In" onclick="zoom3D('in')"></button>
                     <button class="viewer-btn" title="Zoom Out" onclick="zoom3D('out')"></button>
                     <button class="viewer-btn" title="Reset View" onclick="reset3DView()"></button>
-                    <button class="viewer-btn" title="Wireframe" onclick="toggleWireframe()">âš¡</button>
+                    <button class="viewer-btn" title="Wireframe" onclick="toggleWireframe()">¡</button>
                 </div>
                 <canvas id="threejs-canvas" style="width: 100%; height: 100%;"></canvas>
                 <div id="model-info" style="position: absolute; bottom: 10px; left: 10px; color: white; font-size: 0.8rem; background: rgba(0,0,0,0.5); padding: 0.5rem; border-radius: 5px;">
@@ -2951,7 +2951,7 @@
             if (model && model.material) {
                 wireframeMode = !wireframeMode;
                 model.material.wireframe = wireframeMode;
-                showNotification(wireframeMode ? 'âš¡ Wireframe mode enabled' : 'âš¡ Solid mode enabled');
+                showNotification(wireframeMode ? '¡ Wireframe mode enabled' : '¡ Solid mode enabled');
             }
         }
 
@@ -5476,7 +5476,7 @@
             }
 
             try {
-                logger.log('âš¡ Loading Socket.IO library...');
+                logger.log('¡ Loading Socket.IO library...');
                 await new Promise((resolve, reject) => {
                     const script = document.createElement('script');
                     script.src = 'https://cdn.socket.io/4.7.2/socket.io.min.js';
