@@ -1,0 +1,197 @@
+================================================================================
+LOCAL DEV SERVER - QUICK START GUIDE
+================================================================================
+
+Three Ways to Run Local Dev Server:
+
+METHOD 1: PowerShell Script (Recommended - Built-in Windows)
+────────────────────────────────────────────────────────────
+Run this command:
+    powershell -ExecutionPolicy Bypass -File "c:\Users\johng\Documents\oscar\START_LOCAL_DEV_SERVER.ps1"
+
+Advantages:
+    ✅ No dependencies needed
+    ✅ Works on any Windows machine
+    ✅ Shows real-time server logs
+    
+Stop:
+    Press Ctrl+C
+
+
+METHOD 2: Python Script (Advanced - File Monitoring)
+───────────────────────────────────────────────────
+Run this command:
+    python "c:\Users\johng\Documents\oscar\dev_server.py"
+
+Advantages:
+    ✅ Monitors files for changes
+    ✅ Displays color-coded logs
+    ✅ Shows timestamps
+
+Stop:
+    Press Ctrl+C
+
+
+METHOD 3: Direct Python Command (Quick & Simple)
+─────────────────────────────────────────────────
+Run this command:
+    cd c:\Users\johng\Documents\oscar && python -m http.server 8000
+
+Advantages:
+    ✅ One-liner
+    ✅ No scripts needed
+    ✅ Built-in Python module
+
+Stop:
+    Press Ctrl+C
+
+
+WHAT TO DO AFTER STARTING:
+══════════════════════════
+
+1. Open browser to:
+   http://localhost:8000/orfeas-ai-studio.html
+
+2. Open F12 Console to verify backend connection:
+   Look for: [CONFIG] BACKEND_URL, [HEALTH] Response status: 200
+
+3. Edit HTML/CSS/JavaScript files in VS Code
+
+4. Refresh browser (Ctrl+R or F5) to see changes INSTANTLY
+
+5. No waiting for Vercel deployment!
+
+
+BACKEND CONNECTIONS FROM LOCAL SERVER:
+══════════════════════════════════════
+
+The local server still connects to your backend via ngrok:
+
+    Backend:  http://127.0.0.1:5000          (direct)
+    ngrok:    https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev   (tunnel)
+
+So you get:
+    ✅ Instant HTML/CSS/JS changes (local server)
+    ✅ Full backend functionality (via ngrok tunnel)
+    ✅ No deployment delays
+
+
+VERIFY EVERYTHING IS RUNNING:
+═════════════════════════════
+
+Terminal 1 (Backend):
+    cd backend && python main.py
+    Should show: "Running on http://127.0.0.1:5000"
+
+Terminal 2 (ngrok):
+    ngrok http 5000
+    Should show: "forwarding https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev"
+
+Terminal 3 (Local Dev Server):
+    python -m http.server 8000
+    Should show: "Serving HTTP on 0.0.0.0 port 8000"
+
+Then in browser:
+    http://localhost:8000/orfeas-ai-studio.html
+    Should show backend connected: [HEALTH] Response status: 200 ✅
+
+
+TESTING WORKFLOW:
+═════════════════
+
+Edit                          Refresh              See Changes
+│                             │                    │
+VS Code changes HTML/CSS  →  Ctrl+R in browser  →  Changes appear instantly
+│
+No git commits needed
+No Vercel deployment
+No 2-minute wait
+
+
+TROUBLESHOOTING:
+════════════════
+
+Q: "Port 8000 is already in use"
+A: Either:
+   - Kill existing process using port 8000
+   - Use different port: python -m http.server 9000
+   - Edit dev_server.py and change PORT = 9000
+
+Q: "Backend shows 'Connection refused'"
+A: Check that:
+   - Backend is running on port 5000
+   - ngrok tunnel is active
+   - Both are in separate terminals
+
+Q: "Changes don't appear after refresh"
+A: Press hard refresh:
+   - Ctrl+Shift+R (Windows)
+   - Cmd+Shift+R (Mac)
+   - Or clear browser cache
+
+Q: "Where do I edit files?"
+A: All files in:
+   c:\Users\johng\Documents\oscar\
+   
+   Main files:
+   - orfeas-ai-studio.html
+   - synexa-style-studio.html
+   - batch-studio.html
+   - (or any HTML file in the root)
+
+
+WORKFLOW EXAMPLE:
+═════════════════
+
+1. Terminal 1 - Start Backend:
+   cd c:\Users\johng\Documents\oscar\backend
+   python main.py
+
+2. Terminal 2 - Start ngrok:
+   ngrok http 5000
+
+3. Terminal 3 - Start Local Dev Server:
+   python -m http.server 8000 --directory c:\Users\johng\Documents\oscar
+
+4. Browser - Open Local Version:
+   http://localhost:8000/orfeas-ai-studio.html
+
+5. Edit HTML in VS Code (without saving to git yet)
+
+6. Refresh browser - See changes instantly!
+
+7. When happy with changes:
+   git add .
+   git commit -m "..."
+   git push
+   (Vercel deploys automatically)
+
+
+SWITCHING BETWEEN LOCAL & ONLINE:
+══════════════════════════════════
+
+Local (Testing):
+    http://localhost:8000/orfeas-ai-studio.html
+
+Online (Production):
+    https://orfeas-ai-studio.vercel.app
+
+Both use the SAME backend (via ngrok tunnel)
+Both are fully functional
+Use local for rapid testing, online for production
+
+
+KEY ADVANTAGES OF LOCAL DEV SERVER:
+═══════════════════════════════════
+
+Before (Vercel only):
+    Edit HTML → git push → Vercel deploys (2-5 min) → Refresh browser → See changes
+    
+After (Local Server):
+    Edit HTML → Refresh browser (1 sec) → See changes ✅
+    When ready: git push → Vercel deploys (2-5 min)
+
+
+================================================================================
+Ready to start? Pick your method above and run the command!
+================================================================================
