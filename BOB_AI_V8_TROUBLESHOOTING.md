@@ -15,6 +15,7 @@ print(status)
 ```
 
 **Expected:**
+
 - `total_modules`: 27+
 - `loaded_modules`: 27
 - `failed_modules`: 0
@@ -28,6 +29,7 @@ print(status)
 **Symptom:** Error like "Failed to load 5 modules"
 
 **Diagnosis:**
+
 ```python
 loader = BobAIV8ModuleLoader()
 loaded, failed, errors = loader.load_all_modules()
@@ -46,11 +48,13 @@ for module, error in errors.items():
 | `AttributeError` | Missing class/method | Check module has required classes (Knowledge, Integration) |
 
 **Check Python Syntax:**
+
 ```bash
 python -m py_compile backend/bob_ai_v8_book_writing.py
 ```
 
 **Reinstall Dependencies:**
+
 ```bash
 pip install --upgrade -r requirements.txt
 python backend/bob_ai_v8_loader.py  # Test import
@@ -63,6 +67,7 @@ python backend/bob_ai_v8_loader.py  # Test import
 **Symptom:** Bootstrap taking >600ms
 
 **Diagnosis:**
+
 ```bash
 python backend/bob_ai_v8_performance_optimizer.py
 ```
@@ -76,6 +81,7 @@ python backend/bob_ai_v8_performance_optimizer.py
 | `linker_time_ms` > 100 | Linker initialization slow | Increase cache size: `BOB_AI_CACHE_SIZE=2000` |
 
 **Performance Optimization:**
+
 ```bash
 # Enable caching
 export BOB_AI_CACHE_ENABLED=true
@@ -97,6 +103,7 @@ python backend/bob_ai_v8_performance_optimizer.py
 **Symptom:** `get_cross_discipline_recommendations()` returns empty list
 
 **Diagnosis:**
+
 ```python
 from bob_ai_v8_cross_discipline_linker import CrossDisciplineLinker
 
@@ -115,6 +122,7 @@ print(related)
 | Recommendations empty | No related disciplines | Use `get_related_disciplines()` first to verify links exist |
 
 **Test Link Manually:**
+
 ```python
 linker = CrossDisciplineLinker()
 
@@ -134,6 +142,7 @@ print(f"Shared concepts: {bridge}")
 **Symptom:** `pytest` shows failures
 
 **Diagnosis:**
+
 ```bash
 # Run full test suite with verbose output
 python -m pytest backend/bob_ai_v8_test_suite_comprehensive.py -v
@@ -152,6 +161,7 @@ python -m pytest backend/bob_ai_v8_test_suite_comprehensive.py::TestBobAIv8Modul
 | `test_context_detection` | Context not detected | Check `detect_context()` method returns dict |
 
 **Debug Test:**
+
 ```python
 import sys
 print("Python Path:", sys.path)
@@ -182,6 +192,7 @@ except Exception as e:
 **Symptom:** `curl http://localhost:5000/health` returns "Connection refused"
 
 **Diagnosis:**
+
 ```bash
 # Check if service is running
 lsof -i :5000
@@ -203,6 +214,7 @@ tail -50 logs/bob_ai.log
 | Module import failed | Module loading error | Check logs for import errors |
 
 **Start Service Manually:**
+
 ```bash
 # Activate virtual environment
 source venv/bin/activate
@@ -221,6 +233,7 @@ python -u backend/main.py 2>&1 | tee debug.log
 **Symptom:** Memory usage grows continuously over time
 
 **Diagnosis:**
+
 ```bash
 # Monitor memory over time
 watch -n 1 'ps aux | grep python | grep bob'
@@ -238,6 +251,7 @@ python -m memory_profiler backend/bob_ai_v8_performance_optimizer.py
 | Connection pooling | Check database connection limits |
 
 **Enable Garbage Collection:**
+
 ```bash
 export PYTHONGARBAGECOLLECTION=1
 export PYTHONGC_INTERVAL=100
@@ -251,6 +265,7 @@ systemctl restart bob-ai
 **Symptom:** Same prompt produces different enhancements
 
 **Diagnosis:**
+
 ```python
 from bob_ai_v8_loader import BobAIV8ModuleLoader
 
@@ -272,6 +287,7 @@ for i in range(5):
 | Lazy loading causes variation | Disable lazy loading: `export BOB_AI_LAZY_LOAD=false` |
 
 **Set Random Seed:**
+
 ```python
 import random
 import numpy as np
@@ -446,7 +462,7 @@ logger.debug(f"Linker initialized with {len(linker.discipline_relationships)} di
 
 ### Submit Issue
 
-Email with subject "[BOB AI Issue] ISSUE_TITLE" to support@example.com
+Email with subject "[BOB AI Issue] ISSUE_TITLE" to <support@example.com>
 
 Include diagnosis results and reproduction steps.
 
@@ -454,10 +470,10 @@ Include diagnosis results and reproduction steps.
 
 ## Contact Support
 
-- **Email:** support@example.com
+- **Email:** <support@example.com>
 - **Slack:** #bob-ai-support
 - **Office Hours:** Mon-Fri, 9AM-5PM UTC
-- **Emergency:** on-call@example.com (after hours)
+- **Emergency:** <on-call@example.com> (after hours)
 
 ---
 

@@ -26,50 +26,50 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
     """
     Photography knowledge module providing expert-level image composition and technical guidance.
     """
-    
+
     def __init__(self):
         super().__init__('Photography', '8.0')
         self.keywords = self.get_keywords()
         self.knowledge_items = self.get_knowledge_dictionaries()
-    
+
     def get_keywords(self) -> List[str]:
         """Return photography keywords for domain detection."""
         return [
             # Composition
             'composition', 'framing', 'rule of thirds', 'leading lines', 'depth', 'perspective',
             'symmetry', 'negative space', 'golden ratio', 'rule of odds',
-            
+
             # Exposure
             'exposure', 'overexposed', 'underexposed', 'metering', 'histogram', 'dynamic range',
             'blown highlights', 'crushed blacks', 'exposure compensation',
-            
+
             # Aperture and depth
             'aperture', 'f-stop', 'depth of field', 'bokeh', 'shallow focus', 'deep focus',
             'focus stacking', 'macro', 'wide angle',
-            
+
             # Shutter speed
             'shutter speed', 'motion blur', 'freeze', 'long exposure', 'fast shutter', 'slow shutter',
             'panning', 'action photography',
-            
+
             # ISO
             'iso', 'noise', 'grain', 'sensitivity', 'low iso', 'high iso',
-            
+
             # Lighting
             'lighting', 'natural light', 'golden hour', 'blue hour', 'backlit', 'sidelighting',
             'fill light', 'reflector', 'diffuser', 'harsh light', 'soft light',
-            
+
             # Focus techniques
             'focus', 'autofocus', 'manual focus', 'focus point', 'focus lock', 'af-on',
-            
+
             # Color
             'white balance', 'color temperature', 'color cast', 'saturation', 'vibrance',
             'color grading', 'color correction',
-            
+
             # Photography styles
             'portrait', 'landscape', 'macro', 'street', 'wildlife', 'product', 'sports',
             'photography', 'photo', 'image', 'picture'
         ]
-    
+
     def get_knowledge_dictionaries(self) -> Dict[str, Dict[str, Any]]:
         """Return all photography knowledge dictionaries."""
         return {
@@ -88,7 +88,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'light_modifiers': self._get_light_modifiers(),
             'perspective_techniques': self._get_perspective_techniques(),
         }
-    
+
     def _get_composition_principles(self) -> Dict[str, str]:
         """Composition principles for compelling images."""
         return {
@@ -108,7 +108,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'color_contrast': 'Complementary colors create visual pop and attraction',
             'foreground_interest': 'Include foreground element for depth and visual entry point'
         }
-    
+
     def _get_exposure_control(self) -> Dict[str, str]:
         """Exposure control and metering techniques."""
         return {
@@ -126,7 +126,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'wet_exposure': 'Slightly overexposing RAW file to maximize shadow detail',
             'metering_lock': 'Lock exposure while recomposing frame, allows creative positioning'
         }
-    
+
     def _get_aperture_depth(self) -> Dict[str, str]:
         """Aperture and depth of field techniques."""
         return {
@@ -144,7 +144,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'macro_photography': 'Extreme close-up with shallow depth of field requiring precision',
             'focus_stacking': 'Multiple images with different focus points combined for complete sharpness'
         }
-    
+
     def _get_shutter_speed(self) -> Dict[str, str]:
         """Shutter speed and motion techniques."""
         return {
@@ -161,7 +161,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'action_freezing': 'Fast shutter stops motion, critical for sports and wildlife',
             'star_trails': 'Long exposure captures star movement across sky over time'
         }
-    
+
     def _get_iso_sensitivity(self) -> Dict[str, str]:
         """ISO and sensor sensitivity."""
         return {
@@ -178,7 +178,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'high_iso_performance': 'Modern sensors handle high ISO better than older models',
             'iso_reciprocity': 'Raising ISO one stop requires 1 stop faster shutter or smaller aperture'
         }
-    
+
     def _get_lighting_techniques(self) -> Dict[str, str]:
         """Lighting techniques and control."""
         return {
@@ -201,7 +201,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'light_modifiers': 'Umbrellas, softboxes, beauty dishes shape light quality',
             'reciprocity': 'Lower fill light ratio creates more drama, higher ratio flattens'
         }
-    
+
     def _get_focus_techniques(self) -> Dict[str, str]:
         """Focus methods and techniques."""
         return {
@@ -219,7 +219,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'depth_of_field_preview': 'Shows actual depth of field at shooting aperture',
             'focus_breathing': 'Lens focal length changes slightly when focusing, affects framing'
         }
-    
+
     def _get_color_temperature(self) -> Dict[str, str]:
         """Color temperature and white balance."""
         return {
@@ -240,7 +240,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'warm_color_temperature': 'Orange/red tones, intimate and cozy feeling',
             'cool_color_temperature': 'Blue tones, calming and mysterious feeling'
         }
-    
+
     def _get_photography_styles(self) -> Dict[str, str]:
         """Different photography styles and approaches."""
         return {
@@ -259,7 +259,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'fine_art': 'Artistic expression, follows personal vision rather than commercial needs',
             'abstract': 'Non-representational imagery, emphasizes form and color'
         }
-    
+
     def _get_camera_settings(self) -> Dict[str, str]:
         """Camera settings and modes."""
         return {
@@ -276,7 +276,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'image_stabilization': 'Compensates for camera shake, allows slower shutter',
             'custom_white_balance': 'Create personalized white balance profile'
         }
-    
+
     def _get_post_processing(self) -> Dict[str, str]:
         """Post-processing and editing techniques."""
         return {
@@ -295,7 +295,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'cloning_healing': 'Remove unwanted elements or imperfections',
             'selective_editing': 'Edit specific parts of image differently'
         }
-    
+
     def _get_lenses(self) -> Dict[str, str]:
         """Lens types and characteristics."""
         return {
@@ -313,7 +313,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'bokeh_character': 'Lens bokeh quality affects aesthetic appeal',
             'aperture_range': 'Maximum aperture affects light gathering and cost'
         }
-    
+
     def _get_light_modifiers(self) -> Dict[str, str]:
         """Light modifiers and their effects."""
         return {
@@ -329,7 +329,7 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'gobos': 'Patterns projected by light create texture',
             'honeycomb_grid': 'Restricts light spread, creates spot effect'
         }
-    
+
     def _get_perspective_techniques(self) -> Dict[str, str]:
         """Perspective and angle techniques."""
         return {
@@ -344,50 +344,50 @@ class PhotographyKnowledge(BobAIV8BaseKnowledge):
             'leading_point': 'Position subject at strongest compositional point',
             'tilting_plane': 'Tilt subject forward/backward relative to lens plane'
         }
-    
+
     def enhance_prompt(self, prompt: str) -> str:
         """Enhance a prompt with photography expertise."""
         prompt_lower = prompt.lower()
         matched_keywords = [kw for kw in self.keywords if kw in prompt_lower]
-        
+
         if not matched_keywords:
             return prompt
-        
+
         enhancement_parts = [
             prompt,
             "\n\n[Photography Enhancement]"
         ]
-        
+
         if any(word in prompt_lower for word in ['compose', 'frame', 'layout', 'composition']):
             enhancement_parts.append(
                 "Apply composition principles: Rule of thirds or golden ratio for balance, "
                 "leading lines to guide viewer, appropriate depth of field to isolate subject, "
                 "and negative space to emphasize subject."
             )
-        
+
         if any(word in prompt_lower for word in ['light', 'lighting', 'bright', 'shadow']):
             enhancement_parts.append(
                 "Optimize lighting: Use directional light for modeling and form, control contrast "
                 "with fill light, watch for color temperature and white balance, leverage golden "
                 "hour or blue hour for aesthetic light quality."
             )
-        
+
         if any(word in prompt_lower for word in ['exposur', 'bright', 'dark', 'histogram']):
             enhancement_parts.append(
                 "Manage exposure carefully: Preserve highlights to avoid blown-out details, "
                 "maintain shadow detail, use exposure compensation strategically, "
                 "consider dynamic range of scene."
             )
-        
+
         if any(word in prompt_lower for word in ['portrait', 'face', 'people', 'subject']):
             enhancement_parts.append(
                 "For subject-focused work: Use shallow depth of field with quality bokeh, "
                 "position subject according to rule of thirds, watch eye contact and expression, "
                 "consider headroom and lead room in framing."
             )
-        
+
         return "\n".join(enhancement_parts)
-    
+
     def generate_system_prompt(self) -> str:
         """Generate photography-focused system prompt."""
         return """You are an expert photographer with deep knowledge of:

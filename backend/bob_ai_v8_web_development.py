@@ -21,28 +21,28 @@ METADATA = {
 
 class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
     """HTML/CSS/JavaScript web development expertise."""
-    
+
     def get_keywords(self) -> List[str]:
         """Get web development detection keywords."""
         return [
             # HTML
             'html', 'semantic', 'accessibility', 'form', 'input',
             'element', 'attribute', 'doctype', 'meta', 'viewport',
-            
+
             # CSS
             'css', 'selector', 'specificity', 'cascade', 'flexbox',
             'grid', 'responsive', 'media query', 'breakpoint',
             'animation', 'transition', 'transform', 'gradient',
-            
+
             # JavaScript
             'javascript', 'function', 'async', 'promise', 'callback',
             'dom', 'event', 'manipulation', 'fetch', 'api',
-            
+
             # Web standards
             'web', 'responsive', 'accessibility', 'wcag', 'seo',
             'progressive enhancement', 'web component', 'shadow dom'
         ]
-    
+
     def get_knowledge_dictionaries(self) -> Dict[str, Dict[str, str]]:
         """Get all web development knowledge dictionaries."""
         return {
@@ -62,7 +62,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'browser_compatibility': self._get_browser_compatibility(),
             'web_standards': self._get_web_standards()
         }
-    
+
     def _get_html_semantics(self) -> Dict[str, str]:
         """Semantic HTML and markup best practices."""
         return {
@@ -81,7 +81,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'schema_markup': 'schema.org markup for machine-readable content; improves SEO',
             'aria_roles': 'ARIA roles supplement semantic HTML; don\'t replace with role="main"'
         }
-    
+
     def _get_html_forms(self) -> Dict[str, str]:
         """Form elements and best practices."""
         return {
@@ -100,7 +100,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'readonly_attribute': 'readonly allows selection but prevents editing',
             'autofill_attribute': 'autocomplete attribute hints browser autofill behavior'
         }
-    
+
     def _get_accessibility_wcag(self) -> Dict[str, str]:
         """Web accessibility and WCAG standards."""
         return {
@@ -119,7 +119,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'heading_structure': 'Proper heading hierarchy; screen readers use for navigation',
             'list_semantics': '<ul>, <ol>, <li> for lists; screen readers announce structure'
         }
-    
+
     def _get_css_layouts(self) -> Dict[str, str]:
         """CSS layout techniques and best practices."""
         return {
@@ -138,7 +138,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'position_fixed': 'position: fixed; relative to viewport; stays on screen when scrolling',
             'z_index': 'z-index controls stacking order; higher values appear on top'
         }
-    
+
     def _get_css_responsive(self) -> Dict[str, str]:
         """Responsive design and mobile-first approaches."""
         return {
@@ -157,7 +157,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'picture_element': '<picture> multiple sources; art direction for images',
             'srcset_attribute': 'srcset for resolution-dependent images; responsive images'
         }
-    
+
     def _get_css_advanced(self) -> Dict[str, str]:
         """Advanced CSS techniques and features."""
         return {
@@ -176,7 +176,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'filter': 'filter: blur(), brightness(), contrast(); visual effects',
             'backdrop_filter': 'backdrop-filter: blur(); blurs background behind element'
         }
-    
+
     def _get_javascript_fundamentals(self) -> Dict[str, str]:
         """JavaScript language fundamentals."""
         return {
@@ -194,7 +194,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'arrow_functions': '() => {}; no this binding; concise syntax',
             'arrow_this': 'Arrow functions inherit this from surrounding scope'
         }
-    
+
     def _get_dom_manipulation(self) -> Dict[str, str]:
         """DOM selection and manipulation."""
         return {
@@ -213,7 +213,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'classlist': 'element.classList.add(), remove(), toggle(), contains()',
             'setattribute': 'element.setAttribute("attr", "value") sets attribute'
         }
-    
+
     def _get_async_javascript(self) -> Dict[str, str]:
         """Asynchronous JavaScript patterns."""
         return {
@@ -231,7 +231,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'settimeout': 'setTimeout(callback, ms) delayed execution',
             'setinterval': 'setInterval(callback, ms) repeated execution; clearInterval to stop'
         }
-    
+
     def _get_event_handling(self) -> Dict[str, str]:
         """Event handling and delegation."""
         return {
@@ -250,7 +250,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'keyboardevents': 'keydown, keyup, keypress; event.key for character, event.code for position',
             'mouseeventshover': 'mouseover, mouseout, mousemove, mouseenter, mouseleave'
         }
-    
+
     def _get_modern_javascript(self) -> Dict[str, str]:
         """Modern JavaScript ES6+ features."""
         return {
@@ -268,7 +268,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'reflect_api': 'Reflect.get(), set(), has() programmatic object manipulation',
             'maps_sets': 'Map key-value pairs any type; Set unique values; better than plain objects'
         }
-    
+
     def _get_apis_web(self) -> Dict[str, str]:
         """Web APIs and browser functionality."""
         return {
@@ -287,7 +287,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'requestanimationframe': 'requestAnimationFrame(callback) 60fps smooth animation',
             'canvas_api': 'Canvas for drawing graphics, games, animations programmatically'
         }
-    
+
     def _get_performance_optimization(self) -> Dict[str, str]:
         """Web performance and optimization."""
         return {
@@ -306,7 +306,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'request_batching': 'Combine requests; HTTP/2 multiplexing reduces overhead',
             'rendering_optimization': 'Avoid layout thrashing; batch DOM reads and writes'
         }
-    
+
     def _get_browser_compatibility(self) -> Dict[str, str]:
         """Browser compatibility and progressive enhancement."""
         return {
@@ -324,7 +324,7 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'edge_cases': 'Handle older IE carefully; drops support encouraged 2022+',
             'mobile_considerations': 'Touch events, smaller screens, slower networks, weaker CPUs'
         }
-    
+
     def _get_web_standards(self) -> Dict[str, str]:
         """Web standards and best practices."""
         return {
@@ -342,15 +342,15 @@ class WebDevelopmentKnowledge(BobAIV8BaseKnowledge):
             'structured_data': 'schema.org markup JSON-LD for machine-readable content',
             'dns_prefetch': '<link rel="dns-prefetch"> speeds up third-party domain lookups'
         }
-    
+
     def enhance_prompt(self, prompt: str) -> str:
         """Enhance prompt with web development guidance."""
         keywords = self.get_keywords()
         has_keywords = any(kw.lower() in prompt.lower() for kw in keywords)
-        
+
         if not has_keywords:
             return prompt
-        
+
         enhancement = f"""
 {prompt}
 
@@ -374,7 +374,7 @@ Apply these web best practices:
 Apply these web standards to create fast, accessible, user-friendly experiences.
 """
         return enhancement.strip()
-    
+
     def generate_system_prompt(self) -> str:
         """Generate expert web developer system prompt."""
         return """You are an expert full-stack web developer with 15+ years of frontend experience.

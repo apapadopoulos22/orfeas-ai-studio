@@ -21,27 +21,27 @@ METADATA = {
 
 class VideoEditingKnowledge(BobAIV8BaseKnowledge):
     """Video editing expertise knowledge module."""
-    
+
     def get_keywords(self) -> List[str]:
         """Get video editing detection keywords."""
         return [
             # Core editing
             'editing', 'cut', 'transition', 'sequence', 'pacing', 'rhythm',
             'timeline', 'keyframe', 'montage', 'juxtaposition',
-            
+
             # Audio
             'sound design', 'audio', 'foley', 'voiceover', 'dialogue',
             'music', 'soundtrack', 'mix', 'levels',
-            
+
             # Color and visual
             'color correction', 'color grading', 'lut', 'tone',
             'contrast', 'saturation', 'hue',
-            
+
             # Technical
             'codec', 'compression', 'bitrate', 'resolution', 'fps',
             'export', 'render'
         ]
-    
+
     def get_knowledge_dictionaries(self) -> Dict[str, Dict[str, str]]:
         """Get all video editing knowledge dictionaries."""
         return {
@@ -60,7 +60,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'export_optimization': self._get_export_optimization(),
             'workflow_techniques': self._get_workflow_techniques()
         }
-    
+
     def _get_editing_techniques(self) -> Dict[str, str]:
         """Core editing techniques."""
         return {
@@ -80,7 +80,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'cutaway': 'Brief shot away from main action',
             'reaction_shot': 'Character response to off-screen action'
         }
-    
+
     def _get_pacing_rhythm(self) -> Dict[str, str]:
         """Pacing and rhythm control."""
         return {
@@ -97,7 +97,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'tempo_variation': 'Change pace intentionally for effect',
             'climactic_buildup': 'Accelerate to peak moment'
         }
-    
+
     def _get_transitions(self) -> Dict[str, str]:
         """Transition types and usage."""
         return {
@@ -114,7 +114,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'page_curl': 'Page turning effect',
             'barn_doors': 'Two-panel opening transition'
         }
-    
+
     def _get_sound_design(self) -> Dict[str, str]:
         """Sound design elements."""
         return {
@@ -131,7 +131,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'audio_cue': 'Sound triggering emotional response',
             'audio_motif': 'Recurring sound element'
         }
-    
+
     def _get_audio_mixing(self) -> Dict[str, str]:
         """Audio mixing techniques."""
         return {
@@ -148,7 +148,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'normalization': 'Optimize overall audio level',
             'loudness_standards': 'Maintain broadcast audio standards'
         }
-    
+
     def _get_color_correction(self) -> Dict[str, str]:
         """Color correction techniques."""
         return {
@@ -165,7 +165,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'lens_correction': 'Fix lens distortion and vignetting',
             'scopes': 'Use waveform monitor and histogram'
         }
-    
+
     def _get_color_grading(self) -> Dict[str, str]:
         """Color grading for aesthetic impact."""
         return {
@@ -182,7 +182,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'curves': 'Precise tonal and color manipulation',
             'selective_color': 'Grade specific color ranges'
         }
-    
+
     def _get_visual_effects(self) -> Dict[str, str]:
         """Visual effects integration."""
         return {
@@ -199,7 +199,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'particle_effects': 'Simulate natural phenomena',
             'lens_flare': 'Light artifact effect'
         }
-    
+
     def _get_sequencing(self) -> Dict[str, str]:
         """Shot sequencing and arrangement."""
         return {
@@ -216,7 +216,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'action_sequence': 'Coordinate multiple shots for action',
             'dialogue_sequence': 'Properly cover conversation'
         }
-    
+
     def _get_narrative_structure(self) -> Dict[str, str]:
         """Narrative and story structure."""
         return {
@@ -233,7 +233,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'foreshadowing': 'Hint at future events',
             'plot_twist': 'Unexpected reversal'
         }
-    
+
     def _get_pacing_control(self) -> Dict[str, str]:
         """Advanced pacing control."""
         return {
@@ -248,7 +248,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'fast_cuts': 'Rapid succession for excitement',
             'slow_burns': 'Extended duration for contemplation'
         }
-    
+
     def _get_dynamic_editing(self) -> Dict[str, str]:
         """Advanced dynamic editing."""
         return {
@@ -261,7 +261,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'visual_metaphor': 'Use editing to show theme',
             'subliminal_messaging': 'Very brief shots for effect'
         }
-    
+
     def _get_export_optimization(self) -> Dict[str, str]:
         """Export and delivery optimization."""
         return {
@@ -277,7 +277,7 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'optimization': 'Balance quality and file size',
             'delivery_specs': 'Platform-specific requirements'
         }
-    
+
     def _get_workflow_techniques(self) -> Dict[str, str]:
         """Professional workflow techniques."""
         return {
@@ -294,16 +294,16 @@ class VideoEditingKnowledge(BobAIV8BaseKnowledge):
             'version_control': 'Track project iterations',
             'collaboration': 'Multi-editor project sharing'
         }
-    
+
     def enhance_prompt(self, prompt: str) -> str:
         """Enhance prompt with video editing guidance."""
         keywords = self.get_keywords()
-        
+
         has_keywords = any(kw.lower() in prompt.lower() for kw in keywords)
-        
+
         if not has_keywords:
             return prompt
-        
+
         enhancement = f"""
 {prompt}
 
@@ -327,7 +327,7 @@ Consider these video editing principles:
 Apply these video editing principles to create professional, engaging results.
 """
         return enhancement.strip()
-    
+
     def generate_system_prompt(self) -> str:
         """Generate expert video editor system prompt."""
         return """You are an expert video editor with 20+ years of experience in professional post-production.

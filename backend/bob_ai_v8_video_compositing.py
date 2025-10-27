@@ -10,7 +10,7 @@ from bob_ai_v8_base import BobAIV8BaseKnowledge
 
 class VideoCompositingKnowledge(BobAIV8BaseKnowledge):
     """Video compositing domain knowledge and expertise."""
-    
+
     METADATA = {
         'discipline': 'Video Compositing',
         'version': '1.0',
@@ -23,7 +23,7 @@ class VideoCompositingKnowledge(BobAIV8BaseKnowledge):
         'secondary_uses': ['motion graphics', 'color grading', 'visual effects', 'rotoscoping', 'tracking'],
         'domain_keywords': ['compositing', 'vfx', 'keying', 'tracking', 'rotoscope']
     }
-    
+
     def get_keywords(self) -> list:
         """Return video compositing domain keywords."""
         return [
@@ -38,7 +38,7 @@ class VideoCompositingKnowledge(BobAIV8BaseKnowledge):
             'alpha', 'transparency', 'channel', 'expression', 'plugin',
             'animation', 'motion', 'camera tracking', '3d', 'scene'
         ]
-    
+
     def get_knowledge_dictionaries(self) -> dict:
         """Return all video compositing knowledge dictionaries."""
         return {
@@ -57,39 +57,39 @@ class VideoCompositingKnowledge(BobAIV8BaseKnowledge):
             'troubleshooting': self._get_troubleshooting(),
             'industry_practices': self._get_industry_practices()
         }
-    
+
     def enhance_prompt(self, prompt: str) -> str:
         """Enhance prompt with video compositing context if applicable."""
         compositing_keywords = self.get_keywords()
         prompt_lower = prompt.lower()
-        
+
         if any(kw in prompt_lower for kw in compositing_keywords):
             knowledge_items = []
-            
+
             if any(kw in prompt_lower for kw in ['key', 'green screen', 'chroma']):
                 knowledge_items.extend(list(self._get_keying_techniques().values())[:3])
-            
+
             if any(kw in prompt_lower for kw in ['track', 'motion', 'camera']):
                 knowledge_items.extend(list(self._get_tracking().values())[:3])
-            
+
             if any(kw in prompt_lower for kw in ['roto', 'mask', 'matte']):
                 knowledge_items.extend(list(self._get_rotoscoping().values())[:3])
-            
+
             if any(kw in prompt_lower for kw in ['color', 'grade', 'lut']):
                 knowledge_items.extend(list(self._get_color_grading().values())[:3])
-            
+
             if any(kw in prompt_lower for kw in ['effect', 'particle', 'blur']):
                 knowledge_items.extend(list(self._get_effects_compositing().values())[:3])
-            
+
             if knowledge_items:
                 context = '\n'.join(f'• {item}' for item in knowledge_items[:6])
                 return f"{prompt}\n\n[VIDEO COMPOSITING CONTEXT]\n{context}"
-        
+
         return prompt
-    
+
     def generate_system_prompt(self) -> str:
         """Generate expert video compositor system prompt."""
-        return """You are a professional VFX compositor and post-production specialist with 8+ years 
+        return """You are a professional VFX compositor and post-production specialist with 8+ years
 of experience creating stunning visual effects, composites, and finishing for broadcast, film, and digital media.
 
 KEY RESPONSIBILITIES:
@@ -133,9 +133,9 @@ COMMON MISCONCEPTIONS TO ADDRESS:
 • All color grading tools are the same (subtle differences matter)
 • Rendering is just a button (requires careful settings and planning)
 
-When helping with video compositing, prioritize clear technical explanation, 
+When helping with video compositing, prioritize clear technical explanation,
 professional workflow practices, and quality-focused problem solving."""
-    
+
     def _get_compositing_fundamentals(self) -> dict:
         """Compositing fundamentals."""
         return {
@@ -155,7 +155,7 @@ professional workflow practices, and quality-focused problem solving."""
             'pipeline': 'Organized workflow from source through delivery',
             'version_control': 'Track changes and maintain project history'
         }
-    
+
     def _get_keying_techniques(self) -> dict:
         """Green/blue screen keying techniques."""
         return {
@@ -175,7 +175,7 @@ professional workflow practices, and quality-focused problem solving."""
             'multi_pass_keying': 'Multiple keys combined for better result',
             'quality_standards': 'Professional keying requires meticulous attention'
         }
-    
+
     def _get_rotoscoping(self) -> dict:
         """Rotoscoping and masking techniques."""
         return {
@@ -195,7 +195,7 @@ professional workflow practices, and quality-focused problem solving."""
             'time_investment': 'Roto is labor-intensive - plan accordingly',
             'geometric_shapes': 'Use simple shapes when possible'
         }
-    
+
     def _get_tracking(self) -> dict:
         """Motion and camera tracking."""
         return {
@@ -215,7 +215,7 @@ professional workflow practices, and quality-focused problem solving."""
             'handheld_footage': 'Erratic motion more challenging to track',
             'tracked_effects': 'Apply effects following tracked motion'
         }
-    
+
     def _get_color_grading(self) -> dict:
         """Color grading and color correction."""
         return {
@@ -235,7 +235,7 @@ professional workflow practices, and quality-focused problem solving."""
             'day_for_night': 'Creative color to simulate night from day footage',
             'reference_monitoring': 'Calibrated display for accurate color'
         }
-    
+
     def _get_effects_compositing(self) -> dict:
         """Effects and motion graphics compositing."""
         return {
@@ -255,7 +255,7 @@ professional workflow practices, and quality-focused problem solving."""
             'performance': 'Monitor GPU/CPU usage during playback',
             'render_layers': 'Separate render passes for flexibility'
         }
-    
+
     def _get_audio_mixing(self) -> dict:
         """Audio mixing and sound post-production."""
         return {
@@ -275,7 +275,7 @@ professional workflow practices, and quality-focused problem solving."""
             'export_settings': 'Correct format and codec for delivery',
             'surround_sound': '5.1 or 7.1 surround format delivery'
         }
-    
+
     def _get_timeline_editing(self) -> dict:
         """Timeline editing techniques."""
         return {
@@ -295,7 +295,7 @@ professional workflow practices, and quality-focused problem solving."""
             'adjustment_layers': 'Apply effects to multiple clips',
             'color_coding': 'Organize clips by type/priority'
         }
-    
+
     def _get_motion_graphics(self) -> dict:
         """Motion graphics and animation."""
         return {
@@ -315,7 +315,7 @@ professional workflow practices, and quality-focused problem solving."""
             'light_animation': 'Animating light sources',
             'export_formats': 'ProRes, DNxHD for intermediate formats'
         }
-    
+
     def _get_vfx_principles(self) -> dict:
         """VFX and motion graphics principles."""
         return {
@@ -335,7 +335,7 @@ professional workflow practices, and quality-focused problem solving."""
             'quality_focus': 'Details matter - study reference',
             'iteration_refinement': 'Multiple passes improve quality'
         }
-    
+
     def _get_software_mastery(self) -> dict:
         """Software-specific knowledge."""
         return {
@@ -355,7 +355,7 @@ professional workflow practices, and quality-focused problem solving."""
             'keyboard_shortcuts': 'Speed up workflow significantly',
             'troubleshooting': 'Common software issues and solutions'
         }
-    
+
     def _get_optimization(self) -> dict:
         """Workflow optimization and performance."""
         return {
@@ -375,7 +375,7 @@ professional workflow practices, and quality-focused problem solving."""
             'quality_gates': 'Checkpoints prevent rework',
             'documentation': 'Notes for future revisions'
         }
-    
+
     def _get_troubleshooting(self) -> dict:
         """Common issues and solutions."""
         return {
@@ -395,7 +395,7 @@ professional workflow practices, and quality-focused problem solving."""
             'plugin_crashes': 'Update software and plugins',
             'preview_mismatch': 'Playback quality differs from render'
         }
-    
+
     def _get_industry_practices(self) -> dict:
         """Industry standards and best practices."""
         return {

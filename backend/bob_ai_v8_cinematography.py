@@ -26,39 +26,39 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
     """
     Cinematography knowledge module providing expert-level film and visual composition guidance.
     """
-    
+
     def __init__(self):
         super().__init__('Cinematography', '8.0')
         self.keywords = self.get_keywords()
         self.knowledge_items = self.get_knowledge_dictionaries()
-        
+
     def get_keywords(self) -> List[str]:
         """Return cinematography keywords for domain detection."""
         return [
             # Shot types
             'wide shot', 'long shot', 'medium shot', 'close-up', 'extreme close-up',
             'establishing shot', 'over-the-shoulder', 'two-shot', 'master shot',
-            
+
             # Camera movements
             'pan', 'tilt', 'tracking shot', 'dolly', 'crane', 'push-in', 'pull-out',
             'steadicam', 'handheld', 'whip pan', 'orbit',
-            
+
             # Framing and composition
             'rule of thirds', 'leading lines', 'symmetry', 'negative space', 'depth',
             'layering', 'framing within frame', 'aspect ratio', 'composition',
-            
+
             # Lighting
             'three-point lighting', 'key light', 'fill light', 'back light', 'rim light',
             'chiaroscuro', 'low-key', 'high-key', 'color temperature', 'shadows',
-            
+
             # Color and tone
             'color grading', 'color palette', 'saturation', 'contrast', 'color correction',
             'tint', 'grade', 'look-up table', 'LUT', 'cinematic',
-            
+
             # General film terms
             'film', 'video', 'cinematography', '3D', 'scene composition', 'visual storytelling'
         ]
-    
+
     def get_knowledge_dictionaries(self) -> Dict[str, Dict[str, Any]]:
         """Return all cinematography knowledge dictionaries."""
         return {
@@ -78,7 +78,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'motion_dynamics': self._get_motion_dynamics(),
             'atmospheric_elements': self._get_atmospheric_elements(),
         }
-    
+
     def _get_shot_types(self) -> Dict[str, str]:
         """Shot types and their cinematic purposes."""
         return {
@@ -98,7 +98,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'cutaway_shot': 'Related but separate action, provides context or information',
             'aerial_shot': 'From above, helicopter or drone perspective, establishes scale and geography'
         }
-    
+
     def _get_camera_movements(self) -> Dict[str, str]:
         """Camera movement techniques and their effects."""
         return {
@@ -117,7 +117,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'boom': 'Camera moves on boom arm, combines multiple movements smoothly',
             'parallax': 'Camera moves revealing foreground/background separation, creates depth'
         }
-    
+
     def _get_framing_composition(self) -> Dict[str, str]:
         """Framing and composition techniques."""
         return {
@@ -135,7 +135,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'closed_frame': 'Subjects fill frame completely, creates intensity and claustrophobia',
             'open_frame': 'Subjects small in frame, shows vulnerability against environment'
         }
-    
+
     def _get_lighting_setup(self) -> Dict[str, str]:
         """Lighting setups and techniques."""
         return {
@@ -154,7 +154,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'gobos': 'Patterns projected by light (window shadows, trees), adds visual texture',
             'rim_light': 'Thin light line separating subject from background, creates separation'
         }
-    
+
     def _get_color_grading(self) -> Dict[str, str]:
         """Color grading and correction techniques."""
         return {
@@ -173,7 +173,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'vibrance': 'Saturation that avoids skin tone distortion, natural-looking color enhancement',
             'contrast_curve': 'S-curve increases contrast, adjusts midtones for specific mood'
         }
-    
+
     def _get_depth_techniques(self) -> Dict[str, str]:
         """Techniques for creating depth perception."""
         return {
@@ -190,7 +190,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'focus_stacking': 'Multiple focuses combined in post, sharp throughout extreme depth',
             'miniature_effect': 'Use shallow DOF for toy-like appearance, technical depth manipulation'
         }
-    
+
     def _get_visual_storytelling(self) -> Dict[str, str]:
         """Visual storytelling techniques."""
         return {
@@ -207,7 +207,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'weather_symbolism': 'Rain = sadness, sunny = happiness, storm = conflict',
             'time_of_day': 'Golden hour = romance, blue hour = mystery, noon = harsh reality'
         }
-    
+
     def _get_camera_lenses(self) -> Dict[str, str]:
         """Camera lens types and characteristics."""
         return {
@@ -222,7 +222,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'soft_focus_lens': 'Built-in diffusion, romantic/dreamlike quality, beauty-focused',
             'tilt_shift': 'Creates miniature effect, technical manipulation of focus plane'
         }
-    
+
     def _get_frame_rates(self) -> Dict[str, str]:
         """Frame rates and temporal dynamics."""
         return {
@@ -235,7 +235,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'fast_motion': 'Lower fps playback at normal speed, compresses time for comedy/chaos',
             'variable_frame_rate': 'Changes tempo throughout, dynamic temporal expression'
         }
-    
+
     def _get_aspect_ratios(self) -> Dict[str, str]:
         """Aspect ratio choices and their effects."""
         return {
@@ -246,7 +246,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             '2_39_1': 'Film projection standard, cinematic prestige, epic scope',
             '1_85_1': 'American theatrical standard, traditional cinema format'
         }
-    
+
     def _get_cinema_styles(self) -> Dict[str, str]:
         """Different cinema visual styles and movements."""
         return {
@@ -260,7 +260,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'music_video': 'Highly stylized, visual effects, rapid cutting, contemporary aesthetics',
             'documentary': 'Observational framing, natural lighting, authentic perspective'
         }
-    
+
     def _get_focus_techniques(self) -> Dict[str, str]:
         """Focus and sharpness techniques."""
         return {
@@ -271,7 +271,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'selective_focus': 'Sharp subject, blurry background, isolates primary element',
             'deep_focus': 'Sharp throughout frame, Orson Welles technique, complex layered composition'
         }
-    
+
     def _get_exposure_control(self) -> Dict[str, str]:
         """Exposure and brightness techniques."""
         return {
@@ -281,7 +281,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'backlit': 'Subject between camera and light source, glowing edge effect',
             'bounce_exposure': 'Reflected light softens exposure, natural looking fill, reduced contrast'
         }
-    
+
     def _get_motion_dynamics(self) -> Dict[str, str]:
         """Movement and motion techniques."""
         return {
@@ -292,7 +292,7 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'action_crossing': 'Subject moves across frame at diagonal, creates dynamic energy',
             'entrance_exit': 'Subject enters/exits frame, controls pacing and attention'
         }
-    
+
     def _get_atmospheric_elements(self) -> Dict[str, str]:
         """Atmospheric and environmental elements."""
         return {
@@ -303,29 +303,29 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
             'reflections': 'Light bounces off surfaces, shows environment and character',
             'weather': 'Rain, snow, wind affects mood and physical reality'
         }
-    
+
     def enhance_prompt(self, prompt: str) -> str:
         """Enhance a prompt with cinematography expertise."""
         # Extract cinematography keywords that appear in prompt
         prompt_lower = prompt.lower()
         matched_keywords = [kw for kw in self.keywords if kw in prompt_lower]
-        
+
         if not matched_keywords:
             return prompt
-        
+
         # Build enhancement based on detected cinematography elements
         enhancement_parts = [
             prompt,
             "\n\n[Cinematography Enhancement]"
         ]
-        
+
         if any(word in prompt_lower for word in ['scene', '3d', 'model', 'render', 'compose']):
             enhancement_parts.append(
                 "Apply cinematic composition principles: Consider rule of thirds placement, "
                 "layered depth with foreground/middle-ground/background elements, "
                 "and visual balance. Use leading lines and negative space strategically."
             )
-        
+
         if any(word in prompt_lower for word in ['light', 'shadow', 'illuminat']):
             enhancement_parts.append(
                 "Optimize lighting strategy: Use three-point lighting principles with "
@@ -333,23 +333,23 @@ class CinematographyKnowledge(BobAIV8BaseKnowledge):
                 "Consider color temperature (warm for intimacy, cool for mystery) and "
                 "chiaroscuro contrast for dramatic effect."
             )
-        
+
         if any(word in prompt_lower for word in ['color', 'grade', 'palette', 'tone']):
             enhancement_parts.append(
                 "Implement color grading strategy: Establish cohesive color palette that "
                 "supports the mood. Consider split-toning (warm highlights, cool shadows), "
                 "saturation levels for emotional impact, and color symbolism to guide viewer."
             )
-        
+
         if any(word in prompt_lower for word in ['camera', 'perspective', 'view', 'angle']):
             enhancement_parts.append(
                 "Enhance camera perspective: Select appropriate shot type and camera angle "
                 "that conveys emotional content. Use camera movement strategically to guide "
                 "attention and create dynamic visual narrative."
             )
-        
+
         return "\n".join(enhancement_parts)
-    
+
     def generate_system_prompt(self) -> str:
         """Generate cinematography-focused system prompt."""
         return """You are an expert cinematographer and visual storyteller with deep knowledge of:

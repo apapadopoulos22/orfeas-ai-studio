@@ -12,7 +12,7 @@ import json
 
 class MusicHistoryKnowledge:
     """Music history knowledge base with 200+ items"""
-    
+
     def __init__(self):
         self.knowledge_base = {
             "discipline": "music_history",
@@ -37,10 +37,10 @@ Provide historical context and analysis of musical works, periods, and composers
             "knowledge_items": []
         }
         self._build_knowledge_base()
-    
+
     def _build_knowledge_base(self):
         """Build 200+ music history knowledge items"""
-        
+
         # MEDIEVAL & RENAISSANCE (30 items)
         medieval_items = [
             {
@@ -92,7 +92,7 @@ Provide historical context and analysis of musical works, periods, and composers
                 "cultural_context": "Catholic Church reform movement, Council of Trent regulations"
             },
         ]
-        
+
         # BAROQUE (35 items)
         baroque_items = [
             {
@@ -144,7 +144,7 @@ Provide historical context and analysis of musical works, periods, and composers
                 "cultural_context": "Venice musical tradition, patronage system, instrumental virtuosity"
             },
         ]
-        
+
         # CLASSICAL (30 items)
         classical_items = [
             {
@@ -188,7 +188,7 @@ Provide historical context and analysis of musical works, periods, and composers
                 "cultural_context": "Napoleonic era, rising nationalism, transcendence through deafness"
             },
         ]
-        
+
         # ROMANTIC (35 items)
         romantic_items = [
             {
@@ -256,7 +256,7 @@ Provide historical context and analysis of musical works, periods, and composers
                 "cultural_context": "Russian musical tradition, imperial patronage, personal struggle with identity"
             },
         ]
-        
+
         # JAZZ HISTORY (30 items)
         jazz_items = [
             {
@@ -316,7 +316,7 @@ Provide historical context and analysis of musical works, periods, and composers
                 "cultural_context": "Rock era, electronic instrument development, youth culture adoption"
             },
         ]
-        
+
         # CONTEMPORARY & POPULAR MUSIC (30 items)
         contemporary_items = [
             {
@@ -376,31 +376,31 @@ Provide historical context and analysis of musical works, periods, and composers
                 "cultural_context": "Digital revolution, internet ubiquity, subscription economy, artist struggle"
             },
         ]
-        
+
         # Combine all items
         all_items = medieval_items + baroque_items + classical_items + romantic_items + jazz_items + contemporary_items
-        
+
         self.knowledge_base["knowledge_items"] = all_items
         self.knowledge_base["total_items"] = len(all_items)
-    
+
     def get_knowledge_base(self) -> Dict[str, Any]:
         """Return complete knowledge base"""
         return self.knowledge_base
-    
+
     def get_items_by_period(self, period: str) -> List[Dict[str, Any]]:
         """Get all items for a specific historical period"""
         return [item for item in self.knowledge_base["knowledge_items"] if item.get("period") == period]
-    
+
     def get_historical_context(self, topic: str) -> Dict[str, Any]:
         """Get historical context for a musical topic"""
         relevant_items = []
         topic_lower = topic.lower()
-        
+
         for item in self.knowledge_base["knowledge_items"]:
             if topic_lower in item.get("title", "").lower() or \
                any(topic_lower in str(kw).lower() for kw in item.get("keywords", [])):
                 relevant_items.append(item)
-        
+
         return {
             "topic": topic,
             "context": relevant_items,
@@ -410,26 +410,26 @@ Provide historical context and analysis of musical works, periods, and composers
 # Integration module for BOB AI v9.0
 class MusicHistoryIntegration:
     """Integration module for music history in BOB AI"""
-    
+
     def __init__(self):
         self.knowledge = MusicHistoryKnowledge()
-    
+
     def should_apply(self, context: Dict[str, Any]) -> bool:
         """Determine if music history module should apply"""
         keywords = context.get("keywords", [])
         topics = context.get("topics", [])
-        
+
         history_keywords = [
             "history", "composer", "period", "era", "movement", "baroque",
             "classical", "romantic", "jazz", "rock", "evolution", "historical"
         ]
-        
+
         return any(kw in history_keywords for kw in keywords + topics)
-    
+
     def enhance(self, user_input: str, context: Dict[str, Any]) -> str:
         """Enhance user input with music history knowledge"""
         kb = self.knowledge.get_knowledge_base()
-        
+
         enhancement = f"""
 MUSIC HISTORY EXPERTISE
 

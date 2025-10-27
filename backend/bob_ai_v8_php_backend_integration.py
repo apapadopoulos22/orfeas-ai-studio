@@ -11,13 +11,13 @@ from typing import Dict, Any, Tuple, Optional, List
 
 class PHPBackendIntegration(BobAIV8IntegrationBase):
     """Integration of PHP backend knowledge with LLM enhancement."""
-    
+
     def __init__(self, knowledge: Optional[PHPBackendKnowledge] = None):
         """Initialize PHP backend integration."""
         if knowledge is None:
             knowledge = PHPBackendKnowledge()
         super().__init__(knowledge)
-        
+
         self.confidence_multipliers = {
             'php': 1.4,
             'database': 1.3,
@@ -29,28 +29,28 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
             'backend': 1.1,
             'optimization': 1.1
         }
-    
+
     def should_apply_to_prompt(self, prompt: str) -> Tuple[bool, float]:
         """Determine if PHP backend should enhance prompt."""
         should_apply, base_confidence = super().should_apply_to_prompt(prompt)
-        
+
         if not should_apply:
             return False, 0.0
-        
+
         prompt_lower = prompt.lower()
         multiplier = 1.0
-        
+
         for key, mult in self.confidence_multipliers.items():
             if key in prompt_lower:
                 multiplier = max(multiplier, mult)
-        
+
         final_confidence = min(1.0, base_confidence * multiplier)
         return True, final_confidence
-    
+
     def get_discipline_specific_context(self, prompt: str) -> Dict[str, Any]:
         """Get PHP-specific context from prompt."""
         prompt_lower = prompt.lower()
-        
+
         context = {
             'code_style': None,
             'database_focus': None,
@@ -59,7 +59,7 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
             'testing_needed': None,
             'framework_used': None
         }
-        
+
         # Detect framework usage
         if 'laravel' in prompt_lower:
             context['framework_used'] = 'laravel'
@@ -67,42 +67,42 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
             context['framework_used'] = 'symfony'
         elif 'wordpress' in prompt_lower:
             context['framework_used'] = 'wordpress'
-        
+
         # Detect database focus
         if any(word in prompt_lower for word in ['database', 'query', 'sql', 'mysql']):
             context['database_focus'] = 'database'
-        
+
         # Detect security concern
         if any(word in prompt_lower for word in ['security', 'xss', 'sql injection', 'password']):
             context['security_concern'] = 'important'
-        
+
         # Detect performance criticality
         if any(word in prompt_lower for word in ['fast', 'optimize', 'performance', 'scale']):
             context['performance_critical'] = True
-        
+
         # Detect testing needs
         if any(word in prompt_lower for word in ['test', 'unittest', 'phpunit']):
             context['testing_needed'] = True
-        
+
         # Detect code style expectations
         if any(word in prompt_lower for word in ['clean', 'oop', 'pattern', 'solid']):
             context['code_style'] = 'oop_clean'
-        
+
         return context
-    
+
     def generate_enhancement_context(self, prompt: str) -> Dict[str, Any]:
         """Generate complete PHP enhancement context."""
         base_context = super().generate_enhancement_context(prompt)
-        
+
         discipline_context = self.get_discipline_specific_context(prompt)
         recommendations = self._generate_recommendations(discipline_context, prompt)
-        
+
         base_context['discipline_context'] = discipline_context
         base_context['recommendations'] = recommendations
         base_context['enhancement_areas'] = self._get_enhancement_areas(prompt)
-        
+
         return base_context
-    
+
     def _generate_recommendations(self, context: Dict[str, Any], prompt: str) -> Dict[str, Any]:
         """Generate PHP-specific recommendations."""
         recommendations = {
@@ -112,7 +112,7 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
             'performance': [],
             'testing': []
         }
-        
+
         # Security recommendations
         if context['security_concern'] == 'important':
             recommendations['security'].extend([
@@ -123,7 +123,7 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
             ])
         else:
             recommendations['security'].append('Always prioritize security in PHP')
-        
+
         # Database recommendations
         if context['database_focus'] == 'database':
             recommendations['database'].extend([
@@ -131,7 +131,7 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
                 'Index frequently queried columns',
                 'Optimize SQL queries and use LIMIT'
             ])
-        
+
         # Code quality recommendations
         if context['code_style'] == 'oop_clean':
             recommendations['code_quality'].extend([
@@ -139,7 +139,7 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
                 'Follow PSR standards',
                 'Use interfaces and traits for abstraction'
             ])
-        
+
         # Performance recommendations
         if context['performance_critical']:
             recommendations['performance'].extend([
@@ -147,7 +147,7 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
                 'Implement caching strategy',
                 'Profile with xdebug or Blackfire'
             ])
-        
+
         # Testing recommendations
         if context['testing_needed']:
             recommendations['testing'].extend([
@@ -155,14 +155,14 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
                 'Mock dependencies',
                 'Test for security vulnerabilities'
             ])
-        
+
         return recommendations
-    
+
     def _get_enhancement_areas(self, prompt: str) -> List[str]:
         """Identify PHP enhancement areas."""
         enhancement_areas = []
         prompt_lower = prompt.lower()
-        
+
         if any(word in prompt_lower for word in ['security', 'password', 'injection']):
             enhancement_areas.append('security')
         if any(word in prompt_lower for word in ['database', 'query', 'sql']):
@@ -175,16 +175,16 @@ class PHPBackendIntegration(BobAIV8IntegrationBase):
             enhancement_areas.append('performance')
         if any(word in prompt_lower for word in ['session', 'auth', 'login']):
             enhancement_areas.append('authentication')
-        
+
         return enhancement_areas if enhancement_areas else ['general_php']
-    
+
     def enhance(self, prompt: str) -> str:
         """Enhance prompt with PHP expertise."""
         should_apply, confidence = self.should_apply_to_prompt(prompt)
-        
+
         if not should_apply or confidence < 0.1:
             return prompt
-        
+
         return self.knowledge.enhance_prompt(prompt)
 
 
