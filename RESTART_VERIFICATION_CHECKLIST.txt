@@ -1,0 +1,145 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║              HYBRID DEPLOYMENT - RESTART VERIFICATION CHECKLIST            ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+STEP 1: STOP BACKEND
+════════════════════════════════════════════════════════════════════════════
+Location: Terminal running "python main.py"
+
+Action:
+  [ ] Press Ctrl+C
+  [ ] Wait for message "Interrupted" or similar
+  [ ] Wait 2 more seconds (ensure process fully stops)
+
+Expected Output:
+  KeyboardInterrupt
+  Shutting down...
+
+
+STEP 2: RESTART BACKEND
+════════════════════════════════════════════════════════════════════════════
+Location: Same terminal
+
+Action:
+  [ ] Type: python main.py
+  [ ] Press Enter
+  [ ] Wait 10-15 seconds for startup messages
+
+Expected Output (within 15 seconds):
+  INFO - App initialization complete
+  INFO - Running on http://127.0.0.1:5000
+  INFO - WARNING in app.run(): This is a development server...
+
+
+STEP 3: VERIFY BACKEND IS RUNNING
+════════════════════════════════════════════════════════════════════════════
+Location: Anywhere
+
+Action (pick one):
+  [ ] Open browser → http://localhost:5000/health → should show JSON response
+  [ ] Or: netstat -ano | findstr :5000 → should show process listening
+  [ ] Or: Just see the startup messages above
+
+Expected:
+  Backend is responding to requests
+
+
+STEP 4: HARD REFRESH FRONTEND
+════════════════════════════════════════════════════════════════════════════
+Location: Browser with https://orfeas-ai-studio.vercel.app open
+
+Action:
+  [ ] Press: Ctrl+Shift+R  (Windows)
+      OR  Cmd+Shift+R   (Mac)
+  [ ] Wait for page to reload completely (5-10 seconds)
+  [ ] Do NOT use Ctrl+R (that's soft refresh)
+
+Why hard refresh:
+  Clears all cached files and forces browser to download new code
+
+
+STEP 5: CHECK BROWSER CONSOLE
+════════════════════════════════════════════════════════════════════════════
+Location: Browser console (F12)
+
+Action:
+  [ ] Press F12 (or right-click → Inspect → Console tab)
+  [ ] Look at console output
+
+SHOULD SEE (these are GOOD signs):
+  ✓ [CONFIG] BACKEND_URL: https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev
+  ✓ [CONFIG] API_BASE: https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev/api
+  ✓ [CONFIG] Hostname: orfeas-ai-studio.vercel.app
+  ✓ [CONFIG] Environment: PRODUCTION
+  ✓ [HEALTH] Checking backend health at: https://...
+  ✓ [HEALTH] Response status: 200
+
+SHOULD NOT SEE (these are BAD signs):
+  ✗ CORS policy error
+  ✗ Failed to fetch
+  ✗ Access blocked
+  ✗ ERR_FAILED
+
+
+STEP 6: VERIFY NO ERRORS
+════════════════════════════════════════════════════════════════════════════
+Location: Browser console (continued)
+
+Check:
+  [ ] Any red errors in console?
+  [ ] Are there CORS-related messages?
+  [ ] Do you see "Failed to fetch" messages?
+
+If you see errors:
+  1. Check Network tab (F12 → Network)
+  2. Look for failed requests (red text)
+  3. Click on failed request to see response headers
+  4. Should see: Access-Control-Allow-Origin: * (or specific domain)
+
+If header is missing or still shows CORS error:
+  1. Backend wasn't actually restarted (old process still running)
+  2. Try: taskkill /F /IM python.exe
+  3. Then: python main.py again
+
+
+FINAL VERIFICATION
+════════════════════════════════════════════════════════════════════════════
+
+All checks passed? ✓
+  [ ] Backend is running (shows startup messages)
+  [ ] Browser console shows [CONFIG] and [HEALTH] success messages
+  [ ] No CORS errors in console
+  [ ] No "Failed to fetch" errors
+  [ ] Network tab shows successful API requests (status 200)
+
+If ALL above are checked ✓:
+  SUCCESS! Hybrid deployment is working correctly.
+
+  Your frontend can now talk to your backend through ngrok.
+  The system is ready for testing.
+
+
+TROUBLESHOOTING IF STILL FAILING
+════════════════════════════════════════════════════════════════════════════
+
+Issue: Still seeing CORS errors after restart
+→ Solution 1: Make sure backend is FULLY stopped and restarted
+→ Solution 2: Clear Python cache: del /S __pycache__ *.pyc
+→ Solution 3: Run with: python -B main.py (skip cache)
+
+Issue: Backend won't start / shows errors
+→ Check: All dependencies installed (python -m pip install -r requirements.txt)
+→ Check: No port 5000 conflicts (netstat -ano | findstr :5000)
+
+Issue: Backend starts but doesn't respond
+→ Check: Error messages in backend console
+→ Check: ngrok is still running
+
+Issue: Backend starts but still no CORS headers
+→ Verify: backend/main.py line 1265 has ngrok-skip-browser-warning
+→ If not: File wasn't saved or wasn't pulled from git
+
+
+═══════════════════════════════════════════════════════════════════════════════
+DEADLINE: Restart backend NOW and hard refresh browser to see if it works
+═══════════════════════════════════════════════════════════════════════════════

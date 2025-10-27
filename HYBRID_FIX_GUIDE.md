@@ -3,12 +3,14 @@
 ## Problems Fixed
 
 ### Problem 1: Double `/api` Path
+
 Your HTML files were configured with `API_BASE` already containing `/api`, but then the code was adding `/api` again when making requests.
 
 **Before:** `https://...ngrok.../api/api/models-info` ❌
 **After:** `https://...ngrok.../api/models-info` ✅
 
 ### Problem 2: Missing CORS Header
+
 The backend wasn't configured to allow the `ngrok-skip-browser-warning` header that ngrok adds.
 
 **Error:** `CORS policy: No 'Access-Control-Allow-Origin' header`
@@ -16,7 +18,9 @@ The backend wasn't configured to allow the `ngrok-skip-browser-warning` header t
 ## Solutions Applied
 
 ### Frontend Fix (synexa-style-studio.html)
+
 All API calls now use correct paths:
+
 ```javascript
 const API_BASE = BACKEND_URL + "/api";
 
@@ -31,6 +35,7 @@ await fetch(`${API_BASE}/job-status/${jobId}`); // ✅
 ```
 
 **Fixed instances:**
+
 - `/models-info`
 - `/upload-image`
 - `/generate-3d`
@@ -41,7 +46,9 @@ await fetch(`${API_BASE}/job-status/${jobId}`); // ✅
 - `/preview/...`
 
 ### Backend Fix (main.py)
+
 Added ngrok header to CORS whitelist:
+
 ```python
 CORS(self.app,
      resources={r"/*": {"origins": cors_origins_list}},
@@ -56,6 +63,7 @@ Now the backend allows the `ngrok-skip-browser-warning` header in preflight requ
 ## What You Need to Do Now
 
 ### Step 1: Restart Backend (Important!)
+
 The CORS header changes require a backend restart:
 
 ```bash
@@ -68,11 +76,13 @@ python main.py
 ```
 
 ### Step 2: Wait for Vercel Deployment
+
 - Changes committed and pushed
 - Vercel auto-deploys (1-2 minutes)
-- Check: https://vercel.com/apapadopoulos22/orfeas-ai-studio
+- Check: <https://vercel.com/apapadopoulos22/orfeas-ai-studio>
 
 ### Step 3: Test the Connection
+
 ```
 1. Hard refresh browser: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
 2. Open console: F12 → Console tab
@@ -84,6 +94,7 @@ python main.py
 ```
 
 ### Step 4: Verify No Errors
+
 - No CORS errors should appear
 - No "Failed to fetch" errors
 - Network tab shows successful API calls

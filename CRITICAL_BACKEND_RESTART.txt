@@ -1,0 +1,67 @@
+==============================================================================
+CRITICAL: BACKEND MUST BE RESTARTED FOR CORS FIX TO WORK
+==============================================================================
+
+CURRENT PROBLEM:
+================
+- Backend code HAS been updated with new CORS headers
+- But backend PROCESS is still running OLD code
+- Result: Browser gets "No 'Access-Control-Allow-Origin' header" error
+- Solution: Restart the backend process
+
+WHAT TO DO RIGHT NOW:
+=====================
+
+1. STOP BACKEND (in terminal running python main.py):
+   - Press: Ctrl+C
+   - Wait for it to say "Interrupted"
+
+2. WAIT 2 SECONDS:
+   - Let Python fully shut down
+   - Make sure the process is completely gone
+
+3. START BACKEND AGAIN:
+   - Type: python main.py
+   - Press Enter
+   - Wait for: "Running on http://127.0.0.1:5000"
+
+4. VERIFY IN BROWSER:
+   - Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
+   - Open console: F12
+   - Should see:
+     [CONFIG] BACKEND_URL: https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev
+     [HEALTH] Response status: 200  ✅
+   - NO CORS errors should appear
+
+WHY THIS HAPPENS:
+=================
+When you edit Python files and commit them, the old Python process
+keeps running the old code. The new code doesn't load until you
+restart the Python process.
+
+This is not a bug - it's how Python works. Code changes require
+a process restart to take effect.
+
+VERIFY THE FIX IS APPLIED:
+==========================
+Backend file: c:\Users\johng\Documents\oscar\backend\main.py
+Look at line 1265:
+  allow_headers=["Content-Type", "Authorization", "ngrok-skip-browser-warning"]
+
+The "ngrok-skip-browser-warning" should be there.
+
+If you restart and still see CORS errors, the backend didn't load
+the updated file. Check:
+1. Did you save main.py?
+2. Did you commit and push?
+3. Is there a .pyc cache file blocking the update?
+
+If all else fails, try:
+  python -B main.py
+
+The -B flag prevents Python from using cached .pyc files.
+
+==============================================================================
+Status: WAITING FOR BACKEND RESTART
+Next: Hard refresh browser after backend restarts
+==============================================================================
