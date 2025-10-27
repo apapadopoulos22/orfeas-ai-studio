@@ -4811,7 +4811,7 @@
                 if (validTimestamps.length >= limit.max) {
                     const oldestTimestamp = validTimestamps[0];
                     const waitTime = Math.ceil((limit.window - (now - oldestTimestamp)) / 1000);
-                    console.warn(`â›" Rate limit exceeded for ${action}. Wait ${waitTime}s`);
+                    console.warn(`⛔ Rate limit exceeded for ${action}. Wait ${waitTime}s`);
                     showNotification(`⏳ Rate limit: Please wait ${waitTime} seconds`);
                     return false;
                 }

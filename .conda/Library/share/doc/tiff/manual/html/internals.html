@@ -194,7 +194,7 @@ IEEE floating point).
 The <strong class="program">configure</strong> shell script generates the appropriate
 include files and make files for UNIX systems.
 Makefiles exist for non-UNIX platforms that the
-code runs on—this work has mostly been done by other people.</p>
+code runs on-this work has mostly been done by other people.</p>
 <p>In general, the code is guaranteed to work only on SGI machines.
 In practice it is highly portable to any 32-bit or 64-bit system and much
 work has been done to insure portability to 16-bit systems.
@@ -462,7 +462,7 @@ strip, and a user-supplied scanline buffer that compression schemes
 place decoded data into.  When encoding data the data in the
 user-supplied scanline buffer is encoded into the raw data buffer (from
 where it is written).  Decoding routines should never have to explicitly
-read data – a full strip/tile’s worth of raw data is read and scanlines
+read data - a full strip/tile’s worth of raw data is read and scanlines
 never cross strip boundaries.  Encoding routines must be cognizant of
 the raw data buffer size and call <code class="xref c c-func docutils literal notranslate"><span class="pre">TIFFFlushData1()</span></code> when necessary.
 Note that any pending data is automatically flushed when a new strip/tile is
@@ -494,7 +494,7 @@ has the trivial code for the “nil” compression scheme,
 <code class="file docutils literal notranslate"><span class="pre">tif_packbits.c</span></code> is a
 simple byte-oriented scheme that has to watch out for buffer
 boundaries, and <code class="file docutils literal notranslate"><span class="pre">tif_lzw.c</span></code> has the LZW scheme that has the most
-complexity – it tracks the buffer boundary at a bit level.
+complexity - it tracks the buffer boundary at a bit level.
 Of course, using a private compression scheme (or private tags) limits
 the portability of your TIFF files.</p>
 </section>

@@ -592,7 +592,7 @@
         <div class="studio-container">
             <div class="studio-header">
                 <div class="studio-title">
-                    <span>Ô£ø√º¬ß√±</span>
+                    <span>Ô£ø√º↔ß√±</span>
                     AI-Powered 3D Generator - Cloud Edition
                 </div>
                 <div class="studio-controls">
@@ -606,7 +606,7 @@
                 <!-- Input Panel -->
                 <div class="input-panel">
                     <div class="panel-title">
-                        <span>Ô£ø√º√¨‚Ä¢</span>
+                        <span>Ô£ø√º√✨‚Ä•</span>
                         Input & Configuration
                     </div>
 
@@ -629,7 +629,7 @@
                         <!-- Format Selection -->
                         <div class="option-group">
                             <label class="option-label">
-                                <span>Ô£ø√º√©¬Æ</span>
+                                <span>Ô£ø√º√©↔Æ</span>
                                 Output Format
                             </label>
                             <div class="format-grid">
@@ -638,7 +638,7 @@
                                     <div class="format-name">STL</div>
                                 </div>
                                 <div class="format-option" data-format="obj">
-                                    <span class="format-icon">Ô£ø√º√¨¬∂</span>
+                                    <span class="format-icon">Ô£ø√º√✨↔∂</span>
                                     <div class="format-name">OBJ</div>
                                 </div>
                                 <div class="format-option" data-format="glb">
@@ -651,7 +651,7 @@
                         <!-- Dimensions -->
                         <div class="option-group">
                             <label class="option-label">
-                                <span>Ô£ø√º√¨√®</span>
+                                <span>Ô£ø√º√✨√®</span>
                                 Model Dimensions (mm)
                             </label>
                             <div class="size-controls">
@@ -673,7 +673,7 @@
                         <!-- Quality Settings -->
                         <div class="option-group">
                             <label class="option-label">
-                                <span>'√∂¬∞</span>
+                                <span>'√∂↔∞</span>
                                 Generation Quality
                             </label>
                             <div class="quality-slider">
@@ -704,14 +704,14 @@
                 <!-- Output Panel -->
                 <div class="output-panel">
                     <div class="panel-title">
-                        <span>Ô£ø√º√¨¬ß</span>
+                        <span>Ô£ø√º√✨↔ß</span>
                         3D Model Preview & Export
                     </div>
 
                     <!-- 3D Preview Container -->
                     <div class="preview-3d-container" id="preview3d">
                         <div class="preview-placeholder">
-                            <div class="preview-placeholder-icon">Ô£ø√º√©‚â§</div>
+                            <div class="preview-placeholder-icon">Ô£ø√º√©‚â🔧</div>
                             <div>3D preview will appear here</div>
                             <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.7;">Upload an image and generate to see the 3D model</div>
                         </div>
@@ -728,7 +728,7 @@
                         <h3 style="color: white; margin-bottom: 1rem;">'√∫√ñ Generation Complete!</h3>
                         <p style="color: rgba(255,255,255,0.8); margin-bottom: 1rem;">Your 3D model has been successfully generated and is ready for download.</p>
                         <div>
-                            <button class="download-btn" onclick="downloadModel()">Ô£ø√º√¨‚Ä¢ Download Model</button>
+                            <button class="download-btn" onclick="downloadModel()">Ô£ø√º√✨‚Ä• Download Model</button>
                             <button class="download-btn" onclick="viewFullscreen()">üëÅÔ∏è Fullscreen View</button>
                         </div>
                     </div>
@@ -986,7 +986,7 @@
 
             if (response.ok) {
                 const data = await response.json();
-                showNotification(`Ô£ø√º√¨¬ß Image uploaded! Job ID: ${data.job_id}`, 'success');
+                showNotification(`Ô£ø√º√✨↔ß Image uploaded! Job ID: ${data.job_id}`, 'success');
                 return data.job_id;
             } else {
                 throw new Error('Failed to upload image');
@@ -1061,7 +1061,7 @@
 
             if (data.status === 'completed') {
                 showUI('completed');
-                showNotification('Ô£ø√º√©√¢ 3D model generated successfully!', 'success');
+                showNotification('Ô£ø√º√©√• 3D model generated successfully!', 'success');
 
                 // Show 3D preview if model URL is available
                 if (data.model_url) {
@@ -1207,7 +1207,7 @@
             container.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; text-align: center;">
                     <div>
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">Ô£ø√º√©‚â§</div>
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">Ô£ø√º√©‚â🔧</div>
                         <div>3D Model Generated Successfully</div>
                         <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem;">Three.js not available - Download to view</div>
                     </div>

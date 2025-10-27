@@ -83,7 +83,7 @@ doesn’t know anything about the particular field.  This is a crucial
 property of the TIFF format that must not be given up.</p></li>
 <li><p>To manipulate these fields, the TIFF control logic is required to know a
 great deal about JPEG details, for example such arcana as how to compute
-the length of a Huffman code table — the length is not supplied in the
+the length of a Huffman code table - the length is not supplied in the
 field structure and can only be found by inspecting the table contents.
 This is again a violation of good software practice.  Moreover, it will
 prevent easy adoption of future JPEG extensions that might change these
@@ -146,7 +146,7 @@ inter-application compatibility problems are likely to arise.</p>
 <section id="unnecessary-complexity">
 <h3>Unnecessary complexity<a class="headerlink" href="#unnecessary-complexity" title="Permalink to this heading">¶</a></h3>
 <p>The 6.0 design creates problems for implementations that need to keep the
-JPEG codec separate from the TIFF control logic — for example, consider
+JPEG codec separate from the TIFF control logic - for example, consider
 using a JPEG chip that was not designed specifically for TIFF.  JPEG codecs
 generally want to produce or consume a standard ISO JPEG datastream, not
 just raw compressed data.  (If they were to handle raw data, a separate

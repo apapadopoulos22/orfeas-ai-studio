@@ -1,0 +1,128 @@
+================================================================================
+COPILOT INSTRUCTIONS UPDATE - October 27, 2025
+================================================================================
+
+SUMMARY
+-------
+Updated .github/copilot-instructions.md with discovery-focused, actionable
+guidance for AI agents working on the ORFEAS AI 2D→3D Studio codebase.
+
+KEY IMPROVEMENTS
+----------------
+
+1. ARCHITECTURE OVERVIEW (Simplified)
+   - Replaced verbose diagrams with quick reference map
+   - Emphasized key discoveries: lazy loading, WebSocket rooms, singletons
+
+2. CRITICAL PATTERNS (Enhanced)
+   Five core patterns documented with discovery context:
+   - Pattern 1: Env Initialization (import order is CRITICAL)
+   - Pattern 2: Lazy Model Loading (30s→3s startup improvement)
+   - Pattern 3: GPU Memory Management (try-finally with cleanup)
+   - Pattern 4: WebSocket Real-Time Progress (7 weighted stages)
+   - Pattern 5: Graceful Fallback (GPU→CPU fallback path)
+
+3. CORE MODULE DISCOVERY MAP (New Detail)
+   Added specific discoveries for 9 key modules:
+   - hunyuan_integration.py: Thread-safe singleton, lazy load models
+   - websocket_manager.py: Job rooms via Socket.IO subscription
+   - progress_tracker.py: 7 weighted stages, 100-sample ETA history
+   - gpu_manager.py: VRAM pre-check before jobs
+   - Each with file/line references for quick location
+
+4. FRONTEND STRUCTURE (Added)
+   - Documented monolithic HTML frontend (orfeas-ai-studio.html)
+   - Socket.IO client integration patterns
+   - Section navigation using showSection() pattern
+
+5. API ENDPOINTS (Discovery Format)
+   - Return types and parameters documented
+   - WebSocket events clearly listed
+   - Alternative polling endpoint noted
+
+6. DEVELOPMENT WORKFLOW (Enhanced)
+   - Added WebSocket test commands
+   - Critical import order checking noted
+   - Backend initialization prerequisite emphasized
+
+7. COMMON ISSUES & SOLUTIONS (Enhanced)
+   - 8 real issues with specific file locations
+   - Root causes explained
+   - Line ranges provided for each fix
+
+8. DISCOVERY-BASED INSIGHTS (NEW SECTION)
+   Six unique architectural patterns:
+   - Async-Without-Queues: In-memory tracking, not Redis
+   - Lazy Loading Over Preloading: Startup speed vs. performance
+   - Thread-Safe Singletons: Consistent service initialization
+   - WebSocket Rooms: Lightweight subscriptions, scales to 1000s
+   - Graceful Degradation: CPU fallback for all GPU operations
+   - Weighted Progress: Non-linear progress calculation
+
+IMPACT FOR AI AGENTS
+--------------------
+
+BEFORE:
+  - Generic patterns ("Flask app, routes")
+  - No context on architectural decisions
+  - Missing critical import order
+  - No file/line references
+
+AFTER:
+  - Specific discoveries with context
+  - File/line references for quick location
+  - Thread-safe pattern documentation
+  - Real error cases with solutions
+  - Trade-offs clearly explained
+
+AI agents can now:
+  ✓ Find key patterns without reading multiple files
+  ✓ Understand critical gotchas (env vars, GPU cleanup)
+  ✓ Implement changes respecting architecture
+  ✓ Know which modules to modify for features
+  ✓ Understand performance trade-offs
+
+FILE CHANGES
+------------
+File: c:\Users\johng\Documents\oscar\.github\copilot-instructions.md
+Lines: 435 total (expanded from ~300)
+Status: ✅ No linting errors, properly formatted Markdown
+
+HOW TO USE THESE INSTRUCTIONS
+------------------------------
+
+For new features:
+  → Read "Core Module Discovery Map" to understand existing patterns
+
+For debugging:
+  → Check "Common Issues & Solutions" with specific file locations
+
+For architecture decisions:
+  → Read "Discovery-Based Insights" to understand trade-offs
+
+For configuration:
+  → Check "Environment Variables" and "Critical Patterns"
+
+For integration:
+  → Read "WebSocket Real-Time Progress" pattern
+
+NEXT STEPS FOR AI AGENTS
+------------------------
+
+When starting work:
+1. Review Pattern 1 (Env Initialization) - set vars before any imports
+2. Check if changes involve GPU - read Pattern 3 (GPU Memory Management)
+3. If adding features - check "Core Module Discovery Map" for relevant modules
+4. If debugging - scan "Common Issues & Solutions" for similar problems
+
+FEEDBACK REQUESTED
+------------------
+
+Please clarify if any sections need:
+- More specific code examples
+- Additional file locations referenced
+- Clarification on WebSocket event flow
+- More detail on test execution patterns
+- Deployment-specific information
+
+================================================================================

@@ -145,7 +145,7 @@ The data types are:</p>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_BITSPERSAMPLE</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_CLEANFAXDATA</span></code></p></td>
 <td><p>1</p></td>
@@ -160,7 +160,7 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_COMPRESSION</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_CONSECUTIVEBADFAXLINES</span></code></p></td>
 <td><p>1</p></td>
@@ -190,7 +190,7 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_EXTRASAMPLES</span></code></p></td>
 <td><p>2</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span>, <span class="c-expr sig sig-inline c"><span class="n">uint16_t</span><span class="p">*</span></span></p></td>
-<td><p>† count, types array</p></td>
+<td><p>↔ count, types array</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_FAXFILLFUNC</span></code></p></td>
 <td><p>1</p></td>
@@ -200,22 +200,22 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_FAXMODE</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></p></td>
-<td><p>† G3/G4 compression pseudo-tag</p></td>
+<td><p>↔ G3/G4 compression pseudo-tag</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_FILLORDER</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_GROUP3OPTIONS</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_GROUP4OPTIONS</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_HALFTONEHINTS</span></code></p></td>
 <td><p>2</p></td>
@@ -235,7 +235,7 @@ The data types are:</p>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_IMAGEDEPTH</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_IMAGEDESCRIPTION</span></code></p></td>
 <td><p>1</p></td>
@@ -250,7 +250,7 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_IMAGEWIDTH</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_INKNAMES</span></code></p></td>
 <td><p>2</p></td>
@@ -260,12 +260,12 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_INKSET</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_JPEGCOLORMODE</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></p></td>
-<td><p>† JPEG pseudo-tag</p></td>
+<td><p>↔ JPEG pseudo-tag</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_JPEGQUALITY</span></code></p></td>
 <td><p>1</p></td>
@@ -275,12 +275,12 @@ The data types are:</p>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_JPEGTABLES</span></code></p></td>
 <td><p>2</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span><span class="p">*</span></span>, <span class="c-expr sig sig-inline c"><span class="kt">void</span><span class="p">*</span></span></p></td>
-<td><p>† count, tables</p></td>
+<td><p>↔ count, tables</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_JPEGTABLESMODE</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="kt">int</span></span></p></td>
-<td><p>† JPEG pseudo-tag</p></td>
+<td><p>↔ JPEG pseudo-tag</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_MAKE</span></code></p></td>
 <td><p>1</p></td>
@@ -290,7 +290,7 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_MATTEING</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_MAXSAMPLEVALUE</span></code></p></td>
 <td><p>1</p></td>
@@ -335,12 +335,12 @@ The data types are:</p>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_PLANARCONFIG</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_PREDICTOR</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_PRIMARYCHROMATICITIES</span></code></p></td>
 <td><p>1</p></td>
@@ -350,7 +350,7 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_REFERENCEBLACKWHITE</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="kt">float</span><span class="p">*</span></span></p></td>
-<td><p>† 6-entry array</p></td>
+<td><p>↔ 6-entry array</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_RESOLUTIONUNIT</span></code></p></td>
 <td><p>1</p></td>
@@ -365,17 +365,17 @@ The data types are:</p>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_ROWSPERSTRIP</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>† must be &gt; 0</p></td>
+<td><p>↔ must be &gt; 0</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_SAMPLEFORMAT</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_SAMPLESPERPIXEL</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>† value must be ≤ 4</p></td>
+<td><p>↔ value must be ≤ 4</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_SMAXSAMPLEVALUE</span></code></p></td>
 <td><p>1</p></td>
@@ -395,7 +395,7 @@ The data types are:</p>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_STONITS</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="kt">double</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_SUBFILETYPE</span></code></p></td>
 <td><p>1</p></td>
@@ -420,17 +420,17 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_TILEDEPTH</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_TILELENGTH</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>† must be a multiple of 8</p></td>
+<td><p>↔ must be a multiple of 8</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_TILEWIDTH</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint32_t</span></span></p></td>
-<td><p>† must be a multiple of 8</p></td>
+<td><p>↔ must be a multiple of 8</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_TRANSFERFUNCTION</span></code></p></td>
 <td><p>1 or 3‡</p></td>
@@ -460,17 +460,17 @@ The data types are:</p>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_YCBCRCOEFFICIENTS</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="kt">float</span><span class="p">*</span></span></p></td>
-<td><p>† 3-entry array</p></td>
+<td><p>↔ 3-entry array</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_YCBCRPOSITIONING</span></code></p></td>
 <td><p>1</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_YCBCRSAMPLING</span></code></p></td>
 <td><p>2</p></td>
 <td><p><span class="c-expr sig sig-inline c"><span class="n">uint16_t</span></span></p></td>
-<td><p>†</p></td>
+<td><p>↔</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref c c-macro docutils literal notranslate"><span class="pre">TIFFTAG_YPOSITION</span></code></p></td>
 <td><p>1</p></td>
@@ -486,7 +486,7 @@ The data types are:</p>
 </table>
 </div></blockquote>
 <dl class="simple">
-<dt>†:</dt><dd><p>Tag may not have its values changed once data is written.</p>
+<dt>↔:</dt><dd><p>Tag may not have its values changed once data is written.</p>
 </dd>
 </dl>
 <p>‡:</p>
