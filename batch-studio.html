@@ -370,6 +370,11 @@
           grid-template-columns: repeat(2, 1fr);
         }
       }
+
+      /* Progress bar fill - used for GPU and slot progress */
+      .progress-fill-bar {
+        width: 0%;
+      }
     </style>
   </head>
   <body>
@@ -419,15 +424,15 @@
       <div class="controls-panel">
         <div class="control-group">
           <label class="control-label">Output Format</label>
-          <select id="formatSelect" class="control-input">
-            <option value="stl">STL (3D Printing)</option>
+          <select id="formatSelect" class="control-input" title="Select output 3D model format">
+            <option value="stl">STL (Binary)</option>
             <option value="obj">OBJ (Universal)</option>
             <option value="glb">GLB (Web3D)</option>
           </select>
         </div>
         <div class="control-group">
           <label class="control-label">Quality Level</label>
-          <select id="qualitySelect" class="control-input">
+          <select id="qualitySelect" class="control-input" title="Select quality level and processing time">
             <option value="low">Low (Fast - 20s)</option>
             <option value="medium" selected>Medium (Balanced - 40s)</option>
             <option value="high">High (Best Quality - 60s)</option>
@@ -450,7 +455,7 @@
             <span id="gpu-memory-text">0 MB / 0 MB</span>
           </div>
           <div class="gpu-progress">
-            <div class="gpu-fill" id="gpu-memory-bar" style="width: 0%"></div>
+            <div class="gpu-fill progress-fill-bar" id="gpu-memory-bar"></div>
           </div>
         </div>
         <div class="gpu-bar">
@@ -459,7 +464,7 @@
             <span id="gpu-slots-text">0 / 4</span>
           </div>
           <div class="gpu-progress">
-            <div class="gpu-fill" id="gpu-slots-bar" style="width: 0%"></div>
+            <div class="gpu-fill progress-fill-bar" id="gpu-slots-bar"></div>
           </div>
         </div>
       </div>
