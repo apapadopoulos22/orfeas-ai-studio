@@ -564,7 +564,45 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-    </style>
+    .inline-43515-0 {
+  color: rgba(255,255,255,0.6);
+  display: flex;
+  font-size: 0.8rem;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.inline-40095-1 {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+.inline-71948-2 {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.inline-15855-3 {
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 1rem;
+}
+
+.inline-66680-4 {
+  align-items: center;
+  color: white;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+.inline-9794-5 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+</style>
 </head>
 <body>
     <!-- Connection Bar -->
@@ -678,7 +716,7 @@
                             </label>
                             <div class="quality-slider">
                                 <input type="range" min="1" max="10" value="7" class="slider" id="qualitySlider" />
-                                <div style="display: flex; justify-content: space-between; color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 0.5rem;">
+                                <div>
                                     <span>Fast</span>
                                     <span id="qualityValue">High (7)</span>
                                     <span>Ultra</span>
@@ -702,7 +740,7 @@
                 </div>
 
                 <!-- Output Panel -->
-                <div class="output-panel">
+                <div class="output-panel inline-40095-1">
                     <div class="panel-title">
                         <span>Ô£ø√º√✨↔ß</span>
                         3D Model Preview & Export
@@ -713,10 +751,9 @@
                         <div class="preview-placeholder">
                             <div class="preview-placeholder-icon">Ô£ø√º√©‚â🔧</div>
                             <div>3D preview will appear here</div>
-                            <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.7;">Upload an image and generate to see the 3D model</div>
-                        </div>
-                        <div class="model-viewer" id="modelViewer">
-                            <div class="viewer-controls">
+                            <div>Upload an image and generate to see the 3D model</div>
+         </div>
+                        <div class="model-viewer inline-71948-2" id="modelViewer">="modelViewer"<div class="viewer-controls inline-15855-3"> <div class="viewer-controls">
                                 <button class="viewer-btn" title="Rotate" onclick="toggle3DRotation()">üîÑ</button>
                                 <button class="viewer-btn" title="Reset" onclick="reset3DView()">üéØ</button>
                             </div>
@@ -725,8 +762,8 @@
 
                     <!-- Export Results -->
                     <div class="result-section" id="resultSection">
-                        <h3 style="color: white; margin-bottom: 1rem;">'√∫√ñ Generation Complete!</h3>
-                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 1rem;">Your 3D model has been successfully generated and is ready for download.</p>
+                        <h3>'√∫√ñ Generation Complete!</h3>
+                        <p>Your 3D model has been successfully generated and is ready for download.</p>
                         <div>
                             <button class="download-btn" onclick="downloadModel()">Ô£ø√º√✨‚Ä• Download Model</button>
                             <button class="download-btn" onclick="viewFullscreen()">üëÅÔ∏è Fullscreen View</button>
@@ -922,8 +959,7 @@
                 info.innerHTML = `
                     <strong>üìÅ File:</strong> ${file.name}<br>
                     <strong>Ô£ø√º√≠√¶ Size:</strong> ${(file.size / (1024 * 1024)).toFixed(2)} MB<br>
-                    <strong>üéØ Type:</strong> ${file.type}<br>
-                    <strong>'√∫√ñ Status:</strong> Ready for processing
+                    <strong>üéØ Type:</strong> ${file.type}<</strong> Ready for processing
                 `;
 
                 // Enable generate button
@@ -1205,11 +1241,9 @@
         function showFallback3DViewer() {
             const container = document.getElementById('modelViewer');
             container.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; text-align: center;">
-                    <div>
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">Ô£ø√º√©‚â🔧</div>
+                <div>  <div>Ô£ø√º√©‚â🔧</div>
                         <div>3D Model Generated Successfully</div>
-                        <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem;">Three.js not available - Download to view</div>
+                        <div>Three.js not available - Download to view</div>
                     </div>
                 </div>
             `;

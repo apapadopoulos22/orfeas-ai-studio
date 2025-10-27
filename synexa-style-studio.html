@@ -978,7 +978,155 @@
       .bob-ai-button-spacing {
         margin-top: var(--spacing-sm);
       }
-    </style>
+    .inline-52734-0 {
+  margin-bottom: var(--spacing-lg);
+}
+
+.inline-17984-1 {
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-md);
+  padding: 0.875rem 1.5rem;
+}
+
+.inline-61201-2 {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: var(--spacing-sm);
+  text-align: center;
+}
+
+.inline-13837-3 {
+  color: var(--accent-error);
+}
+
+.inline-88100-4 {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(7, 58, 76, 0.5), rgba(124, 58, 237, 0.1));
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.inline-21581-5 {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.inline-33173-6 {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.inline-15524-7 {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-lg);
+  max-width: 450px;
+}
+
+.inline-64464-8 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.inline-92660-9 {
+  font-size: 0.95rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.inline-711-11 {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  margin-top: var(--spacing-md);
+  max-width: 500px;
+  padding: var(--spacing-md);
+  text-align: left;
+}
+
+.inline-51360-12 {
+  color: var(--accent-primary);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.inline-74251-13 {
+  color: var(--text-secondary);
+  list-style: none;
+  padding: 0;
+}
+
+.inline-30446-14 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.inline-22011-17 {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-top: var(--spacing-lg);
+}
+
+.inline-59869-18 {
+  align-items: center;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(124, 58, 237, 0.1));
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.inline-30228-31 {
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.inline-9883-32 {
+  align-items: center;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+}
+
+.inline-53615-33 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+.inline-32346-34 {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.inline-22867-35 {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+.inline-11333-36 {
+  border: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  flex: 1;
+}
+
+</style>
   </head>
   <body>
     <!-- ============================================
@@ -2113,21 +2261,20 @@
 
         // Show success message with prominent download button
         document.getElementById("results-container").innerHTML = `
-                      <div class="status-badge success">
+                      <div class="status-badge success inline-13837-3">nline-61201-2">nline-17984-1">
                           <span>✓</span> Generation Complete
                       </div>
-                      <p class="progress-text-style" style="margin-bottom: var(--spacing-lg);">
+                      <p class="progress-text-style">
                           File: ${data.output_file || "model.stl"}
                       </p>
 
                       <button
                           class="btn btn-primary btn-full-width"
-                          onclick="downloadModel()"
-                          style="font-size: 1.1rem; padding: 0.875rem 1.5rem; margin-bottom: var(--spacing-md);">
+                          onclick="downloadModel()">
                           <span>⬇️</span> Download 3D Model
                       </button>
 
-                      <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-top: var(--spacing-sm);">
+                      <p>
                           💡 Tip: Open in Windows 3D Viewer, MeshLab, or Blender
                       </p>
                   `;
@@ -2159,9 +2306,8 @@
                       <div class="status-badge error">
                           <span>✗</span> Generation Failed
                       </div>
-                      <p class="progress-text-style" style="color: var(--accent-error);">
-                          ${data.message || "Unknown error"}
-                      </p>
+                      <p class="progress-text-style">
+                          ${data.messa</p>
                   `;
       }
 
@@ -2381,33 +2527,33 @@
             // WebGL unavailable - show fallback options with iframe viewer
             const viewerContainer = document.getElementById("viewer-3d");
             viewerContainer.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: var(--spacing-lg); text-align: center; background: linear-gradient(135deg, rgba(7, 58, 76, 0.5), rgba(124, 58, 237, 0.1)); border-radius: var(--radius-lg);">
-                      <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">🖥️</div>
-                      <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: 1.5rem;">3D Preview Not Available</h3>
-                      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); max-width: 450px; line-height: 1.6;">
+                    <div>37, 0.1)); border-radius: var(--radius-lg);">
+                      <div>🖥️</div>
+                      <h3>3D Preview Not Available</h3>
+                      <p>
                         Your browser doesn't support WebGL. Your 3D model was generated successfully! Choose how to view it:
                       </p>
 
-                      <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
-                        <button class="btn btn-primary" onclick="viewOnline3DViewer()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
+                      <div>
+                        <button class="btn btn-primary" onclick="viewOnline3DViewer()">
                           <span>🌐</span> View Online
                         </button>
-                        <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
+                        <button class="btn btn-secondary" onclick="downloadModel()">
                           <span>⬇️</span> Download Local
                         </button>
                       </div>
 
-                      <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md); margin-top: var(--spacing-md); text-align: left; max-width: 500px; font-size: 0.9rem;">
-                        <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: var(--spacing-sm);"> Viewing Methods:</p>
-                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
-                          <li style="margin-bottom: var(--spacing-sm);">🌐 <strong>Online Viewer (no installation):</strong> View instantly in 3DViewer.net</li>
-                          <li style="margin-bottom: var(--spacing-sm);">📦 <strong>Windows 3D Viewer:</strong> Double-click .stl file (built-in)</li>
-                          <li style="margin-bottom: var(--spacing-sm);">🎨 <strong>Blender:</strong> Professional 3D software (free)</li>
+                      <div>
+                        <p> Viewing Methods:</p>
+                        <ul>
+                          <li>🌐 <strong>Online Viewer (no installation):</strong> View instantly in 3DViewer.net</li>
+                          <li>📦 <strong>Windows 3D Viewer:</strong> Double-click .stl file (built-in)</li>
+                          <li>🎨 <strong>Blender:</strong> Professional 3D software (free)</li>
                           <li>🔧 <strong>MeshLab:</strong> Specialized mesh viewer (free)</li>
                         </ul>
                       </div>
 
-                      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: var(--spacing-lg);">
+                      <p>
                         ✅ Model ready |  Use online viewer or download to your computer
                       </p>
                     </div>
@@ -2463,8 +2609,7 @@
             // Decode base64 to binary
             const binaryString = atob(result.data);
             const arrayBuffer = new ArrayBuffer(binaryString.length);
-            const view = new Uint8Array(arrayBuffer);
-            for (let i = 0; i < binaryString.length; i++) {
+            const view = new Uint8Array< binaryString.length; i++) {
               view[i] = binaryString.charCodeAt(i);
             }
 
@@ -2537,38 +2682,35 @@
               throw new Error(`Failed to parse STL: ${parseError.message}`);
             }
           })
+          .catch((error) =>   }
+          })
           .catch((error) => {
             console.error("[ERROR] ❌ Failed to load STL:", error);
 
             // Three.js initialized but STL failed to load - show fallback options
             const viewerContainer = document.getElementById("viewer-3d");
             viewerContainer.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: var(--spacing-lg); text-align: center; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(124, 58, 237, 0.1)); border-radius: var(--radius-lg);">
-                      <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">📦</div>
-                      <h3 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: 1.5rem;">Preview Load Failed</h3>
-                      <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg); max-width: 450px; line-height: 1.6;">
+                    <div>
+                      <div>📦</div>
+                      <h3>Pr<p>
                         The preview couldn't load in your browser, but your 3D model was generated successfully! View it online or download:
+                      </p>nline or download:
                       </p>
 
-                      <div style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); flex-wrap: wrap; justify-content: center;">
-                        <button class="btn btn-primary" onclick="viewOnline3DViewer()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
-                          <span>🌐</span> View Online
-                        </button>
-                        <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.95rem; padding: 0.75rem 1.25rem;">
+                      <divbtn btn-primary inline-53615-33" onclick="viewOnline3DViewer()">nt-size: 0.95rem; </span>: 0.75rem 1.25rem;">
+                          <span>🌐</span> View Onli<button class="btn btn-secondary inline-22867-35" onclick="downloadModel()">
+                          <span> padding: 0.75rem 1.25rem;">
                           <span>⬇️</span> Download Local
-                        </button>
-                      </div>
-
-                      <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md); margin-top: var(--spacing-md); text-align: left; max-width: 500px; font-size: 0.9rem;">
-                        <p style="color: var(--accent-primary); font-weight: 600; margin-bottom: var(--spacing-sm);">✅ Model Ready - Choose Method:</p>
-                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
-                          <li style="margin-bottom: var(--spacing-sm);">🌐 <strong>Online Viewer:</strong> View instantly (no download)</li>
-                          <li style="margin-bottom: var(--spacing-sm);">📥 <strong>Download:</strong> Open with Windows 3D Viewer</li>
+         <div>: var(--spacing-md); text-align: left; max-width: 500px; font-size: 0.9rem;">
+                        <p>✅ Model Ready - Choose Method:</p>
+                        <ul>
+                          <li>🌐 <strong>Online Viewer:</strong> View instantly (no download)</li>
+                          <li>📥 <strong>Download:</strong> Open with Windows 3D Viewer</li>
                           <li>🖥️ <strong>Desktop Software:</strong> Blender, MeshLab, CAD tools</li>
                         </ul>
                       </div>
 
-                      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: var(--spacing-lg);">
+                      <p>
                         Your model generated successfully | Ready to view or download
                       </p>
                     </div>
@@ -2594,13 +2736,13 @@
 
         const viewerContainer = document.getElementById("viewer-3d");
         viewerContainer.innerHTML = `
-                <div style="display: flex; flex-direction: column; height: 100%; border-radius: var(--radius-lg); overflow: hidden;">
-                  <div style="padding: var(--spacing-md); background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div>
                     <div>
-                      <p style="color: var(--text-primary); font-weight: 600; margin-bottom: var(--spacing-xs);">🌐 Online 3D Viewer</p>
-                      <p style="color: var(--text-muted); font-size: 0.85rem;">Powered by 3DViewer.net</p>
+                      <p>🌐 Online 3D Viewer</p>
+                      <p>Powered by 3DViewer.net</p>
                     </div>
-                    <button class="btn btn-secondary" onclick="downloadModel()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                    <button class="btn btn-secondary" onclick="downloadModel()">
                       <span>⬇️</span> Download
                     </button>
                   </div>
@@ -2608,7 +2750,6 @@
                     src="https://3dviewer.net?model=${encodeURIComponent(
                       modelUrl
                     )}"
-                    style="flex: 1; border: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);"
                     allow="accelerometer; autoplay; camera; gyroscope; magnetometer; microphone; payment; usb"
                     allowfullscreen>
                   </iframe>
