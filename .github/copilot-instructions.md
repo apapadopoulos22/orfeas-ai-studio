@@ -366,8 +366,386 @@ See `PRODUCTION_DEPLOYMENT_GUIDE.md` for full deployment checklist.
 
 ---
 
+## REASONING & DECISION FRAMEWORK (Explain Everything)
+
+### Principle 1: Transparency in Problem-Solving
+
+**When working on any task, explicitly explain**:
+
+1. **What** you're doing (specific action)
+2. **Why** you're doing it (technical reasoning)
+3. **How** it solves the problem (root cause analysis)
+4. **What** could go wrong (risk assessment)
+5. **How** you'll verify success (validation strategy)
+
+**Example template**:
+
+```
+TASK: Fix template expression syntax error on line 8574
+
+ANALYSIS:
+- Error: ${progre" (incomplete template variable)
+- Why: Missing closing } and remaining property access
+- Root cause: Developer typo during template literal editing
+- Risk: This breaks the entire progress bar rendering
+
+SOLUTION:
+- Change ${progre" to ${progressData.progress}%
+- Why: progressData object has progress property (0-100)
+- Verification: Component should render progress bar dynamically
+
+PREVENTION:
+- Add automated template syntax checker
+- Use IDE with template literal highlighting
+```
+
+### Principle 2: Root Cause Before Symptoms
+
+**When debugging, always ask**:
+
+- Is this the actual error or a symptom?
+- What actually changed? (git diff)
+- When did this start? (timeline)
+- What assumptions am I making?
+- What would contradict my hypothesis?
+
+**Example**:
+
+- Symptom: "showSection function undefined"
+- Symptom cause: Function called before definition (execution order)
+- Root cause: HTML body executes before <head> script loads
+- Real fix: Move function to <head>, not just move it later in file
+
+### Principle 3: Evidence-Based Decision Making
+
+**For every decision, collect evidence**:
+
+```python
+# REASONING CHECKLIST
+DECISION = "Should we use GPU or fallback to CPU?"
+
+EVIDENCE FOR GPU:
+✓ GPU available (nvidia-smi returns device)
+✓ VRAM sufficient (24GB > 6GB required)
+✓ Previous generation successful
+✓ No thermal throttling warnings
+
+EVIDENCE AGAINST GPU:
+✗ CUDA out of memory error last job
+✓ GPU memory not fully cleared (orphaned tensors)
+✓ xformers library unstable on Windows
+
+DECISION: Try GPU with pre-check, fall back to CPU on OOM
+CONFIDENCE: 85% (evidence is mixed, but fallback is safe)
+ACTION: Pre-check VRAM, execute, cleanup in finally block
+MONITORING: Log GPU usage and fallback frequency
+```
+
+---
+
 **Last Updated:** October 27, 2025
 **Reference:** Full docs in `.github/copilot-instructions-full.md`
+
+## MISTAKE LEARNING & ERROR RECOVERY (Learn from Problems)
+
+### Error Pattern 1: Import-Time vs Runtime Configuration
+
+**Mistake Learned**:
+
+```python
+# ❌ WRONG: This caused xformers DLL crash (Error: 0xc0000139)
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+import xformers  # CRASHES HERE - env vars not set!
+```
+
+**Why it failed**:
+
+- `xformers` reads environment variables at import time
+- By that time, `XFORMERS_DISABLED=1` was not yet set
+- DLL collision with CUDA runtime
+
+**Correct pattern** (lessons applied):
+
+```python
+# ✅ CORRECT: Set env vars BEFORE any imports
+import os
+os.environ['XFORMERS_DISABLED'] = '1'          # Set FIRST
+os.environ['ORT_TENSORRT_UNAVAILABLE'] = '1'
+os.environ['HOME'] = os.path.expanduser('~')
+
+# NOW it's safe to import
+from dotenv import load_dotenv
+load_dotenv()  # Can override above if needed
+import xformers  # Now safe - env var already set
+```
+
+**How to detect this pattern**:
+
+- Check if error happens at import time vs runtime
+- Review module `__init__.py` for env var reads
+- Use `grep -r "os.environ" module_name` to find all reads
+- If found, set env vars before importing
+
+**Prevention going forward**:
+
+- Always read copilot-instructions Pattern 1
+- Document "import-time dependencies" in module docstrings
+- Add pre-import assertion checks
+
+### Error Pattern 2: Inline Styles Hiding Real Issues
+
+**Mistake Learned**:
+
+```html
+<!-- ❌ WRONG: This worked but hid accessibility problems -->
+<div style="width: 0%">GPU Memory</div>
+
+<!-- Problems hidden by inline style:
+  1. No semantic meaning in CSS
+  2. Hard to audit at scale (386+ files)
+  3. Accessibility tools can't find theme conflicts
+  4. Can't apply media queries or responsive design
+-->
+```
+
+**Why it failed**:
+
+- Inline styles bypass CSS cascade
+- Each style is an island - no shared theme
+- Linting tools can't catch patterns
+- Team can't enforce standards
+
+**Correct pattern** (lessons applied):
+
+```html
+<!-- ✅ CORRECT: Use CSS classes for consistency -->
+<div class="progress-fill-bar">GPU Memory</div>
+
+<style>
+  .progress-fill-bar {
+    width: 0%;  /* Centralizes the concern */
+    transition: width 0.3s ease;  /* Adds polish */
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    border-radius: 4px;
+  }
+
+  /* Can now apply responsive design */
+  @media (prefers-reduced-motion: reduce) {
+    .progress-fill-bar { transition: none; }
+  }
+</style>
+```
+
+**How to detect this pattern**:
+
+- Scan for `style="` in HTML
+- Check if same style repeated 3+ times
+- Use automated tool: `scan_html_css_syntax.py`
+- Review git history for style duplication
+
+**Prevention going forward**:
+
+- Validate: Run `validate_html_css.py` before commits
+- Enable: Webhint.io linting in CI/CD
+- Document: Add CSS audit checklist to PR template
+
+### Error Pattern 3: Missing Type Hints Cascading
+
+**Mistake Learned**:
+
+```python
+# ❌ WRONG: Untyped function creates 5+ downstream errors
+def extract_style_properties(element):  # Missing param type
+    """Extract inline style properties."""
+    # IDE can't infer element type
+    # Can't know what methods are available
+    # Type checker reports 11 errors total
+
+    properties = {}  # Type unknown
+    css_lines = []   # Type unknown
+
+    for key, value in properties.items():  # Can't infer key, value types
+        css_lines.append(f"{key}: {value}")
+
+    return css_lines  # Return type unknown
+```
+
+**Why it failed**:
+
+- Untyped code → IDE loses context
+- Type checker can't validate usage
+- Errors cascade through codebase
+- Next developer has to guess intent
+
+**Correct pattern** (lessons applied):
+
+```python
+# ✅ CORRECT: Full type hints from start
+from typing import Dict, List, Tuple, Any
+
+def extract_style_properties(element: str) -> Tuple[str, Dict[str, str]]:
+    """Extract inline style properties from HTML element.
+
+    Args:
+        element: HTML element string containing style attribute
+
+    Returns:
+        Tuple of (class_name, properties_dict)
+    """
+    properties: Dict[str, str] = {}
+    css_lines: List[str] = []
+
+    for key, value in properties.items():
+        css_lines.append(f"{key}: {value}")
+
+    return ("generated-class", properties)
+```
+
+**How to detect this pattern**:
+
+- Run Pylance: `mcp_pylance_mcp_s_pylanceFileSyntaxErrors`
+- Check for "Cannot access member" errors
+- Look for Any types in IDE tooltips
+- Count type inference cascades
+
+**Prevention going forward**:
+
+- Add `python.analysis.typeCheckingMode: "strict"` to settings
+- Require type hints in all new functions
+- Use automated type hint generation tools
+- Document typing imports at module top
+
+---
+
+## BOB AI KNOWLEDGE BASE INTEGRATION
+
+### What is BOB AI in This Project
+
+BOB AI is an **advanced diagnostic and troubleshooting framework** embedded in this codebase. It represents:
+
+1. **Behavioral observation** - Track what actually happens vs expected
+2. **Optimization** - Find bottlenecks and improve performance
+3. **Building blocks** - Modular solutions to recurring problems
+
+**BOB AI is NOT**:
+
+- A separate system or agent
+- Machine learning inference
+- A new framework or library
+
+**BOB AI IS**:
+
+- A methodology for problem-solving
+- A knowledge base of proven patterns
+- A reasoning framework for debugging
+
+### BOB AI Decision Tree: "How Do I Fix This?"
+
+```
+┌─ ERROR OCCURS
+│
+├─ Step 1: Is it an IMPORT ERROR?
+│  └─ YES → Check environment variables FIRST
+│  │       (See Pattern 1: lines 1-50 of main.py)
+│  │       Reason: Import-time dependencies
+│  └─ NO → Go to Step 2
+│
+├─ Step 2: Is it a RENDERING ERROR?
+│  └─ YES → Check HTML structure
+│  │       1. Function defined before use? (showSection pattern)
+│  │       2. Template syntax valid? (${variable} check)
+│  │       3. CSS classes applied? (inline styles check)
+│  │       Reason: DOM execution order matters
+│  └─ NO → Go to Step 3
+│
+├─ Step 3: Is it a MEMORY ERROR?
+│  └─ YES → Check GPU/VRAM
+│  │       1. Pre-check before job (gpu_manager pattern)
+│  │       2. Cleanup after job (torch.cuda.empty_cache)
+│  │       3. Use fallback processor (graceful degradation)
+│  │       Reason: GPU is shared resource
+│  └─ NO → Go to Step 4
+│
+├─ Step 4: Is it a WebSocket/Networking ERROR?
+│  └─ YES → Check subscriptions
+│  │       1. Client joined room? (subscribe_to_job)
+│  │       2. Server emitting to room? (socketio.emit(..., room=id))
+│  │       3. Heartbeat working? (ping/pong)
+│  │       Reason: WebSocket is stateful
+│  └─ NO → Go to Step 5
+│
+└─ Step 5: Check Common Issues Table (below)
+   └─ Still stuck? Check .github/copilot-instructions-full.md
+```
+
+### BOB AI Pattern Library: Proven Solutions
+
+**Pattern Set A: Configuration & Initialization**
+
+- ✓ Environment variables must be set before imports
+- ✓ Use lazy loading for expensive resources (models, GPU)
+- ✓ Thread-safe singletons with locks for shared state
+- ✓ Validate configuration early, fail fast
+
+**Pattern Set B: Resource Management**
+
+- ✓ Always pre-check before allocating (VRAM check)
+- ✓ Execute in try block, cleanup in finally block
+- ✓ Implement graceful degradation (GPU → CPU fallback)
+- ✓ Monitor resource usage continuously
+
+**Pattern Set C: Communication & Events**
+
+- ✓ Use WebSocket rooms for subscription-based updates
+- ✓ Never broadcast globally when targeted delivery works
+- ✓ Implement heartbeat for connection health
+- ✓ Use JSON serialization for inter-process communication
+
+**Pattern Set D: Error Handling**
+
+- ✓ Catch specific exceptions, not generic Exception
+- ✓ Log context: what state were we in? what were inputs?
+- ✓ Provide fallback always - never leave client hanging
+- ✓ Return meaningful errors to frontend (not stack traces)
+
+### BOB AI Diagnostic Questions
+
+**When something breaks, ask in order**:
+
+1. **Has this worked before?** (regression or new issue?)
+   - If new: Search for recent changes (`git log --oneline -20`)
+   - If regression: Compare working version with broken version
+
+2. **What exactly changed?** (identify delta)
+   - File changes: `git diff`
+   - Dependency changes: `pip list` or `npm list`
+   - Environment changes: Check env vars, config files
+   - External factors: Disk space, internet, permissions
+
+3. **What does the error message actually say?** (don't skip)
+   - Full stack trace or just first line?
+   - Line number is accurate?
+   - Is this the root cause or symptom?
+   - Can I reproduce it consistently?
+
+4. **Which layer is failing?** (narrow scope)
+   - Frontend (browser console errors)
+   - Backend (Flask/Python errors)
+   - WebSocket (connection/message issues)
+   - Database/Storage (file not found)
+   - GPU (CUDA errors)
+
+5. **What would fix this?** (test hypothesis)
+   - Too many things to try? Start with safest bet
+   - Rollback last change (safest)
+   - Check environment variables (quickest)
+   - Restart service (often works)
+   - Check logs (reveals truth)
+
+---
 
 ## Discovery-Based Insights (What Makes This Project Unique)
 
