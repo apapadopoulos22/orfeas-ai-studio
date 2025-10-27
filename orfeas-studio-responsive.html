@@ -551,8 +551,12 @@
       // ORFEAS FRONTEND - SIMPLE & RESPONSIVE
       // ============================================================================
 
-      const API_URL = "http://localhost:5000/api";
-      const HEALTH_URL = "http://localhost:5000/health";
+      // Hybrid Deployment Configuration
+      const BACKEND_BASE =
+        (typeof window.BACKEND_URL !== "undefined" && window.BACKEND_URL) ||
+        "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev";
+      const API_URL = BACKEND_BASE + "/api";
+      const HEALTH_URL = BACKEND_BASE + "/health";
 
       // Check server health
       async function checkServerHealth() {

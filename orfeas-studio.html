@@ -11,12 +11,13 @@
         default-src 'self';
         script-src 'self' 'unsafe-inline' https://cdn.socket.io https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.babylonjs.com;
         style-src 'self' 'unsafe-inline';
-        img-src 'self' data: blob: http://localhost:5000 http://127.0.0.1:5000 https://*.trycloudflare.com;
+        img-src 'self' data: blob: http://localhost:5000 http://127.0.0.1:5000 https://*.trycloudflare.com https://*.ngrok-free.dev https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev;
         connect-src 'self'
             http://localhost:5000 http://localhost:7777 http://localhost:8000
             http://127.0.0.1:5000 http://127.0.0.1:7777 http://127.0.0.1:8000
             ws://localhost:5000 ws://127.0.0.1:5000
             https://*.trycloudflare.com wss://*.trycloudflare.com
+            https://*.ngrok-free.dev wss://*.ngrok-free.dev https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev wss://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev
             https://cdn.socket.io https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.babylonjs.com https://assets.babylonjs.com;
         font-src 'self';
         object-src 'none';
@@ -33,6 +34,7 @@
     <!-- Preconnect to backend API (establishes connection early) -->
     <link rel="preconnect" href="http://127.0.0.1:5000" crossorigin>
     <link rel="preconnect" href="http://localhost:5000" crossorigin>
+    <link rel="preconnect" href="https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev" crossorigin>
 
     <!--  ORFEAS PHASE 3: Cloudflare Tunnel & Babylon.js CDN Preconnect -->
     <link rel="preconnect" href="https://township-discusses-professional-row.trycloudflare.com" crossorigin>
@@ -3154,9 +3156,13 @@
             },
             ENABLE_PERFORMANCE_METRICS: true,  // Track and display performance metrics
 
-            // Backend API Configuration - ORFEAS FIX: LOCAL FIRST, CLOUDFLARE FALLBACK
-            API_BASE_URL: 'http://localhost:5000/api',
-            WEBSOCKET_URL: 'http://localhost:5000',
+            // Hybrid Deployment Backend Configuration
+            BACKEND_URL: (typeof window.BACKEND_URL !== "undefined" && window.BACKEND_URL) ||
+                'https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev',
+
+            // Backend API Configuration
+            API_BASE_URL: '',  // Set dynamically below
+            WEBSOCKET_URL: '', // Set dynamically below
 
             // File Upload Limits
             MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
@@ -3247,6 +3253,10 @@
                 LONG_ANIMATION_DURATION: 800     // Long animation duration (ms)
             }
         };
+
+        // Initialize dynamic backend URLs based on BACKEND_URL
+        ORFEAS_CONFIG.API_BASE_URL = ORFEAS_CONFIG.BACKEND_URL + '/api';
+        ORFEAS_CONFIG.WEBSOCKET_URL = ORFEAS_CONFIG.BACKEND_URL;
 
         // ============================================================================
         //  PRODUCTION FIX 1: Fetch with Timeout Wrapper

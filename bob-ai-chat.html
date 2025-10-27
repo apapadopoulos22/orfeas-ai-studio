@@ -314,8 +314,10 @@
       const sendButton = document.getElementById("sendButton");
       const modelSelect = document.getElementById("modelSelect");
 
-      // API base URL
-      const API_URL = "http://localhost:5000";
+      // API base URL - Hybrid Deployment Configuration
+      const API_URL =
+        (typeof window.BACKEND_URL !== "undefined" && window.BACKEND_URL) ||
+        "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev";
 
       // Add message to chat
       function addMessage(content, isUser = false, modelName = null) {

@@ -1642,11 +1642,17 @@
 
       // Detect environment and set API_BASE accordingly
       // For Netlify: Uses window.API_BASE from netlify.toml redirect rules
-      // For local development: Always use localhost
+      // Hybrid Deployment Configuration
+      // Check window.BACKEND_URL first (set by external config), then use ngrok production URL
+      const BACKEND_URL =
+        (typeof window.BACKEND_URL !== "undefined" && window.BACKEND_URL) ||
+        "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev";
+
       const API_BASE =
         (typeof window.API_BASE !== "undefined" && window.API_BASE) ||
-        "http://127.0.0.1:5000";
+        BACKEND_URL + "/api";
 
+      console.log("[CONFIG] BACKEND_URL:", BACKEND_URL);
       console.log("[CONFIG] API_BASE:", API_BASE);
       console.log("[CONFIG] Hostname:", window.location.hostname);
       console.log(

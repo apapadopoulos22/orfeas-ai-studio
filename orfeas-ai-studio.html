@@ -3842,10 +3842,16 @@
       // CONFIGURATION - ENVIRONMENT AWARE
       // ============================================
 
+      // Hybrid Deployment Configuration
+      const BACKEND_URL =
+        (typeof window.BACKEND_URL !== "undefined" && window.BACKEND_URL) ||
+        "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev";
+
       const API_BASE =
         (typeof window.API_BASE !== "undefined" && window.API_BASE) ||
-        "http://127.0.0.1:5000";
+        BACKEND_URL + "/api";
 
+      console.log("[CONFIG] BACKEND_URL:", BACKEND_URL);
       console.log("[CONFIG] API_BASE:", API_BASE);
       console.log("[CONFIG] Hostname:", window.location.hostname);
       console.log(
