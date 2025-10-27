@@ -1,0 +1,441 @@
+================================================================================
+                    ORFEAS AI STUDIO - DEPLOYMENT FLOWCHART
+================================================================================
+
+DEPLOYMENT DECISION TREE:
+════════════════════════════════════════════════════════════════════════════
+
+                            START HERE
+                                │
+                    Do you want to deploy online?
+                         YES ──┬── NO (STOP)
+                                │
+                    ┌───────────┴───────────┐
+                    │                       │
+              Frontend or        Frontend Only?
+              Full System?        (Static HTML)
+                    │                       │
+        ┌───────────┴───────────┐           │
+        │                       │           │
+      YES                      NO           │
+        │                       │           │
+        ▼                       ▼           ▼
+    Full Stack           Backend Only    GitHub Pages
+     System             (API only)        (Free)
+        │                   │                │
+        │                   │                └──→ OPTION 3
+        ▼                   ▼
+    Vercel +            Heroku              Netlify
+    Heroku           or AWS or              (Free)
+     (Free)            Azure                  │
+        │                  │                 └──→ OPTION 2B
+        ├──→ OPTION 1      │
+        │               ┌──┴──┐               Vercel
+        │               │     │              (Free)
+        │         Heroku AWS  Azure            │
+        │           │     │    │              └──→ OPTION 2A
+        │           │     │    │
+        └───────────┴──────┴────┘
+              │
+              ▼
+    ┌─────────────────────────────────────┐
+    │  SELECT YOUR DEPLOYMENT STACK       │
+    └─────────────────────────────────────┘
+
+================================================================================
+                          RECOMMENDED PATHS
+================================================================================
+
+PATH 1: FASTEST (30 minutes, $0/year) ✅ RECOMMENDED
+────────────────────────────────────────────────────
+
+  Frontend:        Vercel (free tier)
+  Backend:         Heroku (free tier)
+  Domain:          Optional (free tier without custom domain)
+
+  Timeline:        Frontend: 5 min  →  Backend: 15 min  →  Integration: 10 min
+
+  Scripts to Run:  1. DEPLOY_TO_VERCEL.ps1
+                   2. DEPLOY_BACKEND_TO_HEROKU.ps1
+
+  Result:          https://orfeas-ai-studio.vercel.app
+                   https://orfeas-ai-backend.herokuapp.com
+
+
+PATH 2: ENTERPRISE (30 minutes, $10-50/month)
+──────────────────────────────────────────────
+
+  Frontend:        AWS CloudFront + S3
+  Backend:         AWS Lambda / EC2
+  Database:        AWS DynamoDB
+  Domain:          Custom domain ($1-5/month)
+
+  Timeline:        ~30 minutes for full setup
+
+  Best For:        Large-scale applications, high traffic
+
+  Result:          https://orfeas-ai-studio.example.com
+                   Highly scalable, enterprise-grade
+
+
+PATH 3: STATIC ONLY (5 minutes, Free)
+──────────────────────────────────────
+
+  Frontend:        GitHub Pages (free) or Netlify (free)
+  Backend:         None (static site)
+  Domain:          Optional
+
+  Timeline:        ~5 minutes
+
+  Best For:        Documentation, demos, portfolios
+
+  Result:          https://apapadopoulos22.github.io/orfeas-ai-studio
+
+
+PATH 4: SIMPLE FULL-STACK (20 minutes, $7/month)
+─────────────────────────────────────────────────
+
+  Frontend:        Netlify (free)
+  Backend:         Heroku (paid dyno)
+  Domain:          Optional
+
+  Timeline:        ~20 minutes
+
+  Cost:            $7-10/month
+
+  Result:          Complete working system with minimal setup
+
+================================================================================
+                        EXECUTION FLOWCHART
+================================================================================
+
+VERCEL DEPLOYMENT (Frontend):
+─────────────────────────────
+
+    Install Vercel CLI
+           │
+           ▼
+    heroku login
+           │
+           ▼
+    Choose: Staging or Production
+           │
+      ┌────┴────┐
+      │          │
+   Staging    Production
+      │          │
+      ▼          ▼
+  vercel      vercel --prod
+      │          │
+      └────┬─────┘
+           │
+           ▼
+  Get Live URL
+           │
+           ▼
+  Test Frontend Pages
+           │
+           ▼
+    ✅ DONE (5 min)
+
+
+HEROKU DEPLOYMENT (Backend):
+────────────────────────────
+
+    Install Heroku CLI
+           │
+           ▼
+    heroku login
+           │
+           ▼
+    heroku create app-name
+           │
+           ▼
+    Run: DEPLOY_BACKEND_TO_HEROKU.ps1
+           │
+           ▼
+    Create Procfile (auto)
+           │
+           ▼
+    Generate requirements.txt (auto)
+           │
+           ▼
+    Set Environment Variables (auto)
+           │
+           ▼
+    Deploy with: git push heroku main
+           │
+           ▼
+    Scale Dynos (auto)
+           │
+           ▼
+    Get Live URL
+           │
+           ▼
+    Test API Endpoints
+           │
+           ▼
+    ✅ DONE (15 min)
+
+
+INTEGRATION (Connect Frontend to Backend):
+──────────────────────────────────────────
+
+    Update Frontend URL in HTML
+           │
+           ▼
+    Update Backend URL in JavaScript
+           │
+           ▼
+    Configure CORS Headers
+           │
+           ▼
+    Test API Calls
+           │
+           ▼
+    Check Real-time Updates
+           │
+           ▼
+    Monitor Production Logs
+           │
+           ▼
+    ✅ DONE (10 min)
+
+
+POST-DEPLOYMENT VERIFICATION:
+────────────────────────────
+
+    Test 1: Frontend Loads
+    ☐ https://orfeas-ai-studio.vercel.app  → 200 OK
+           │
+           ▼
+    Test 2: Backend Responds
+    ☐ https://orfeas-ai-backend.herokuapp.com/health  → 200 OK
+           │
+           ▼
+    Test 3: API Connectivity
+    ☐ Frontend → Backend API calls  → Success
+           │
+           ▼
+    Test 4: Knowledge Engine
+    ☐ Search queries work  → Return results
+           │
+           ▼
+    Test 5: Real-time Updates
+    ☐ WebSocket connections  → Data streaming
+           │
+           ▼
+    ✅ ALL TESTS PASS → Production Ready!
+
+================================================================================
+                          QUICK DECISION MATRIX
+================================================================================
+
+Question 1: Do you have a Node.js/npm environment?
+  YES → Can use Vercel / Netlify directly
+  NO  → Use GitHub Pages for frontend only
+
+Question 2: Do you want to deploy the Python backend?
+  YES → Use Heroku or AWS
+  NO  → Use GitHub Pages (static only)
+
+Question 3: Do you have an AWS account?
+  YES → Consider AWS for full enterprise setup
+  NO  → Use Vercel + Heroku (simpler, recommended)
+
+Question 4: Do you need custom domain?
+  YES → Purchase domain ($1-5/year) + configure
+  NO  → Use free domain from Vercel/Heroku
+
+Question 5: What's your budget?
+  $0/month    → Vercel + Heroku (free tier)
+  $10-50/mo   → Heroku (paid) + Vercel
+  $50+/month  → AWS Enterprise setup
+
+================================================================================
+                        DEPLOYMENT CHECKLIST BY PHASE
+================================================================================
+
+PRE-DEPLOYMENT (30 minutes before):
+  ☐ Read ONLINE_DEPLOYMENT_QUICK_START.md
+  ☐ Ensure internet connection is stable
+  ☐ Close unnecessary applications
+  ☐ Have credentials ready (GitHub, email for signup)
+  ☐ Test local system is working
+
+
+VERCEL DEPLOYMENT (5 minutes):
+  ☐ Install Vercel CLI:  npm install -g vercel
+  ☐ Login:               vercel login
+  ☐ Deploy:              vercel --prod
+  ☐ Note URL from output
+  ☐ Test by visiting URL in browser
+
+
+HEROKU DEPLOYMENT (15 minutes):
+  ☐ Install Heroku CLI (if not installed)
+  ☐ Login:               heroku login
+  ☐ Create app:          heroku create orfeas-ai-backend
+  ☐ Run script:          .\DEPLOY_BACKEND_TO_HEROKU.ps1
+  ☐ Wait for completion  (~10-15 minutes)
+  ☐ Note URL from output
+  ☐ Check logs:          heroku logs --tail
+
+
+INTEGRATION & TESTING (10 minutes):
+  ☐ Update HTML frontend URL in orfeas-ai-studio.html
+  ☐ Update JavaScript backend URL variable
+  ☐ Push changes to GitHub
+  ☐ Verify Vercel auto-deploys (should be instant)
+  ☐ Test frontend → backend communication
+  ☐ Test search functionality
+  ☐ Check console for errors
+  ☐ Monitor both dashboards for issues
+
+
+VERIFICATION & MONITORING (5 minutes):
+  ☐ Verify frontend loads (https://orfeas-ai-studio.vercel.app)
+  ☐ Verify backend responds (health endpoint)
+  ☐ Check API endpoints (curl or browser)
+  ☐ Verify databases are accessible
+  ☐ Check real-time updates (WebSocket)
+  ☐ Monitor error logs for issues
+
+
+POST-DEPLOYMENT (Ongoing):
+  ☐ Share URLs with team
+  ☐ Document in wiki/README
+  ☐ Set up monitoring alerts
+  ☐ Plan backup strategy
+  ☐ Schedule first retrospective
+  ☐ Plan next optimization phase
+
+================================================================================
+                           TROUBLESHOOTING FLOWCHART
+================================================================================
+
+Issue: Frontend not loading
+  → Check Vercel dashboard
+  → Verify build was successful
+  → Clear browser cache
+  → Try incognito mode
+  → Check network tab for 404s
+
+Issue: Backend returning errors
+  → Check Heroku logs: heroku logs --tail
+  → Verify environment variables set
+  → Check free tier dyno is running
+  → Restart dyno: heroku restart
+  → Check backend local version first
+
+Issue: CORS errors between frontend and backend
+  → Verify backend CORS_ORIGINS configured
+  → Check frontend is making requests to correct URL
+  → Verify frontend URL matches CORS_ORIGINS
+  → Check browser console for exact error
+  → Temporarily disable CORS for testing
+
+Issue: Slow response times
+  → Check Heroku dyno size (may need paid plan)
+  → First request loads model (~50s expected)
+  → Verify not many concurrent users
+  → Check Vercel CDN is being used
+  → Review slow queries in logs
+
+Issue: Out of memory errors
+  → Heroku free tier limited to 512MB
+  → May need to upgrade dyno
+  → Consider AWS for larger memory
+  → Optimize model loading
+  → Reduce batch sizes
+
+Solution path:
+  Problem ──→ Check logs ──→ Verify config ──→ Test locally ──→ Deploy fix ──→ Verify
+
+================================================================================
+                              SUPPORT MATRIX
+================================================================================
+
+Question                          Resource
+────────────────────────────────────────────────────────────────────────────
+How do I deploy?                  ONLINE_DEPLOYMENT_QUICK_START.md
+What are all options?             ONLINE_DEPLOYMENT_GUIDE.md
+How do I use Vercel?              Run DEPLOY_TO_VERCEL.ps1 + Vercel docs
+How do I use Heroku?              Run DEPLOY_BACKEND_TO_HEROKU.ps1 + Heroku docs
+Where are my live URLs?           Vercel/Heroku dashboard
+How do I monitor?                 Built-in dashboards + set up alerts
+How do I scale up?                Upgrade plan or use AWS
+How do I troubleshoot?            Check this flowchart + logs
+What if something breaks?         Rollback available in both platforms
+
+Vercel Docs:  https://vercel.com/docs
+Heroku Docs:  https://devcenter.heroku.com
+GitHub Docs:  https://docs.github.com
+
+================================================================================
+                            NEXT STEPS
+================================================================================
+
+1. CHOOSE YOUR PLATFORM
+   ✓ Vercel (frontend)
+   ✓ Heroku (backend)
+   ✓ Optional: AWS for advanced needs
+
+2. FOLLOW THE EXECUTION FLOWCHART
+   ✓ Run DEPLOY_TO_VERCEL.ps1
+   ✓ Run DEPLOY_BACKEND_TO_HEROKU.ps1
+   ✓ Integration & Testing
+
+3. MONITOR & VERIFY
+   ✓ Check both dashboards
+   ✓ Run verification tests
+   ✓ Verify end-to-end workflow
+
+4. HAND OFF TO TEAM
+   ✓ Share live URLs
+   ✓ Brief on system architecture
+   ✓ Provide documentation links
+   ✓ Set up monitoring alerts
+
+5. OPTIMIZE & SCALE
+   ✓ Collect performance metrics
+   ✓ Identify bottlenecks
+   ✓ Plan optimization roadmap
+   ✓ Schedule scaling review
+
+================================================================================
+                    ESTIMATED TIMELINE TO LIVE
+================================================================================
+
+Activity                          Time       Cumulative
+────────────────────────────────────────────────────────
+1. Install prerequisites          2-3 min    2-3 min
+2. Frontend deployment            5 min      7-8 min
+3. Backend deployment             15 min     22-23 min
+4. Integration & testing          5-10 min   27-33 min
+5. Verification & monitoring      5 min      32-38 min
+─────────────────────────────────────────────────
+TOTAL TIME TO LIVE                ~30-40 min
+
+OPTIMIZED PATH (everything prepared):
+  Just run scripts:               ~20 min
+
+FAST TRACK (skip some testing):
+  Minimum viable deployment:      ~15 min
+
+================================================================================
+                       YOU ARE READY TO DEPLOY! 🚀
+════════════════════════════════════════════════════════════════════════════
+
+Choose your platform above, follow the flowchart, and go live!
+
+Your system is production-ready, tested, and optimized.
+
+Questions? Check the comprehensive guides or review the troubleshooting section.
+
+Good luck! 🎉
+
+Generated: October 27, 2025
+Status: DEPLOYMENT READY
+Next Step: Execute flowchart and deploy!
+================================================================================

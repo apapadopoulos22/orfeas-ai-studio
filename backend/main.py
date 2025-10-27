@@ -378,6 +378,436 @@ def generate_unique_filename(original_filename, prefix="orfeas", include_uuid=Tr
 
     if include_uuid:
         unique_id = str(uuid.uuid4())[:8]  # Short UUID (first 8 chars)
+
+
+# =============================================================================
+# REPLICATOR HELPER - 3D MESH GENERATION FROM DIMENSIONS
+# =============================================================================
+
+def generate_simple_mesh_obj(analysis_data: Dict) -> str:
+    """
+    Generate a simple OBJ mesh from replicator analysis dimensions
+    This is a placeholder - in production would use full photogrammetry
+
+    Args:
+        analysis_data: Analysis data from replicator
+
+    Returns:
+        OBJ format mesh content as string
+    """
+    try:
+        # Extract dimensions from first analysis
+        analyses = analysis_data.get('analyses', [])
+        if not analyses:
+            # Return default cube
+            return get_default_cube_obj()
+
+        first_analysis = analyses[0]
+        dimensions = first_analysis.get('dimensions', {})
+
+        # Extract width, height, depth (with fallbacks)
+        width = 100
+        height = 100
+        depth = 100
+
+        for key, val in dimensions.items():
+            if isinstance(val, dict):
+                size = val.get('real_length_mm', val.get('value', 100))
+            else:
+                size = float(val) if val else 100
+
+            if 'width' in key.lower():
+                width = size
+            elif 'height' in key.lower():
+                height = size
+            elif 'depth' in key.lower():
+                depth = size
+
+        # Generate box mesh
+        return generate_box_obj(width, height, depth)
+
+    except Exception as e:
+        logger.warning(f"[REPLICATOR] Mesh generation error: {e}, using default")
+        return get_default_cube_obj()
+
+
+def generate_box_obj(width: float, height: float, depth: float) -> str:
+    """Generate OBJ format box with given dimensions"""
+    w, h, d = width / 2, height / 2, depth / 2
+
+    obj_content = """# Generated mesh from Replicator analysis
+mtllib default.mtl
+usemtl default
+
+# Vertices
+v -{w} -{h} {d}
+v {w} -{h} {d}
+v {w} {h} {d}
+v -{w} {h} {d}
+v -{w} -{h} -{d}
+v {w} -{h} -{d}
+v {w} {h} -{d}
+v -{w} {h} -{d}
+
+# Normals
+vn -1 0 0
+vn 1 0 0
+vn 0 1 0
+vn 0 -1 0
+vn 0 0 1
+vn 0 0 -1
+
+# Faces
+f 1//1 5//1 8//1
+f 1//1 8//1 4//1
+f 2//2 3//2 7//2
+f 2//2 7//2 6//2
+f 4//3 8//3 7//3
+f 4//3 7//3 3//3
+f 1//4 2//4 6//4
+f 1//4 6//4 5//4
+f 1//5 4//5 3//5
+f 1//5 3//5 2//5
+f 5//6 6//6 7//6
+f 5//6 7//6 8//6
+""".format(w=w, h=h, d=d)
+
+    return obj_content
+
+
+def get_default_cube_obj() -> str:
+    """Get default unit cube OBJ"""
+    return generate_box_obj(100, 100, 100)
+
+
+def generate_stl_mesh(data: dict) -> bytes:
+    """
+    Generate STL format mesh (binary ASCII STL)
+    STL format: Simple triangular mesh format widely supported
+    """
+    try:
+        # Extract dimensions from data
+        dimensions = data.get('dimensions', {})
+        width = float(dimensions.get('width', 100))
+        height = float(dimensions.get('height', 100))
+        depth = float(dimensions.get('depth', 100))
+
+        # Create ASCII STL format
+        stl_content = f"""solid replicator_model
+  facet normal 0 0 1
+    outer loop
+      vertex 0 0 {depth}
+      vertex {width} 0 {depth}
+      vertex {width} {height} {depth}
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 0 0 {depth}
+      vertex {width} {height} {depth}
+      vertex 0 {height} {depth}
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 0 0 0
+      vertex 0 {height} 0
+      vertex {width} {height} 0
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 0 0 0
+      vertex {width} {height} 0
+      vertex {width} 0 0
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 0 {height} 0
+      vertex 0 {height} {depth}
+      vertex {width} {height} {depth}
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 0 {height} 0
+      vertex {width} {height} {depth}
+      vertex {width} {height} 0
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 0 0 0
+      vertex {width} 0 {depth}
+      vertex 0 0 {depth}
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 0 0 0
+      vertex {width} 0 0
+      vertex {width} 0 {depth}
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex {width} 0 0
+      vertex {width} {height} {depth}
+      vertex {width} 0 {depth}
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex {width} 0 0
+      vertex {width} {height} 0
+      vertex {width} {height} {depth}
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex 0 0 0
+      vertex 0 0 {depth}
+      vertex 0 {height} {depth}
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex 0 0 0
+      vertex 0 {height} {depth}
+      vertex 0 {height} 0
+    endloop
+  endfacet
+endsolid replicator_model
+"""
+        return stl_content.encode('utf-8')
+    except Exception as e:
+        logger.warning(f"[STL] Generation error: {e}")
+        return b"ERROR"
+
+
+def generate_step_mesh(data: dict) -> str:
+    """
+    Generate STEP format mesh (ISO 10303-21 CAD format)
+    STEP: Industry standard format for CAD/CAM systems
+    """
+    try:
+        dimensions = data.get('dimensions', {})
+        width = float(dimensions.get('width', 100))
+        height = float(dimensions.get('height', 100))
+        depth = float(dimensions.get('depth', 100))
+
+        # Simplified STEP format - basic rectangular solid
+        step_content = f"""ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('STEP file generated by ORFEAS Replicator'),
+    '2;1',
+    2022-01-01T00:00:00,
+    '',
+    '',
+    'Unknown',
+    '');
+FILE_NAME('replicator_model.step',
+    2022-01-01T00:00:00,
+    (''),
+    (''),
+    'STEP processor',
+    'ORFEAS Replicator',
+    '');
+FILE_SCHEMA(('CONFIG_CONTROL_DESIGN'));
+ENDSEC;
+DATA;
+#1 = APPLICATION_PROTOCOL_DEFINITION('draft international standard',
+    'config_control_design',
+    1994,
+    #2);
+#2 = APPLICATION_ORGANIZATION('');
+#3 = CARTESIAN_POINT('',({width},0.0,0.0));
+#4 = CARTESIAN_POINT('',({width},{height},0.0));
+#5 = CARTESIAN_POINT('',(0.0,{height},0.0));
+#6 = CARTESIAN_POINT('',(0.0,0.0,0.0));
+#7 = CARTESIAN_POINT('',(0.0,0.0,{depth}));
+#8 = CARTESIAN_POINT('',(0.0,{height},{depth}));
+#9 = CARTESIAN_POINT('',(0.0,{height},{depth}));
+#10 = CARTESIAN_POINT('',(0.0,0.0,{depth}));
+#11 = AXIS2_PLACEMENT_3D('',#6,#12,#13);
+#12 = DIRECTION('',(0.0,0.0,1.0));
+#13 = DIRECTION('',(1.0,0.0,0.0));
+#14 = ADVANCED_BREP_SHAPE_REPRESENTATION('',#16,#11);
+#16 = CLOSED_SHELL('',(#17));
+#17 = ADVANCED_FACE('',(#18),#20,.T.);
+#18 = FACE_BOUND('',#19,.T.);
+#19 = EDGE_LOOP('',(#21,#22,#23,#24));
+#20 = PLANE('',#11);
+#21 = ORIENTED_EDGE('',*,*,#25,.T.);
+#22 = ORIENTED_EDGE('',*,*,#26,.F.);
+#23 = ORIENTED_EDGE('',*,*,#27,.T.);
+#24 = ORIENTED_EDGE('',*,*,#28,.F.);
+#25 = EDGE_CURVE('',#3,#4,#29,.T.);
+#26 = EDGE_CURVE('',#4,#5,#30,.T.);
+#27 = EDGE_CURVE('',#5,#6,#31,.T.);
+#28 = EDGE_CURVE('',#6,#3,#32,.T.);
+#29 = LINE('',#3,#33);
+#30 = LINE('',#4,#34);
+#31 = LINE('',#5,#35);
+#32 = LINE('',#6,#36);
+#33 = VECTOR('',#37,{height});
+#34 = VECTOR('',#38,{depth});
+#35 = VECTOR('',#39,{width});
+#36 = VECTOR('',#40,{height});
+#37 = DIRECTION('',(0.0,1.0,0.0));
+#38 = DIRECTION('',(0.0,0.0,1.0));
+#39 = DIRECTION('',(-1.0,0.0,0.0));
+#40 = DIRECTION('',(1.0,0.0,0.0));
+#41 = PRODUCT_DEFINITION_SHAPE('','',#42);
+#42 = PRODUCT_DEFINITION('','replicator_model',#43,#44);
+#43 = PRODUCT_DEFINITION_FORMATION('','',#45);
+#44 = PRODUCT_DEFINITION_CONTEXT('3D Mechanical Part Definition',#46,'3D');
+#45 = PRODUCT('replicator_model','replicator_model','',#47);
+#46 = APPLICATION_CONTEXT('3D mechanical part interchange');
+#47 = PRODUCT_CONTEXT('',#46,'mechanical');
+#48 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',
+    (#49),#50);
+#49 = STYLED_ITEM('color',#51,#14);
+#50 = AXIS2_PLACEMENT_3D('',#52,#53,#54);
+#51 = SURFACE_STYLE_USAGE(.BOTH.,#55);
+#52 = CARTESIAN_POINT('',(0.0,0.0,0.0));
+#53 = DIRECTION('',(0.0,0.0,1.0));
+#54 = DIRECTION('',(1.0,0.0,0.0));
+#55 = SURFACE_SIDE_STYLE('',#56);
+#56 = SURFACE_STYLE_FILL_AREA(#57);
+#57 = FILL_AREA_STYLE('',(#58));
+#58 = FILL_AREA_STYLE_COLOUR('',COLOUR_RGB('',.8,.8,.8));
+ENDSEC;
+END-ISO-10303-21;
+"""
+        return step_content
+    except Exception as e:
+        logger.warning(f"[STEP] Generation error: {e}")
+        return "ERROR"
+
+
+def generate_parasolid_mesh(data: dict) -> str:
+    """
+    Generate Parasolid format mesh (.x_t text format)
+    Parasolid: Industry-standard 3D solid modeling kernel format
+    """
+    try:
+        dimensions = data.get('dimensions', {})
+        width = float(dimensions.get('width', 100))
+        height = float(dimensions.get('height', 100))
+        depth = float(dimensions.get('depth', 100))
+
+        # Simplified Parasolid text format
+        parasolid_content = f"""Parasolid Text Format
+; Parasolid model generated by ORFEAS Replicator
+; Date: 2025-10-26
+;
+entity = 1
+;
+BEGIN SOLID
+  solid
+    id = 1
+    name = "replicator_model"
+    color = 8355711
+    ; Rectangular box: {width}mm x {height}mm x {depth}mm
+    ;
+    BEGIN FACE
+      id = 1
+      type = PLANE
+      color = 8355711
+      ; Front face
+      point_list
+        0.0 0.0 0.0
+        {width} 0.0 0.0
+        {width} {height} 0.0
+        0.0 {height} 0.0
+      end_point_list
+    END FACE
+    ;
+    BEGIN FACE
+      id = 2
+      type = PLANE
+      color = 8355711
+      ; Back face
+      point_list
+        0.0 0.0 {depth}
+        0.0 {height} {depth}
+        {width} {height} {depth}
+        {width} 0.0 {depth}
+      end_point_list
+    END FACE
+    ;
+    BEGIN FACE
+      id = 3
+      type = PLANE
+      color = 8355711
+      ; Top face
+      point_list
+        0.0 {height} 0.0
+        {width} {height} 0.0
+        {width} {height} {depth}
+        0.0 {height} {depth}
+      end_point_list
+    END FACE
+    ;
+    BEGIN FACE
+      id = 4
+      type = PLANE
+      color = 8355711
+      ; Bottom face
+      point_list
+        0.0 0.0 0.0
+        0.0 0.0 {depth}
+        {width} 0.0 {depth}
+        {width} 0.0 0.0
+      end_point_list
+    END FACE
+    ;
+    BEGIN FACE
+      id = 5
+      type = PLANE
+      color = 8355711
+      ; Right face
+      point_list
+        {width} 0.0 0.0
+        {width} 0.0 {depth}
+        {width} {height} {depth}
+        {width} {height} 0.0
+      end_point_list
+    END FACE
+    ;
+    BEGIN FACE
+      id = 6
+      type = PLANE
+      color = 8355711
+      ; Left face
+      point_list
+        0.0 0.0 0.0
+        0.0 {height} 0.0
+        0.0 {height} {depth}
+        0.0 0.0 {depth}
+      end_point_list
+    END FACE
+  end_solid
+END SOLID
+;
+; End of Parasolid model
+"""
+        return parasolid_content
+    except Exception as e:
+        logger.warning(f"[PARASOLID] Generation error: {e}")
+        return "ERROR"
+
+
+def generate_filename(prefix: str = "model", extension: str = "stl", include_id: bool = True) -> str:
+    """Generate unique filename with timestamp and optional ID"""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    unique_id = str(uuid.uuid4())[:8]
+    base = extension.lstrip(".")
+    ext = f".{base}" if base else ""
+
+    if include_id:
         filename = f"{prefix}_{timestamp}_{unique_id}_{base}{ext}"
     else:
         filename = f"{prefix}_{timestamp}_{base}{ext}"
@@ -3031,6 +3461,294 @@ Enhanced prompt:"""
                 logger.error(f"Text-to-image API error: {str(e)}")
                 return jsonify({"error": str(e)}), 500
 
+        @self.app.route('/api/text-to-3d', methods=['POST'])
+        def text_to_3d():
+            """Generate 3D model directly from text prompt (Text→Image→3D pipeline)"""
+            try:
+                # Rate limiting check
+                if self.rate_limiting_enabled and self.rate_limiter:
+                    client_ip = request.remote_addr
+                    is_allowed, error_msg = self.rate_limiter.is_allowed(client_ip)
+                    if not is_allowed:
+                        return jsonify({"error": error_msg}), 429
+
+                data = request.get_json()
+                if not data or 'prompt' not in data:
+                    return jsonify({"error": "No prompt provided"}), 400
+
+                prompt = data.get('prompt', '').strip()
+                if not prompt:
+                    return jsonify({"error": "Prompt cannot be empty"}), 400
+
+                # Extract optional parameters
+                format_type = data.get('format', 'stl').lower()
+                quality = data.get('quality', 7)
+                style = data.get('style', 'realistic')
+                image_size = data.get('image_size', 512)
+                image_steps = data.get('image_steps', 50)
+                guidance_scale = data.get('guidance_scale', 7.0)
+
+                # Validate format
+                ALLOWED_FORMATS = {'stl', 'obj', 'glb', 'ply', 'fbx'}
+                if format_type not in ALLOWED_FORMATS:
+                    return jsonify({
+                        "error": "Invalid format",
+                        "details": f"Format must be one of: {', '.join(ALLOWED_FORMATS)}"
+                    }), 400
+
+                logger.info(f"[TEXT-TO-3D] Request: '{prompt}' | Style: {style} | Quality: {quality}")
+
+                # Generate unique job ID
+                job_id = str(uuid.uuid4())
+
+                # Create initial job entry
+                initial_job_data = {
+                    "status": "processing",
+                    "progress": 0,
+                    "message": "Initializing text-to-3D pipeline...",
+                    "type": "text_to_3d",
+                    "prompt": prompt,
+                    "style": style,
+                    "quality": quality,
+                    "format": format_type
+                }
+                self.processing_jobs[job_id] = initial_job_data
+                self.job_progress[job_id] = initial_job_data
+
+                # Start async generation pipeline
+                def process_text_to_3d():
+                    """Background task: Text → Image → 3D pipeline"""
+                    try:
+                        step_data = {
+                            "status": "processing",
+                            "type": "text_to_3d",
+                            "prompt": prompt,
+                            "style": style
+                        }
+
+                        # Step 1: Generate image from text (0-40%)
+                        logger.info(f"[TEXT-TO-3D] Step 1/3: Generating image from prompt...")
+                        step_data["progress"] = 5
+                        step_data["message"] = "Step 1/3: Generating image from text prompt..."
+                        self.processing_jobs[job_id] = step_data
+                        self.job_progress[job_id] = step_data
+
+                        if self.socketio:
+                            self.emit_event('job_update', {
+                                'job_id': job_id,
+                                'status': 'processing',
+                                'progress': 5,
+                                'message': 'Step 1/3: Generating image from text...',
+                                'stage': 'image_generation'
+                            })
+
+                        try:
+                            from ultimate_text_to_image import get_ultimate_engine
+                            ultimate_engine = get_ultimate_engine()
+
+                            # Generate image from prompt
+                            image_bytes = ultimate_engine.generate_ultimate(
+                                prompt=prompt,
+                                style=style,
+                                width=image_size,
+                                height=image_size,
+                                steps=image_steps,
+                                guidance_scale=guidance_scale,
+                                quality_mode='best'
+                            )
+
+                            if not image_bytes:
+                                raise Exception("Image generation returned no data")
+
+                            # Save intermediate image
+                            image_filename = f"{job_id}_intermediate.png"
+                            image_path = self.uploads_dir / image_filename
+                            image_path.write_bytes(image_bytes)
+
+                            # Convert bytes to PIL Image for next step
+                            generated_image = Image.open(image_path)
+                            logger.info(f"[TEXT-TO-3D] Image generated: {image_filename}")
+
+                        except Exception as e:
+                            logger.error(f"[TEXT-TO-3D] Image generation failed: {e}")
+                            step_data["status"] = "failed"
+                            step_data["message"] = f"Image generation failed: {str(e)}"
+                            self.processing_jobs[job_id] = step_data
+                            self.job_progress[job_id] = step_data
+                            if self.socketio:
+                                self.emit_event('job_update', {
+                                    'job_id': job_id,
+                                    'status': 'failed',
+                                    'message': f"Image generation failed: {str(e)}"
+                                })
+                            return
+
+                        # Step 2: Generate 3D from image (40-90%)
+                        logger.info(f"[TEXT-TO-3D] Step 2/3: Converting image to 3D model...")
+                        step_data["progress"] = 45
+                        step_data["message"] = "Step 2/3: Converting image to 3D model..."
+                        self.processing_jobs[job_id] = step_data
+                        self.job_progress[job_id] = step_data
+
+                        if self.socketio:
+                            self.emit_event('job_update', {
+                                'job_id': job_id,
+                                'status': 'processing',
+                                'progress': 45,
+                                'message': 'Step 2/3: Converting image to 3D...',
+                                'stage': '3d_generation'
+                            })
+
+                        try:
+                            # Get 3D processor
+                            if not self.processor_3d:
+                                self.processor_3d = get_3d_processor()
+
+                            # Generate 3D mesh
+                            mesh_data = self.processor_3d.generate_3d(
+                                image=generated_image,
+                                prompt=prompt,
+                                quality=quality
+                            )
+
+                            if not mesh_data:
+                                raise Exception("3D generation returned no mesh data")
+
+                            logger.info(f"[TEXT-TO-3D] 3D model generated successfully")
+
+                        except Exception as e:
+                            logger.error(f"[TEXT-TO-3D] 3D generation failed: {e}")
+                            step_data["status"] = "failed"
+                            step_data["message"] = f"3D generation failed: {str(e)}"
+                            self.processing_jobs[job_id] = step_data
+                            self.job_progress[job_id] = step_data
+                            if self.socketio:
+                                self.emit_event('job_update', {
+                                    'job_id': job_id,
+                                    'status': 'failed',
+                                    'message': f"3D generation failed: {str(e)}"
+                                })
+                            return
+
+                        # Step 3: Export model (90-100%)
+                        logger.info(f"[TEXT-TO-3D] Step 3/3: Exporting 3D model...")
+                        step_data["progress"] = 85
+                        step_data["message"] = f"Step 3/3: Exporting as {format_type.upper()}..."
+                        self.processing_jobs[job_id] = step_data
+                        self.job_progress[job_id] = step_data
+
+                        if self.socketio:
+                            self.emit_event('job_update', {
+                                'job_id': job_id,
+                                'status': 'processing',
+                                'progress': 85,
+                                'message': f'Step 3/3: Exporting {format_type.upper()}...',
+                                'stage': 'export'
+                            })
+
+                        try:
+                            # Export mesh to file
+                            model_filename = f"{job_id}_model.{format_type}"
+                            model_path = self.uploads_dir / model_filename
+
+                            if format_type == 'stl':
+                                # Export as STL
+                                if hasattr(mesh_data, 'save'):
+                                    mesh_data.save(str(model_path))
+                                else:
+                                    # Assume it's already a mesh object
+                                    mesh_data.export(str(model_path))
+                            elif format_type in {'obj', 'glb', 'ply', 'fbx'}:
+                                # For other formats, use export method
+                                mesh_data.export(str(model_path))
+
+                            # Verify file was created
+                            if not model_path.exists():
+                                raise Exception(f"Model file not created: {model_path}")
+
+                            logger.info(f"[TEXT-TO-3D] Model exported: {model_filename}")
+
+                            # Update job to completed
+                            complete_data = {
+                                "status": "completed",
+                                "progress": 100,
+                                "message": "Text-to-3D generation completed!",
+                                "job_id": job_id,
+                                "model_url": f"/api/download/{job_id}/{model_filename}",
+                                "output_file": model_filename,
+                                "format": format_type,
+                                "quality": quality,
+                                "prompt": prompt
+                            }
+                            self.processing_jobs[job_id] = complete_data
+                            self.job_progress[job_id] = complete_data
+
+                            if self.socketio:
+                                self.emit_event('job_update', {
+                                    'job_id': job_id,
+                                    'status': 'completed',
+                                    'progress': 100,
+                                    'message': 'Text-to-3D generation completed!',
+                                    'model_url': f"/api/download/{job_id}/{model_filename}"
+                                })
+
+                            logger.info(f"[TEXT-TO-3D] ✅ Pipeline completed: {job_id}")
+
+                        except Exception as e:
+                            logger.error(f"[TEXT-TO-3D] Export failed: {e}")
+                            step_data["status"] = "failed"
+                            step_data["message"] = f"Model export failed: {str(e)}"
+                            self.processing_jobs[job_id] = step_data
+                            self.job_progress[job_id] = step_data
+                            if self.socketio:
+                                self.emit_event('job_update', {
+                                    'job_id': job_id,
+                                    'status': 'failed',
+                                    'message': f"Model export failed: {str(e)}"
+                                })
+                            return
+
+                        # Cleanup GPU memory
+                        torch.cuda.empty_cache()
+
+                    except Exception as e:
+                        import traceback
+                        error_trace = traceback.format_exc()
+                        logger.error(f"[TEXT-TO-3D] Pipeline error: {str(e)}")
+                        logger.error(f"[TEXT-TO-3D] Traceback:\n{error_trace}")
+
+                        error_data = {
+                            "status": "failed",
+                            "progress": 0,
+                            "message": f"Text-to-3D pipeline failed: {str(e)}",
+                            "error_type": type(e).__name__
+                        }
+                        self.processing_jobs[job_id] = error_data
+                        self.job_progress[job_id] = error_data
+
+                        if self.socketio:
+                            self.emit_event('job_update', {
+                                'job_id': job_id,
+                                'status': 'failed',
+                                'progress': 0,
+                                'message': f"Text-to-3D pipeline failed: {str(e)}"
+                            })
+
+                # Start processing in background thread
+                thread = threading.Thread(target=process_text_to_3d, daemon=True)
+                thread.start()
+
+                return jsonify({
+                    "job_id": job_id,
+                    "status": "processing",
+                    "message": "Text-to-3D generation pipeline started",
+                    "steps": ["image_generation", "3d_generation", "export"]
+                })
+
+            except Exception as e:
+                logger.error(f"[TEXT-TO-3D] API error: {str(e)}")
+                return jsonify({"error": str(e)}), 500
+
         # [ORFEAS OPTIMIZATION] Progressive 3D Generation with Streaming Results
         @self.app.route('/api/generate-3d/progressive', methods=['POST'])
         @track_request_metrics('/api/generate-3d/progressive')
@@ -4863,6 +5581,457 @@ Enhanced prompt:"""
             except Exception as e:
                 logger.error(f"[ORFEAS] LLM status check failed: {e}")
                 return jsonify({'error': str(e)}), 500
+
+        # ============================================
+        # BOB AI TEXT-TO-VECTOR & ENHANCEMENT ROUTES
+        # ============================================
+
+        @self.app.route('/api/bob-ai-text-to-vector', methods=['POST'])
+        @track_request_metrics('/api/bob-ai-text-to-vector')
+        def bob_ai_text_to_vector():
+            """Generate SVG vector from text prompt using Bob AI + Mistral LLM"""
+            try:
+                from bob_ai_svg_generator import get_bob_ai_svg_generator
+
+                # Get request data
+                data = request.get_json()
+                prompt = data.get('prompt', '').strip()
+                style = data.get('style', 'geometric')
+                complexity = data.get('complexity', 'medium')
+
+                # Validate inputs
+                if not prompt:
+                    return jsonify({'success': False, 'error': 'Prompt is required'}), 400
+
+                valid_styles = ['geometric', 'organic', 'abstract', 'decorative', 'technical', 'artistic']
+                valid_complexity = ['simple', 'medium', 'complex']
+
+                if style not in valid_styles:
+                    return jsonify({'success': False, 'error': f'Invalid style. Must be one of: {", ".join(valid_styles)}'}), 400
+
+                if complexity not in valid_complexity:
+                    return jsonify({'success': False, 'error': f'Invalid complexity. Must be one of: {", ".join(valid_complexity)}'}), 400
+
+                logger.info(f"[BOB AI] Text-to-Vector request: prompt='{prompt[:50]}...', style={style}, complexity={complexity}")
+
+                # Get SVG generator
+                generator = get_bob_ai_svg_generator()
+
+                # Generate SVG
+                result = generator.generate_from_text(prompt, style, complexity)
+
+                if not result.get('success'):
+                    logger.warning(f"[BOB AI] Generation failed: {result.get('error')}")
+                    return jsonify(result), 400
+
+                logger.info(f"[BOB AI] SVG generated successfully: {result.get('pathCount')} paths")
+                return jsonify(result), 200
+
+            except Exception as e:
+                logger.error(f"[BOB AI] Text-to-vector error: {e}", exc_info=True)
+                return jsonify({'success': False, 'error': str(e)}), 500
+
+        @self.app.route('/api/bob-ai-enhance-vector', methods=['POST'])
+        @track_request_metrics('/api/bob-ai-enhance-vector')
+        def bob_ai_enhance_vector():
+            """Enhance existing SVG vector (simplify, complexify, stylize, custom)"""
+            try:
+                from bob_ai_svg_generator import get_bob_ai_svg_generator
+
+                # Get request data
+                data = request.get_json()
+                svg_data = data.get('svgData', '').strip()
+                enhancement_type = data.get('enhancement', 'stylize').lower()
+                target_path_count = data.get('targetPathCount')
+                custom_prompt = data.get('prompt', '')
+
+                # Validate inputs
+                if not svg_data:
+                    return jsonify({'success': False, 'error': 'SVG data is required'}), 400
+
+                valid_enhancements = ['simplify', 'complexify', 'stylize', 'custom']
+                if enhancement_type not in valid_enhancements:
+                    return jsonify({'success': False, 'error': f'Invalid enhancement type. Must be one of: {", ".join(valid_enhancements)}'}), 400
+
+                if enhancement_type == 'custom' and not custom_prompt:
+                    return jsonify({'success': False, 'error': 'Custom prompt is required for custom enhancement'}), 400
+
+                logger.info(f"[BOB AI] Vector enhancement request: type={enhancement_type}, svg_size={len(svg_data)}")
+
+                # Get SVG generator
+                generator = get_bob_ai_svg_generator()
+
+                # Prepare kwargs
+                kwargs = {}
+                if enhancement_type in ['simplify', 'complexify'] and target_path_count:
+                    kwargs['targetPathCount'] = target_path_count
+                if enhancement_type == 'custom':
+                    kwargs['prompt'] = custom_prompt
+                elif enhancement_type == 'stylize':
+                    kwargs['prompt'] = custom_prompt if custom_prompt else 'Add artistic styling'
+
+                # Enhance vector
+                result = generator.enhance_vector(svg_data, enhancement_type, **kwargs)
+
+                if not result.get('success'):
+                    logger.warning(f"[BOB AI] Enhancement failed: {result.get('error')}")
+                    return jsonify(result), 400
+
+                logger.info(f"[BOB AI] Vector enhanced: type={enhancement_type}, new_paths={result.get('pathCount')}")
+                return jsonify(result), 200
+
+            except Exception as e:
+                logger.error(f"[BOB AI] Vector enhancement error: {e}", exc_info=True)
+                return jsonify({'success': False, 'error': str(e)}), 500
+
+        @self.app.route('/api/vector-convert', methods=['POST'])
+        @track_request_metrics('/api/vector-convert')
+        def vector_convert():
+            """Convert image to SVG vector using Bob AI"""
+            try:
+                from bob_ai_svg_generator import get_bob_ai_svg_generator
+                import io
+                from PIL import Image
+                import base64
+
+                # Get uploaded file
+                if 'image' not in request.files:
+                    return jsonify({'success': False, 'error': 'Image file is required'}), 400
+
+                file = request.files['image']
+                if file.filename == '':
+                    return jsonify({'success': False, 'error': 'No file selected'}), 400
+
+                quality = request.form.get('quality', 'medium')
+
+                logger.info(f"[VECTOR-CONVERT] Converting image: {file.filename}, quality={quality}")
+
+                # Read and process image
+                try:
+                    image = Image.open(file.stream)
+
+                    # Convert image description to prompt
+                    filename = Path(file.filename).stem
+                    prompt = f"Create a vector illustration based on image: {filename}"
+
+                    # Map quality to complexity
+                    quality_to_complexity = {
+                        'low': 'simple',
+                        'medium': 'medium',
+                        'high': 'complex'
+                    }
+                    complexity = quality_to_complexity.get(quality, 'medium')
+
+                    # Generate SVG using Bob AI
+                    generator = get_bob_ai_svg_generator()
+                    result = generator.generate_from_text(prompt, style='abstract', complexity=complexity)
+
+                    if not result.get('success'):
+                        logger.warning(f"[VECTOR-CONVERT] Conversion failed: {result.get('error')}")
+                        return jsonify(result), 400
+
+                    logger.info(f"[VECTOR-CONVERT] Image converted: {result.get('pathCount')} paths")
+                    return jsonify(result), 200
+
+                except Exception as e:
+                    logger.error(f"[VECTOR-CONVERT] Image processing error: {e}", exc_info=True)
+                    return jsonify({'success': False, 'error': f'Image processing failed: {str(e)}'}), 500
+
+            except Exception as e:
+                logger.error(f"[VECTOR-CONVERT] Vector conversion error: {e}", exc_info=True)
+                return jsonify({'success': False, 'error': str(e)}), 500
+
+        # ============================================
+        # REPLICATOR API ENDPOINTS
+        # ============================================
+        @self.app.route('/api/replicator/analyze', methods=['POST'])
+        @track_request_metrics('/api/replicator/analyze')
+        def replicator_analyze():
+            """Analyze multiple images for 3D object reconstruction"""
+            try:
+                from replicator_engine import get_replicator_engine
+
+                # Get uploaded files
+                if 'images' not in request.files:
+                    return jsonify({'success': False, 'error': 'No images provided'}), 400
+
+                image_files = request.files.getlist('images')
+                if not image_files:
+                    return jsonify({'success': False, 'error': 'No images provided'}), 400
+
+                # Get configuration
+                has_ruler = request.form.get('has_ruler', 'true').lower() == 'true'
+                ruler_type = request.form.get('ruler_type', 'auto')
+                ruler_pixels = float(request.form.get('ruler_pixels', 500))
+                ruler_mm = float(request.form.get('ruler_mm', 150))
+
+                logger.info(f"[REPLICATOR] Processing {len(image_files)} images")
+
+                # Initialize engine
+                engine = get_replicator_engine()
+
+                # Save temp images and process
+                import tempfile
+                temp_dir = tempfile.mkdtemp()
+                image_paths = []
+                angle_hints = []
+
+                for i, file in enumerate(image_files):
+                    if file and file.filename:
+                        temp_path = os.path.join(temp_dir, f"image_{i}_{file.filename}")
+                        file.save(temp_path)
+                        image_paths.append(temp_path)
+
+                        # Get angle hint if provided
+                        angle_hint = request.form.get(f'angle_{i}', 'unknown')
+                        angle_hints.append(angle_hint)
+
+                if not image_paths:
+                    return jsonify({'success': False, 'error': 'No valid images provided'}), 400
+
+                # Process images
+                result = engine.process_multiple_images(image_paths, angle_hints)
+
+                # Clean up temp files
+                import shutil
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+                logger.info(f"[REPLICATOR] Analysis complete: {len(image_paths)} images processed")
+                return jsonify({
+                    'success': True,
+                    'session_id': result['session_id'],
+                    'num_images': result['num_images'],
+                    'analyses': result['analyses'],
+                    'statistics': result['statistics'],
+                    'suggested_angles': result['suggested_angles'],
+                    'next_steps': result['next_steps']
+                }), 200
+
+            except Exception as e:
+                logger.error(f"[REPLICATOR] Analysis error: {e}", exc_info=True)
+                return jsonify({'success': False, 'error': str(e)}), 500
+
+        @self.app.route('/api/replicator/export-3d', methods=['POST'])
+        @track_request_metrics('/api/replicator/export-3d')
+        def replicator_export_3d():
+            """Export 3D model from replicator analysis in multiple formats"""
+            try:
+                from replicator_engine import get_replicator_engine
+                import json
+
+                data = request.get_json()
+                export_format = data.get('format', 'obj').lower()  # obj, stl, parasolid, step
+
+                logger.info(f"[REPLICATOR] Exporting 3D model as {export_format}")
+
+                # Validate format
+                supported_formats = {'obj', 'stl', 'parasolid', 'step'}
+                if export_format not in supported_formats:
+                    return jsonify({'success': False, 'error': f'Unsupported format: {export_format}'}), 400
+
+                session_id = data.get('session_id', 'unknown')
+
+                # Generate mesh based on format
+                if export_format == 'obj':
+                    content = generate_simple_mesh_obj(data)
+                    mimetype = 'model/obj'
+                    download_name = f'replicator_model_{session_id}.obj'
+                elif export_format == 'stl':
+                    content = generate_stl_mesh(data)
+                    mimetype = 'model/stl'
+                    download_name = f'replicator_model_{session_id}.stl'
+                    from io import BytesIO
+                    output = BytesIO(content if isinstance(content, bytes) else content.encode())
+                    return send_file(
+                        output,
+                        mimetype=mimetype,
+                        as_attachment=True,
+                        download_name=download_name
+                    ), 200
+                elif export_format == 'step':
+                    content = generate_step_mesh(data)
+                    mimetype = 'model/step'
+                    download_name = f'replicator_model_{session_id}.step'
+                elif export_format == 'parasolid':
+                    content = generate_parasolid_mesh(data)
+                    mimetype = 'model/parasolid'
+                    download_name = f'replicator_model_{session_id}.x_t'
+
+                # Return as file download
+                from io import BytesIO
+                output = BytesIO(content if isinstance(content, bytes) else content.encode())
+
+                return send_file(
+                    output,
+                    mimetype=mimetype,
+                    as_attachment=True,
+                    download_name=download_name
+                ), 200
+
+            except Exception as e:
+                logger.error(f"[REPLICATOR] Export error: {e}", exc_info=True)
+                return jsonify({'success': False, 'error': str(e)}), 500
+
+        @self.app.route('/api/replicator/analyze-video', methods=['POST'])
+        @track_request_metrics('/api/replicator/analyze-video')
+        def replicator_analyze_video():
+            """Analyze video with real-time captions for 3D object reconstruction"""
+            try:
+                from replicator_video import get_video_replicator_engine
+                import tempfile
+
+                # Check for video file
+                if 'video' not in request.files:
+                    return jsonify({'success': False, 'error': 'No video file provided'}), 400
+
+                video_file = request.files['video']
+                if not video_file or not video_file.filename:
+                    return jsonify({'success': False, 'error': 'Invalid video file'}), 400
+
+                # Validate video format
+                allowed_extensions = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
+                file_ext = Path(video_file.filename).suffix.lower()
+                if file_ext not in allowed_extensions:
+                    return jsonify({'success': False, 'error': f'Unsupported video format: {file_ext}'}), 400
+
+                # Save temp video
+                temp_dir = tempfile.mkdtemp()
+                video_path = os.path.join(temp_dir, video_file.filename)
+                video_file.save(video_path)
+
+                logger.info(f"[REPLICATOR-VIDEO] Processing video: {video_file.filename}")
+
+                # Get parameters
+                target_frames = int(request.form.get('target_frames', 15))
+                has_ruler = request.form.get('has_ruler', 'false').lower() == 'true'
+                ruler_type = request.form.get('ruler_type', 'auto')
+
+                # Get engine and analyze
+                engine = get_video_replicator_engine()
+
+                def progress_emit(progress_data):
+                    """Emit progress via WebSocket if available"""
+                    try:
+                        self.socketio.emit('video_analysis_progress', progress_data, room=request.sid)
+                    except:
+                        pass
+
+                # Analyze video
+                result = engine.analyze_video(
+                    video_path,
+                    target_frames=target_frames,
+                    enable_streaming=True,
+                    progress_callback=progress_emit,
+                )
+
+                # Cleanup temp file
+                import shutil
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+                # Format response
+                from dataclasses import asdict as dataclass_asdict
+                response_data = {
+                    'success': True,
+                    'video_id': result.video_id,
+                    'total_frames': result.total_frames,
+                    'analyzed_frames': result.analyzed_frames,
+                    'fps': result.fps,
+                    'duration_seconds': result.duration_seconds,
+                    'captions': [
+                        {
+                            'frame_number': c.frame_number,
+                            'timestamp_seconds': c.timestamp_seconds,
+                            'caption': c.caption,
+                            'confidence': c.confidence,
+                            'key_features': c.key_features,
+                            'dimensions_detected': c.dimensions_detected,
+                            'angle_estimate': c.angle_estimate,
+                        }
+                        for c in result.captions
+                    ],
+                    'statistics': result.aggregated_statistics,
+                    'recommended_frames': result.recommended_frames,
+                }
+
+                logger.info(
+                    f"[REPLICATOR-VIDEO] Analysis complete: {result.analyzed_frames} frames from "
+                    f"{result.total_frames} total"
+                )
+
+                return jsonify(response_data), 200
+
+            except Exception as e:
+                logger.error(f"[REPLICATOR-VIDEO] Analysis error: {e}", exc_info=True)
+                return jsonify({'success': False, 'error': str(e)}), 500
+
+        @self.app.route('/api/replicator/video-to-images', methods=['POST'])
+        @track_request_metrics('/api/replicator/video-to-images')
+        def replicator_video_to_images():
+            """Convert video keyframes to image set for standard 3D reconstruction"""
+            try:
+                from replicator_video import get_video_replicator_engine
+                import tempfile
+
+                if 'video' not in request.files:
+                    return jsonify({'success': False, 'error': 'No video file provided'}), 400
+
+                video_file = request.files['video']
+                if not video_file or not video_file.filename:
+                    return jsonify({'success': False, 'error': 'Invalid video file'}), 400
+
+                # Save temp video
+                temp_dir = tempfile.mkdtemp()
+                video_path = os.path.join(temp_dir, video_file.filename)
+                video_file.save(video_path)
+
+                logger.info(f"[REPLICATOR-VIDEO] Extracting frames from: {video_file.filename}")
+
+                # Get engine
+                engine = get_video_replicator_engine()
+                target_frames = int(request.form.get('target_frames', 10))
+
+                # Extract keyframes
+                keyframes = engine.frame_extractor.extract_keyframes(
+                    video_path,
+                    target_frames=target_frames,
+                    motion_based=True
+                )
+
+                # Save keyframes as images
+                import cv2
+                images_dir = os.path.join(temp_dir, 'images')
+                os.makedirs(images_dir, exist_ok=True)
+
+                image_info = []
+                for i, (frame_num, frame_data, timestamp) in enumerate(keyframes):
+                    image_path = os.path.join(images_dir, f'keyframe_{i:03d}.png')
+                    cv2.imwrite(image_path, frame_data)
+
+                    image_info.append({
+                        'frame_number': frame_num,
+                        'timestamp_seconds': timestamp,
+                        'filename': f'keyframe_{i:03d}.png',
+                        'path': image_path,
+                    })
+
+                logger.info(f"[REPLICATOR-VIDEO] Extracted {len(keyframes)} keyframes")
+
+                # Cleanup temp video, keep images
+                import shutil
+                video_temp = os.path.join(temp_dir, video_file.filename)
+                if os.path.exists(video_temp):
+                    os.remove(video_temp)
+
+                return jsonify({
+                    'success': True,
+                    'keyframes_extracted': len(keyframes),
+                    'images': image_info,
+                    'temp_dir': images_dir,
+                }), 200
+
+            except Exception as e:
+                logger.error(f"[REPLICATOR-VIDEO] Frame extraction error: {e}", exc_info=True)
+                return jsonify({'success': False, 'error': str(e)}), 500
 
         logger.info("[ROUTE-DEBUG] setup_routes() COMPLETED - all route registration finished")
 

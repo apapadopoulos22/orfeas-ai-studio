@@ -1,0 +1,424 @@
+================================================================================
+        HYBRID DEPLOYMENT - VERCEL FRONTEND + LOCAL BACKEND
+================================================================================
+
+Date: October 27, 2025
+Status: ✅ READY FOR HYBRID DEPLOYMENT
+Setup Time: 15 minutes total
+Cost: $0
+
+================================================================================
+                          WHAT IS HYBRID DEPLOYMENT?
+================================================================================
+
+Your frontend runs on Vercel (global CDN) while your backend runs locally
+on your machine. Best of both worlds!
+
+┌─────────────────────────────────────────┐
+│  GLOBAL (Vercel)                        │
+│  Frontend: orfeas-ai-studio.vercel.app │
+│  - Fast loading worldwide               │
+│  - Auto-deploys from GitHub             │
+│  - Free SSL                             │
+└──────────────┬──────────────────────────┘
+               │ HTTPS API Calls
+               │
+┌──────────────────────────────────────────┐
+│  LOCAL (Your Machine)                    │
+│  Backend: http://localhost:5000         │
+│  - Full control                          │
+│  - Easy debugging                        │
+│  - No cloud costs                        │
+└──────────────────────────────────────────┘
+
+================================================================================
+                        3-STEP SETUP (15 MINUTES)
+================================================================================
+
+STEP 1: Deploy Frontend to Vercel (5 min)
+════════════════════════════════════════
+
+Command:
+  .\DEPLOY_TO_VERCEL.ps1
+
+What happens:
+  ✓ Vercel CLI installed
+  ✓ Authenticated with Vercel
+  ✓ Frontend deployed
+  ✓ You get a live URL
+
+Result:
+  https://orfeas-ai-studio.vercel.app ✅
+
+
+STEP 2: Start Backend Locally (3 min)
+═════════════════════════════════════
+
+Commands:
+  cd backend
+  python main.py
+
+What happens:
+  ✓ Backend starts
+  ✓ Listens on port 5000
+  ✓ Loads 1,330+ knowledge items
+  ✓ Ready for API calls
+
+Result:
+  http://localhost:5000 ✅
+  (Keep terminal window open!)
+
+
+STEP 3: Connect Frontend to Backend (7 min)
+═════════════════════════════════════════
+
+Actions:
+  1. Edit HTML files (orfeas-ai-studio.html, babylon-viewer.html, etc.)
+  2. Add backend URL configuration
+  3. Commit and push to GitHub
+  4. Vercel auto-deploys
+  5. Test the connection
+
+Example configuration to add:
+  <script>
+    const BACKEND_URL = 'http://localhost:5000';
+    const API_BASE = BACKEND_URL + '/api';
+  </script>
+
+Result:
+  Frontend ↔ Backend connected ✅
+
+================================================================================
+                          FILES & AUTOMATION
+================================================================================
+
+HYBRID_DEPLOYMENT_GUIDE.md (Read This)
+  Complete guide with all options
+  Detailed setup instructions
+  Troubleshooting guide
+  Remote access options (ngrok)
+
+HYBRID_DEPLOYMENT_SETUP.ps1 (Run This)
+  Interactive setup wizard
+  Guides you through configuration
+  Creates configuration file
+  Displays next steps
+
+DEPLOY_TO_VERCEL.ps1 (Already Available)
+  Deploys frontend to Vercel
+  Can be run standalone
+
+Usage:
+  .\HYBRID_DEPLOYMENT_SETUP.ps1  ← Start here!
+
+================================================================================
+                          QUICK COMMAND REFERENCE
+================================================================================
+
+FRONTEND DEPLOYMENT:
+  npm install -g vercel
+  vercel login
+  vercel --prod
+  OR
+  .\DEPLOY_TO_VERCEL.ps1
+
+
+BACKEND STARTUP:
+  cd backend
+  python main.py
+
+
+VERIFY SETUP:
+  # Check frontend
+  curl https://orfeas-ai-studio.vercel.app
+
+  # Check backend
+  curl http://localhost:5000/health
+
+  # Test API
+  curl "http://localhost:5000/api/knowledge/search?query=test"
+
+
+OPTIONAL: REMOTE ACCESS VIA NGROK:
+  ngrok http 5000
+  # Get URL like: https://abc123.ngrok.io
+  # Update frontend config with this URL
+
+
+STOP BACKEND:
+  Press Ctrl+C in backend terminal
+
+
+================================================================================
+                          ADVANTAGES
+================================================================================
+
+✅ DEVELOPMENT-FRIENDLY
+   • Test locally before production
+   • Easy debugging
+   • Quick iteration
+
+✅ COST-EFFECTIVE
+   • Vercel frontend: Free tier
+   • Local backend: Free
+   • Total: $0/month
+
+✅ PERFORMANCE
+   • Frontend: Global CDN (fast)
+   • Backend: Local machine (low latency)
+   • Best of both worlds
+
+✅ FLEXIBILITY
+   • Easy to switch backend to cloud later
+   • Keep frontend deployment
+   • Upgrade anytime
+
+✅ CONTROL
+   • Full control of backend code
+   • Local debugging
+   • No vendor lock-in
+
+================================================================================
+                          WORKFLOW
+================================================================================
+
+DAILY WORKFLOW:
+═════════════
+
+1. Start Backend
+   Open terminal:
+   cd backend && python main.py
+   (Keep it running)
+
+2. Make Frontend Changes
+   Edit HTML/CSS/JS files
+   Test locally with Ctrl+S refresh
+
+3. Verify Backend
+   Check: http://localhost:5000/health
+   Test: API calls in browser console
+
+4. Commit Changes
+   git add .
+   git commit -m "description"
+   git push origin main
+
+5. Vercel Auto-Deploys
+   Website updates automatically
+   Usually within 30-60 seconds
+
+6. Test Production
+   Visit: https://orfeas-ai-studio.vercel.app
+   Verify all features work
+
+================================================================================
+                          TROUBLESHOOTING
+================================================================================
+
+PROBLEM: "Cannot connect to backend"
+SOLUTION:
+  1. Check backend running: netstat -ano | findstr :5000
+  2. Check health: curl http://localhost:5000/health
+  3. Check browser console for CORS errors (F12)
+  4. Verify backend URL in HTML matches (localhost:5000)
+  5. Restart backend: Stop and run again
+
+
+PROBLEM: CORS Error in Console
+SOLUTION:
+  1. Ensure backend has CORS enabled
+  2. Check frontend URL in CORS whitelist
+  3. Restart backend
+  4. Hard refresh browser (Ctrl+F5)
+
+
+PROBLEM: WebSocket Connection Failed
+SOLUTION:
+  1. Backend must support WebSocket
+  2. Check WS_URL configuration
+  3. Verify firewall not blocking
+  4. Check port 5000 is open locally
+
+
+PROBLEM: Frontend loads but no data
+SOLUTION:
+  1. Check browser Network tab (F12)
+  2. Look for failed API calls
+  3. Verify BACKEND_URL is correct
+  4. Check backend terminal for errors
+  5. Test backend directly: curl http://localhost:5000/api/knowledge/search
+
+
+PROBLEM: Port 5000 Already in Use
+SOLUTION:
+  # Find process using port 5000
+  netstat -ano | findstr :5000
+
+  # Kill process (replace PID)
+  taskkill /F /PID 1234
+
+  # Restart backend
+  python main.py
+
+================================================================================
+                          COST BREAKDOWN
+================================================================================
+
+YEAR 1 (FREE TIER):
+  Vercel Frontend:    $0
+  Local Backend:      $0
+  Domain (optional):  $0
+  ─────────────────────────
+  TOTAL:              $0 ✅
+
+
+IF YOU UPGRADE LATER:
+  Vercel Frontend:    $20/month
+  Cloud Backend:      $10-50/month
+  Domain:             $1-2/month
+  ─────────────────────────
+  TOTAL:              $30-70/month
+
+
+SAVINGS vs TRADITIONAL:
+  Traditional Hosting:  $50-200/month
+  Hybrid Setup:         $0-70/month
+  SAVINGS:              $50-130/month ✅
+
+================================================================================
+                          KEEPING BACKEND RUNNING
+================================================================================
+
+OPTION 1: Manual (Easiest)
+  ✓ Open terminal
+  ✓ Run: cd backend && python main.py
+  ✓ Keep window open while working
+  ✗ Stops when you shut down
+
+OPTION 2: Scheduled Task (Windows)
+  ✓ Starts automatically on boot
+  ✓ Runs in background
+  See: HYBRID_DEPLOYMENT_GUIDE.md for details
+
+OPTION 3: Service (Advanced)
+  ✓ Professional setup
+  ✓ Auto-restart on failure
+  ✓ Persistent across reboots
+  Use: nssm (Non-Sucking Service Manager)
+
+OPTION 4: Remote with ngrok (Access Anywhere)
+  ✓ Access backend from anywhere
+  ✓ Share with team
+  See: HYBRID_DEPLOYMENT_GUIDE.md for details
+
+================================================================================
+                          GETTING STARTED
+================================================================================
+
+1. READ:
+   HYBRID_DEPLOYMENT_GUIDE.md (Complete guide)
+
+2. RUN:
+   .\HYBRID_DEPLOYMENT_SETUP.ps1 (Interactive setup)
+
+3. UPDATE:
+   HTML files with backend URL
+
+4. DEPLOY:
+   git push origin main (Auto-deploys to Vercel)
+
+5. START:
+   cd backend && python main.py (Keep running locally)
+
+6. TEST:
+   https://orfeas-ai-studio.vercel.app (Frontend)
+   http://localhost:5000/health (Backend)
+
+7. ENJOY:
+   Your hybrid system is now live! 🎉
+
+================================================================================
+                          QUICK CHECKLIST
+================================================================================
+
+SETUP:
+  ☐ Read HYBRID_DEPLOYMENT_GUIDE.md
+  ☐ Run HYBRID_DEPLOYMENT_SETUP.ps1
+  ☐ Deploy frontend to Vercel
+  ☐ Get Vercel URL
+  ☐ Update HTML files with backend URL
+  ☐ Commit and push to GitHub
+
+BACKEND:
+  ☐ Start backend locally: cd backend && python main.py
+  ☐ Verify port 5000 listening
+  ☐ Check health endpoint
+  ☐ Keep terminal open
+
+VERIFICATION:
+  ☐ Frontend loads without errors
+  ☐ Backend responds to health check
+  ☐ API calls succeed
+  ☐ WebSocket connections work
+  ☐ Search functionality works
+  ☐ No CORS errors in console
+  ☐ Real-time updates showing
+
+OPTIONAL:
+  ☐ Set up ngrok for remote access
+  ☐ Configure scheduled task for auto-start
+  ☐ Set up monitoring
+  ☐ Plan backup strategy
+
+================================================================================
+                          SUPPORT & RESOURCES
+================================================================================
+
+DOCUMENTATION:
+  HYBRID_DEPLOYMENT_GUIDE.md       → Complete guide
+  HYBRID_DEPLOYMENT_SETUP.ps1      → Interactive setup
+  DEPLOY_TO_VERCEL.ps1             → Frontend deployment
+
+OFFICIAL DOCS:
+  Vercel:   https://vercel.com/docs
+  Flask:    https://flask.palletsprojects.com
+  ngrok:    https://ngrok.com/docs
+
+COMMUNITY:
+  Vercel Forums:  https://forums.vercel.com
+  Stack Overflow: Search "vercel" or "flask"
+
+QUICK LINKS:
+  GitHub:   https://github.com
+  Vercel:   https://vercel.com
+  ngrok:    https://ngrok.com
+
+================================================================================
+                          YOU'RE READY!
+================================================================================
+
+Your hybrid deployment is configured and ready to go!
+
+Next Steps:
+  1. Run: .\HYBRID_DEPLOYMENT_SETUP.ps1
+  2. Update HTML files with backend URL
+  3. Commit and push to GitHub
+  4. Start backend locally: cd backend && python main.py
+  5. Visit frontend URL and test
+
+Expected Results:
+  ✅ Frontend: https://orfeas-ai-studio.vercel.app (Live)
+  ✅ Backend: http://localhost:5000 (Running locally)
+  ✅ Integration: Frontend ↔ Backend (Connected)
+  ✅ Knowledge: 1,330+ items (Available)
+  ✅ Cost: $0/month (Free!)
+
+═══════════════════════════════════════════════════════════════════════════
+
+Generated: October 27, 2025
+Status: ✅ HYBRID DEPLOYMENT READY
+Next Step: Run HYBRID_DEPLOYMENT_SETUP.ps1
+Time to Deploy: 15 minutes
+Cost: $0
+
+═══════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,329 @@
+BOB AI V6.0 - QUICK DEPLOYMENT CHECKLIST
+=========================================
+
+This checklist is designed to be printed and used during deployment.
+
+Date: ________________    Deployer: ________________
+
+
+PRE-DEPLOYMENT (5 minutes)
+==========================
+
+SYSTEM CHECK:
+[ ] Python 3.10+ installed
+    Command: python --version
+    Expected: 3.10 or higher
+
+[ ] Flask 2.3+ installed
+    Command: pip list | grep Flask
+    Expected: Flask 2.3.0 or higher
+
+[ ] Flask-SocketIO 5.3+ installed
+    Command: pip list | grep socketio
+    Expected: flask-socketio 5.3.0 or higher
+
+[ ] Backend service running
+    Command: curl http://localhost:5000/health
+    Expected: 200 OK
+
+[ ] Ollama service running
+    Command: curl http://localhost:11434/api/tags
+    Expected: List of models
+
+
+PRE-DEPLOYMENT BACKUPS:
+[ ] Backup main.py
+    Command: cp backend/main.py backend/main.py.backup_$(date +%s)
+
+[ ] Backup requirements.txt
+    Command: cp backend/requirements.txt backend/requirements.txt.backup_$(date +%s)
+
+[ ] Note current LLM integration status in log
+
+
+FILE VERIFICATION:
+[ ] bob_ai_v6_final_knowledge.py exists
+    Location: backend/ or workspace root
+    Size: ~1,050 lines
+
+[ ] bob_ai_v6_integration.py exists
+    Location: backend/ or workspace root
+    Size: ~580 lines
+
+[ ] bob_ai_v6_llm_integration.py exists
+    Location: backend/ or workspace root
+    Size: ~500 lines
+
+[ ] bob_ai_v6_integration_and_testing_suite.py exists
+    Location: backend/ or workspace root
+    Size: ~600 lines
+
+[ ] test_bob_ai_v6_final.py exists
+    Location: backend/
+    Size: ~500 lines
+
+[ ] deploy_bob_ai_v6.py exists
+    Location: backend/
+    Size: ~700 lines
+
+
+DEPLOYMENT (10 minutes)
+=======================
+
+AUTOMATED DEPLOYMENT:
+[ ] Navigate to backend directory
+    Command: cd backend
+
+[ ] Run full deployment
+    Command: python deploy_bob_ai_v6.py --full
+    Expected: DEPLOYMENT COMPLETE message
+
+[ ] Review deployment report
+    Look for: All steps with "success" status
+
+[ ] Check for errors
+    Look for: 0 errors in report
+
+
+MANUAL VERIFICATION (if automated failed):
+[ ] Verify imports
+    Command: python -c "from bob_ai_v6_final_knowledge import *; print('OK')"
+    Expected: OK
+
+[ ] Verify integration module
+    Command: python -c "from bob_ai_v6_integration import *; print('OK')"
+    Expected: OK
+
+[ ] Verify LLM integration
+    Command: python -c "from bob_ai_v6_llm_integration import *; print('OK')"
+    Expected: OK
+
+
+TESTING (15 minutes)
+====================
+
+UNIT TESTS:
+[ ] Run unit tests
+    Command: python test_bob_ai_v6_final.py
+    Expected: 51/51 tests passing
+    Expected Time: <1 second
+
+[ ] All 13 domains tested
+    Look for: "TestFineArts", "TestPoetry", ... "TestCombatSports"
+
+[ ] All tests marked PASSING
+    Look for: No "FAILED" or "ERROR" messages
+
+
+INTEGRATION TESTS:
+[ ] Run integration suite
+    Command: python bob_ai_v6_integration_and_testing_suite.py
+    Expected: All 10 tests passing
+    Expected Time: 10-30 seconds
+
+[ ] Deployment verification passing
+    Look for: DeploymentVerification: READY status
+
+
+FLASK INTEGRATION (5 minutes)
+==============================
+
+UPDATE main.py:
+[ ] Add imports at top of main.py
+    Add these lines:
+    from bob_ai_v6_llm_integration import (
+        BobAILLMIntegration,
+        with_bob_ai_enhancement,
+        WebSocketBobAIHelper
+    )
+
+[ ] Update REST API routes (at least one)
+    Example: Add @with_bob_ai_enhancement to text-to-3d endpoint
+
+[ ] Update WebSocket handlers (at least one)
+    Example: Add enhancement to generation event
+
+[ ] Initialize system prompt on startup
+    Add: BOB_AI_SYSTEM_PROMPT = BobAILLMIntegration.get_system_prompt()
+
+
+PRODUCTION ACTIVATION (5 minutes)
+=================================
+
+RESTART BACKEND:
+[ ] Stop current Flask process
+    Action: Press Ctrl+C if running in terminal
+
+[ ] Restart Flask
+    Command: python main.py
+    Expected: Flask running message (0.0.0.0:5000)
+    Expected: Bob AI initialization messages in logs
+
+
+HEALTH CHECK:
+[ ] Test health endpoint
+    Command: curl http://localhost:5000/health
+    Expected: 200 OK
+
+[ ] Test Bob AI basic endpoint
+    Command: curl -X POST http://localhost:5000/api/test-bob-ai \
+              -H "Content-Type: application/json" \
+              -d '{"prompt":"test"}'
+    Expected: JSON response with enhancement data
+
+[ ] Check logs for initialization
+    Look for: "Bob AI v6.0 knowledge modules loaded"
+    Look for: "Bob AI v6.0 enhancer initialized"
+
+
+VALIDATION & MONITORING (10 minutes)
+====================================
+
+MONITOR LOGS:
+[ ] Watch Flask logs
+    Command: tail -f backend/orfeas.log (if available)
+
+[ ] Check for errors
+    Look for: No "ERROR" messages related to Bob AI
+    Look for: "INFO" messages showing enhancement usage
+
+[ ] Test domain detection
+    Sample prompt: "Create a beautiful jewelry design with robotics"
+    Expected in logs: Domains detected: Jewelry, Robotics
+    Expected: Expansion factor shown
+
+
+PERFORMANCE VALIDATION:
+[ ] Enhancement time check
+    Expected: <100ms per enhancement
+    Look for: Performance logs in output
+
+[ ] Memory usage check
+    Command: Monitor system memory during operation
+    Expected: Stable (no memory leaks)
+
+[ ] WebSocket connectivity
+    Test in browser: socket.emit('enhancement_request', {prompt: "test"})
+    Expected: Response received
+
+
+MULTI-DOMAIN TEST:
+[ ] Test boxing domain
+    Prompt: "Describe boxing training methods"
+    Expected: CombatSports domain detected
+
+[ ] Test robotics domain
+    Prompt: "Design an advanced robot"
+    Expected: Robotics domain detected
+
+[ ] Test multi-domain
+    Prompt: "Create a robot that boxes with fine art"
+    Expected: CombatSports, Robotics, FineArts domains detected
+
+
+PRODUCTION SIGN-OFF
+===================
+
+FINAL CHECKS:
+[ ] All tests passing (51/51 unit, 10/10 integration)
+[ ] All domains detectable
+[ ] Enhancement working in Flask
+[ ] WebSocket enhancement working
+[ ] Logs show no errors
+[ ] Performance metrics acceptable
+[ ] Documentation reviewed
+
+DEPLOYMENT APPROVAL:
+[ ] Deployment manager approval: _________________ Date: _________
+[ ] System administrator approval: _________________ Date: _________
+[ ] Quality assurance approval: _________________ Date: _________
+
+
+TROUBLESHOOTING QUICK REFERENCE
+================================
+
+ISSUE: Module import error
+FIX:
+  1. Verify files in backend directory: ls backend/bob_ai_v6_*.py
+  2. Check Python path: python -c "import sys; print(sys.path)"
+  3. Reinstall: python deploy_bob_ai_v6.py --full
+
+ISSUE: Tests failing
+FIX:
+  1. Run individual test: python -m pytest test_bob_ai_v6_final.py::TestFineArts -v
+  2. Check dependencies: pip list | grep -E "(torch|flask)"
+  3. Reinstall requirements: pip install -r requirements.txt
+
+ISSUE: Domain not detected
+FIX:
+  1. Test detection directly: python -c "
+     from bob_ai_v6_integration import FinalComprehensiveEnhancer
+     e = FinalComprehensiveEnhancer()
+     print(e.detect_knowledge_domain('boxing and robotics'))
+     "
+  2. Check keywords in bob_ai_v6_integration.py
+  3. Restart Flask service
+
+ISSUE: LLM timeout
+FIX:
+  1. Check Ollama: curl http://localhost:11434/api/tags
+  2. Check Mistral: ollama list
+  3. Restart Ollama service
+  4. Restart Flask backend
+
+ISSUE: WebSocket not working
+FIX:
+  1. Check Socket.IO: curl http://localhost:5000/socket.io/
+  2. Review Flask logs for WebSocket errors
+  3. Check network connectivity
+  4. Verify room/session_id parameters
+
+
+CONTACTS & ESCALATION
+=====================
+
+For issues, contact:
+  Backend Team: _________________
+  LLM Admin: _________________
+  DevOps: _________________
+  QA Lead: _________________
+
+
+DEPLOYMENT NOTES
+================
+
+Notes from deployment:
+
+_________________________________________________________________
+
+_________________________________________________________________
+
+_________________________________________________________________
+
+
+SIGN-OFF
+========
+
+Deployment completed: _______________
+
+Deployed by: ________________________
+
+Verified by: ________________________
+
+Date: ______________  Time: ______________
+
+Status: [ ] SUCCESS  [ ] PARTIAL  [ ] ROLLED_BACK
+
+
+POST-DEPLOYMENT
+===============
+
+[ ] Monitor logs for 24 hours
+[ ] Collect performance metrics
+[ ] Gather user feedback
+[ ] Schedule follow-up review
+[ ] Document any issues encountered
+
+Follow-up Meeting Date: ______________
+
+Follow-up Owner: ______________

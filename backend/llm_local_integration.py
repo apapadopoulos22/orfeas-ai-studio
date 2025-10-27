@@ -20,7 +20,23 @@ import logging
 from typing import Dict, Optional, Tuple
 from pathlib import Path
 
+# Import Bob AI Knowledge Base
+try:
+    from bob_ai_knowledge_base import (
+        BobAIKnowledgeBase,
+        WebSemanticLibraries,
+        WorldKnowledgeBase,
+        initialize_bob_ai_knowledge
+    )
+    BOB_AI_KB_AVAILABLE = True
+except ImportError:
+    BOB_AI_KB_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
+
+# Warn if KB not available
+if not BOB_AI_KB_AVAILABLE:
+    logger.warning("[LLM] Bob AI Knowledge Base not available, running without semantic enhancement")
 
 
 class OllamaManager:
@@ -335,13 +351,92 @@ def initialize_local_llm() -> Dict[str, any]:
         }
 
 
-def generate_with_llm(prompt: str, model: Optional[str] = None) -> Optional[Dict]:
+def enhance_prompt_with_bob_ai(user_prompt: str, context: str = "general") -> str:
     """
-    Generate response from local LLM
+    Enhance user prompt with Bob AI semantic knowledge
+
+    Args:
+        user_prompt: Original user input
+        context: Context type (design, 3d_modeling, general, etc.)
+
+    Returns:
+        Enhanced prompt with semantic context
+    """
+    if not BOB_AI_KB_AVAILABLE:
+        logger.debug("[LLM] Bob AI Knowledge Base not available, returning original prompt")
+        return user_prompt
+
+    try:
+        # Determine quality level based on context
+        quality = "high" if context in ["3d_modeling", "professional"] else "medium"
+
+        # Determine style if provided in prompt
+        style = None
+        for design_style in BobAIKnowledgeBase.DESIGN_STYLES.keys():
+            if design_style.lower() in user_prompt.lower():
+                style = design_style
+                break
+
+        # Enhance the prompt with semantic knowledge
+        enhanced = BobAIKnowledgeBase.enhance_prompt(user_prompt, style=style, quality=quality)
+        logger.debug(f"[LLM] Prompt enhanced with semantic knowledge (length: {len(enhanced)} chars)")
+        return enhanced
+
+    except Exception as e:
+        logger.warning(f"[LLM] Error enhancing prompt: {e}, using original")
+        return user_prompt
+
+
+def get_bob_ai_system_prompt() -> str:
+    """
+    Generate system prompt with Bob AI knowledge context
+
+    Returns:
+        System prompt with semantic knowledge dictionaries
+    """
+    if not BOB_AI_KB_AVAILABLE:
+        return "You are Bob AI, a creative and helpful assistant."
+
+    try:
+        # Get all semantic dictionaries
+        all_dicts = BobAIKnowledgeBase.get_all_dictionaries()
+
+        # Build system prompt with knowledge context
+        system_prompt = """You are Bob AI, an advanced AI assistant with comprehensive world knowledge.
+
+You have deep expertise in:
+- Visual Design: Familiar with 15+ design styles (minimalist, steampunk, cyberpunk, gothic, art deco, futurism, maximalism, brutalism, etc.)
+- Materials & Textures: Understand properties of 15+ materials (metal, wood, ceramic, glass, stone, fabric, plastic, rubber, concrete, ice, liquid, crystal, etc.)
+- Lighting Techniques: Master 15+ lighting effects (ambient, dramatic, neon, volumetric, rim lighting, backlighting, etc.)
+- Color Theory: Skilled in 15+ color palettes (monochromatic, complementary, analogous, triadic, gradient, etc.)
+- Atmosphere & Mood: Can convey 15+ atmospheric descriptors (peaceful, mysterious, ethereal, chaotic, elegant, etc.)
+- Cultural References: Knowledgeable about historical periods and artistic movements
+- Composition: Expert in composition principles (rule of thirds, leading lines, depth, symmetry, etc.)
+
+When responding to creative requests:
+1. Identify the style, mood, and quality level intended
+2. Use specific terminology from your knowledge base
+3. Provide detailed, vivid descriptions
+4. Reference materials, lighting, and composition principles
+5. Consider cultural and historical context
+
+Your responses are detailed, imaginative, and technically informed."""
+
+        return system_prompt
+
+    except Exception as e:
+        logger.warning(f"[LLM] Error generating Bob AI system prompt: {e}")
+        return "You are Bob AI, a creative and helpful assistant."
+
+
+def generate_with_llm(prompt: str, model: Optional[str] = None, use_semantic_enhancement: bool = True) -> Optional[Dict]:
+    """
+    Generate response from local LLM with optional semantic enhancement
 
     Args:
         prompt: Text prompt for generation
         model: Optional model name (defaults to configured model)
+        use_semantic_enhancement: Whether to enhance prompt with Bob AI knowledge
 
     Returns:
         Dict with generated response or None on error
@@ -355,18 +450,35 @@ def generate_with_llm(prompt: str, model: Optional[str] = None) -> Optional[Dict
     model_name = model or manager.model
 
     try:
+        # Enhance prompt with Bob AI semantic knowledge if available and enabled
+        enhanced_prompt = prompt
+        system_prompt = get_bob_ai_system_prompt()
+
+        if use_semantic_enhancement and BOB_AI_KB_AVAILABLE:
+            enhanced_prompt = enhance_prompt_with_bob_ai(prompt, context="general")
+            logger.debug(f"[LLM] Using enhanced prompt for generation")
+
+        # Build the full request with system context
+        request_payload = {
+            'model': model_name,
+            'prompt': enhanced_prompt,
+            'stream': False
+        }
+
+        # Add system context if available
+        if system_prompt:
+            request_payload['system'] = system_prompt
+
         response = requests.post(
             f'{manager.endpoint}/api/generate',
-            json={
-                'model': model_name,
-                'prompt': prompt,
-                'stream': False
-            },
+            json=request_payload,
             timeout=60
         )
 
         if response.status_code == 200:
-            return response.json()
+            result = response.json()
+            logger.info(f"[LLM] Generation successful - model: {model_name}")
+            return result
         else:
             logger.error(f"[LLM] Generation failed: {response.status_code}")
             return None
@@ -382,3 +494,26 @@ def shutdown_local_llm():
     if _ollama_manager:
         _ollama_manager.stop_ollama()
         logger.info("[LLM] Local LLM shutdown complete")
+
+
+# ============================================================================
+# Module Exports - Semantic Enhancement API
+# ============================================================================
+__all__ = [
+    'OllamaManager',
+    'get_ollama_manager',
+    'initialize_local_llm',
+    'generate_with_llm',
+    'enhance_prompt_with_bob_ai',
+    'get_bob_ai_system_prompt',
+    'shutdown_local_llm',
+    'BOB_AI_KB_AVAILABLE',
+]
+
+# Initialize Bob AI Knowledge Base if available
+if BOB_AI_KB_AVAILABLE:
+    try:
+        initialize_bob_ai_knowledge()
+        logger.info("[LLM] ✓ Bob AI Knowledge Base initialized")
+    except Exception as e:
+        logger.warning(f"[LLM] Warning initializing Bob AI KB: {e}")

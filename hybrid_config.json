@@ -1,0 +1,9 @@
+{
+    "frontendUrl": "https://orfeas-ai-studio.vercel.app",
+    "backendUrl": "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev",
+    "apiBase": "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev/api",
+    "healthEndpoint": "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev/health",
+    "wsUrl": "wss://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev",
+    "deploymentType": "hybrid",
+    "timestamp": "2025-10-27 14:30:00"
+}
