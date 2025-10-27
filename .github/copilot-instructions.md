@@ -810,3 +810,535 @@ The 7-stage pipeline uses weighted percentages:
 - Other stages: remaining %
 
 **Discovery**: Progress is NOT linear. 30 seconds into shape_generation ≠ 50% done overall.
+
+---
+
+## PESSIMISTIC PROBLEM-SOLVING FRAMEWORK
+
+### Why Pessimism? (The Realistic Approach)
+
+Most developers are optimists. They assume:
+- ✗ "It will probably work"
+- ✗ "This edge case won't happen"
+- ✗ "We don't need to handle this error"
+- ✗ "The documentation is up-to-date"
+- ✗ "Nobody will use it that way"
+
+**Reality check:** These assumptions are wrong 90% of the time.
+
+**Pessimistic approach:** Assume EVERYTHING will fail. Then solve for that.
+
+```python
+# ❌ OPTIMISTIC (NAIVE)
+def process_job(job_id):
+    data = fetch_data(job_id)
+    result = calculate(data)
+    return result
+
+# ✅ PESSIMISTIC (REALISTIC)
+def process_job(job_id):
+    try:
+        # Assume data fetch fails
+        data = fetch_data(job_id)
+        if not data:
+            logger.error(f"No data for job {job_id}")
+            return None
+        
+        # Assume calculation fails
+        if len(data) > 100000:  # Data too large
+            return graceful_fallback(job_id)
+        
+        # Assume format is wrong
+        try:
+            result = calculate(data)
+        except ValueError as e:
+            logger.warning(f"Calculation failed: {e}, using cache")
+            return get_cached_result(job_id)
+        
+        # Assume result is invalid
+        if not validate_result(result):
+            logger.error(f"Invalid result for {job_id}")
+            return fallback_result(job_id)
+        
+        return result
+    
+    except Exception as e:
+        # Assume EVERYTHING can fail
+        logger.error(f"Job {job_id} failed catastrophically: {e}", exc_info=True)
+        return create_error_response(job_id, str(e))
+```
+
+### Pessimistic Principles
+
+**Principle P1: Assume Everything Will Fail**
+- Input validation: Check EVERYTHING
+- Network calls: Always timeout and retry
+- File operations: Disk full, permission denied, corrupted
+- Memory: GPU runs out, system runs out
+- Users: Will do the wrong thing
+
+**Principle P2: Fail Fast With Context**
+- Don't let bad state propagate
+- Log the exact state when failure occurs
+- Provide meaningful error messages
+- Include stack trace AND context variables
+
+**Principle P3: Multiple Fallbacks**
+- Level 1: Graceful degradation (GPU → CPU)
+- Level 2: Cached fallback (use last known good)
+- Level 3: Simplified fallback (lower quality)
+- Level 4: Human intervention (admin console)
+
+**Principle P4: Prove It Works**
+- "It works on my machine" = worthless
+- Test on actual hardware
+- Test with real data (not mocked)
+- Test at scale (production load)
+- Test failure modes (what breaks?)
+
+---
+
+## MULTI-AGENT ARGUMENTATION FRAMEWORK
+
+### The Problem With Single Perspectives
+
+One person (or one AI) looking at a problem sees:
+- ✗ Their own biases
+- ✗ Their preferred solutions
+- ✗ Their blind spots
+- ✗ What they EXPECT to see
+
+**Solution:** Simulate multiple expert perspectives arguing the case.
+
+### The 5-Agent Argumentation System
+
+When facing a complex problem, consult 5 agents:
+
+#### Agent 1: THE PESSIMIST 😟
+**Role:** "What could go wrong?"
+
+**Questions:**
+- What's the worst case scenario?
+- What data format could break this?
+- What if the user has wrong permissions?
+- What if the network times out?
+- What if we run out of memory?
+
+**Example output:**
+```
+PESSIMIST: This GPU memory check is wrong!
+  - Problem: You check VRAM once, but it changes during execution
+  - Worst case: Check shows 8GB free, but by the time you allocate 6GB,
+    another process grabbed 3GB. Now you're OOM mid-generation.
+  - Solution: Check AND reserve memory atomically, or check continuously
+  - Fallback: CPU processing if OOM occurs
+```
+
+#### Agent 2: THE OPTIMIST 😊
+**Role:** "Why this could work"
+
+**Questions:**
+- What's the best case scenario?
+- What common patterns does this follow?
+- What's already proven in production?
+- What can we simplify?
+- What defaults are safe?
+
+**Example output:**
+```
+OPTIMIST: The GPU memory check works for 99% of cases!
+  - Success rate: Works perfectly when code paths don't race
+  - Common pattern: Industry standard approach in other projects
+  - Already proven: Works in production for 6 months
+  - Simplification: Don't need real-time monitoring, check before job
+  - Safe defaults: Pre-check buffer prevents most OOM cases
+```
+
+#### Agent 3: THE ENGINEER 🔧
+**Role:** "How do we actually build this?"
+
+**Questions:**
+- What's the simplest implementation?
+- What dependencies are needed?
+- What performance characteristics?
+- What's the maintenance burden?
+- How do we test this?
+
+**Example output:**
+```
+ENGINEER: Implementation needs these components:
+  - VRAM checker: nvidia-smi or PyTorch API (simple)
+  - Reservation system: Allocate dummy tensor to hold space (hacky)
+  - Cleanup logic: Empty cache in finally block (critical)
+  - Testing: Test with 5 different VRAM sizes (80% coverage)
+  - Maintenance: Monitor OOM incidents monthly (low burden)
+```
+
+#### Agent 4: THE RESEARCHER 📚
+**Role:** "What does the industry know?"
+
+**Questions:**
+- How do other projects handle this?
+- What's the academic best practice?
+- What open source solutions exist?
+- What's the research saying?
+- What are common pitfalls?
+
+**Example output:**
+```
+RESEARCHER: GPU memory management standards:
+  - Industry practice: Pre-check + fallback (NVIDIA recommended)
+  - Academic paper: "Efficient GPU Memory Management" (Chen et al, 2023)
+  - Open source: PyTorch uses cudaMallocManaged() with fallback
+  - Research finding: 40% of OOM occurs after memory freed not reclaimed
+  - Pitfall: Fragmentation - allocated/freed blocks prevent large allocations
+```
+
+#### Agent 5: THE DEVIL'S ADVOCATE 😈
+**Role:** "Why this approach might be fundamentally wrong"
+
+**Questions:**
+- Is this solving the right problem?
+- Are we making wrong assumptions?
+- What if the entire premise is flawed?
+- What are we NOT considering?
+- Could a different approach work better?
+
+**Example output:**
+```
+DEVIL'S ADVOCATE: Why VRAM pre-checking is fundamentally flawed:
+  - Wrong premise: Assuming we can predict memory needs (we can't)
+  - Better approach: Use memory pooling with adaptive allocation
+  - Assumption error: Assuming single check is sufficient
+  - Not considered: Dynamic memory from other GPU processes
+  - Alternative: Memory mapping to system RAM (slower but works)
+```
+
+### Using Multi-Agent Argumentation
+
+**When to use:**
+- Making major architectural decisions
+- Debugging mysterious failures
+- Planning risky deployments
+- Evaluating multiple solutions
+- Before writing production code
+
+**Process:**
+
+1. **State the problem** clearly
+2. **Ask each agent** their perspective
+3. **Look for disagreement** - this reveals blind spots
+4. **Identify consensus** - what do all agree on?
+5. **Test hypothesis** - implement the solution that handles all concerns
+
+**Example dialogue:**
+
+```
+PROBLEM: Should we use GPU or CPU for batch processing?
+
+PESSIMIST: GPU will fail! Multiple concurrent jobs will fight for VRAM.
+           OOM crashes will destroy data. Use CPU - it's slower but safe.
+
+OPTIMIST: GPU is 40x faster! Most jobs don't need maximum VRAM. Worth
+          the risk. 99% of users want speed over reliability.
+
+ENGINEER: GPU needs: VRAM reservation, fallback logic, monitoring.
+          CPU needs: Multi-threading, process pooling. GPU is harder.
+
+RESEARCHER: Best practice: Use GPU for small jobs (<1GB), CPU for large.
+            Hybrid approach shown in "GPU-CPU Orchestration" (2024).
+
+DEVIL'S ADVOCATE: Why are we assuming CPU is a fallback? What if we just
+                  reject jobs that need >6GB? Queue them or fail gracefully?
+
+CONSENSUS: Use GPU with tiered fallback:
+  1. Try GPU (fast)
+  2. Fall back to CPU (slow)
+  3. Queue job if both insufficient
+  4. Reject with explanation if queued too long
+```
+
+---
+
+## ONLINE RESEARCH & SOLUTION FINDING
+
+### Built-in Research Queries
+
+When you encounter a problem, ask:
+
+**Query 1: Stack Overflow**
+```
+site:stackoverflow.com [error message] [language] [framework]
+```
+
+**Query 2: GitHub Issues**
+```
+site:github.com/[project] [error] "500 error" OR "crash"
+```
+
+**Query 3: Documentation**
+```
+site:[project].org OR site:[project].readthedocs.io [error] troubleshooting
+```
+
+**Query 4: Academic Research**
+```
+site:arxiv.org [technical topic] performance optimization
+```
+
+**Query 5: Blog Posts & Tutorials**
+```
+[error message] solution tutorial 2024
+```
+
+### Problem-Solving Research Pattern
+
+**Step 1: Identify the error accurately**
+```
+What is the EXACT error message?
+❌ "Something went wrong"
+✅ "CUDA out of memory: tried to allocate 6.00GB, but only 2.50GB available"
+```
+
+**Step 2: Search for others who had same issue**
+```
+Search 1: [Exact error message]
+Search 2: [Error + your framework] solution
+Search 3: [Error + your hardware] fix
+Search 4: [Error + version info] issue
+```
+
+**Step 3: Analyze solutions found**
+```
+- Count how many solutions exist (1 = rare, 10+ = common)
+- Check dates (outdated solutions may not apply)
+- Look at reputation (upvotes, GitHub stars)
+- Check if solution applies to YOUR setup
+```
+
+**Step 4: Test hypothesis before production**
+```
+1. Reproduce error in isolated environment
+2. Apply solution from research
+3. Verify fix actually resolves root cause
+4. Check for side effects
+5. Document what worked
+```
+
+### Common Errors & Research Strategies
+
+| Error | Research Strategy | Expected Solutions |
+|-------|-------------------|-------------------|
+| `CUDA out of memory` | Search: "[CUDA OOM pytorch](https://github.com/pytorch/pytorch/issues?q=CUDA+out+of+memory)" | GPU memory management, batch size reduction, gradient accumulation |
+| `xformers DLL error` | Search: "[xformers 0xc0000139](https://github.com/search?q=xformers+0xc0000139)" | Env var ordering, Windows path issues, dependency conflicts |
+| `WebSocket timeout` | Search: "[Socket.io timeout connection](https://socket.io/docs/)" | Heartbeat config, CORS settings, firewall rules |
+| `Import error` | Search: "[Python import module not found](https://docs.python.org/3/)" | Missing dependency, wrong Python path, version mismatch |
+| `3D model corruption` | Search: "[STL mesh repair Python](https://trimsh.org/)" | Mesh validation, auto-repair libraries, format conversion |
+
+### Assembling Your Research
+
+**Create a decision matrix:**
+
+```
+PROBLEM: Should we use GPU or CPU for processing?
+
+Solution 1: GPU Only
+  Research: NVIDIA docs (authoritative)
+  Pros: 40x faster, production standard
+  Cons: OOM risk, setup complexity
+  Reliability: 95% (with fallback)
+  Confidence: HIGH (industry standard)
+
+Solution 2: CPU Only
+  Research: Python threading docs
+  Pros: Simple, always works
+  Cons: 40x slower, won't meet SLA
+  Reliability: 99.9%
+  Confidence: MEDIUM (works but not optimal)
+
+Solution 3: GPU + CPU Hybrid
+  Research: "GPU-CPU Orchestration" paper
+  Pros: Fast + reliable, flexible
+  Cons: Complex, high maintenance
+  Reliability: 98% (if implemented right)
+  Confidence: MEDIUM (unproven in this project)
+
+RECOMMENDATION: Solution 1 (GPU) with fallback to Solution 2 (CPU)
+  Rationale: Matches industry practice, acceptable reliability, meets performance SLA
+```
+
+### Research Protocol
+
+Before implementing ANY major change:
+
+1. **Research phase** (30 min)
+   - Search for existing solutions
+   - Find 3+ credible sources
+   - Read through GitHub issues
+   - Check official documentation
+
+2. **Analysis phase** (15 min)
+   - Compare approaches found
+   - Evaluate tradeoffs
+   - Identify best practice
+   - Note edge cases others found
+
+3. **Hypothesis phase** (15 min)
+   - State your solution clearly
+   - Document why you chose it
+   - List assumptions
+   - Identify failure modes
+
+4. **Test phase** (60 min)
+   - Reproduce the original problem
+   - Apply your solution
+   - Verify it actually works
+   - Test edge cases from research
+
+5. **Documentation phase** (15 min)
+   - Write what you learned
+   - Document the solution
+   - Link to research sources
+   - Note limitations
+
+---
+
+## INTEGRATED PROBLEM-SOLVING WORKFLOW
+
+### When You Encounter a Problem
+
+```
+🔴 PROBLEM APPEARS
+        ↓
+📚 RESEARCH IT
+  - Search Stack Overflow
+  - Check GitHub issues
+  - Read official docs
+  - Note common solutions
+        ↓
+🧠 CONSULT AGENTS (argue it out)
+  - PESSIMIST: "What could go wrong?"
+  - OPTIMIST: "Why this could work?"
+  - ENGINEER: "How do we build it?"
+  - RESEARCHER: "What do experts say?"
+  - DEVIL: "Is our premise wrong?"
+        ↓
+⚖️ BUILD DECISION MATRIX
+  - Compare 3+ solutions
+  - Score on reliability/performance/complexity
+  - Identify tradeoffs
+  - Choose best approach
+        ↓
+✅ IMPLEMENT WITH PESSIMISM
+  - Add validation
+  - Add fallbacks
+  - Add error handling
+  - Add monitoring
+  - Add tests
+        ↓
+🧪 TEST RIGOROUSLY
+  - Normal case
+  - Edge cases
+  - Failure cases
+  - Recovery cases
+        ↓
+📖 DOCUMENT & SHARE
+  - What was the problem?
+  - How did you research it?
+  - Why did you choose this solution?
+  - What were alternatives?
+  - What did you learn?
+```
+
+---
+
+## PESSIMISTIC CODE CHECKLIST
+
+Before merging ANY code, ask pessimistically:
+
+**Input & Validation**
+- [ ] What if input is NULL?
+- [ ] What if input is empty?
+- [ ] What if input is wrong type?
+- [ ] What if input is too large?
+- [ ] What if input is malicious?
+
+**State & Assumptions**
+- [ ] What if previous operation failed?
+- [ ] What if state is corrupted?
+- [ ] What if system is in unknown state?
+- [ ] What assumptions are we making?
+- [ ] What if assumptions are wrong?
+
+**Resources & Limits**
+- [ ] What if we run out of memory?
+- [ ] What if disk is full?
+- [ ] What if network is down?
+- [ ] What if timeout occurs?
+- [ ] What if rate limiting kicks in?
+
+**Error Handling**
+- [ ] What errors can occur?
+- [ ] Do we catch specific exceptions?
+- [ ] Do we log with context?
+- [ ] Do we have fallback?
+- [ ] Do we cleanup resources?
+
+**Testing**
+- [ ] Does test cover happy path?
+- [ ] Does test cover error paths?
+- [ ] Do we test with real data?
+- [ ] Do we test at scale?
+- [ ] Do we test after deployment?
+
+---
+
+## DECISION-MAKING WITH EVIDENCE
+
+### Evidence Collection Template
+
+When making a decision:
+
+```
+DECISION: Should we cache expensive computations?
+
+EVIDENCE FOR CACHING:
+✓ Academic research: "Caching strategies in ML" (Google, 2023)
+✓ Industry practice: 80% of ML services use caching
+✓ Our data: Similar queries 70% of the time
+✓ Performance: 40x faster with cache (measured)
+✓ Cost: Saves $500/month in compute (calculated)
+✗ ONE AGAINST: Cache invalidation is hard
+
+EVIDENCE AGAINST CACHING:
+✓ System complexity: +2000 LOC, harder to debug
+✓ Memory cost: +4GB RAM required
+✓ Staleness risk: Results may be outdated
+✓ Maintenance: Need cache expiry logic
+✗ ONE FOR: Queries change frequently anyway
+
+CONFIDENCE SCORING:
+  1. Is evidence from credible source? (YES: academic + industry)
+  2. Is evidence recent? (YES: 2023/2024)
+  3. Do multiple sources agree? (YES: Google + Stack Overflow + our data)
+  4. Have we tested locally? (NEED TO DO)
+  5. Is fallback available? (YES: can disable cache)
+
+CONFIDENCE LEVEL: 85% (proceed with pilot)
+
+IMPLEMENTATION PLAN:
+1. Implement basic cache (Redis)
+2. Monitor hit/miss rates (target 70%)
+3. Measure performance improvement
+4. Set TTL based on data freshness requirements
+5. Have disable switch if issues occur
+```
+
+**Final Recommendation:**
+Implement caching with:
+- Daily TTL (adjust based on data update frequency)
+- Monitoring dashboard (cache hit rate)
+- Easy disable switch in config
+- Tests covering cache misses and expiry
+- Gradual rollout (10% → 50% → 100%)
+
