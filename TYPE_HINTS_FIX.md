@@ -3,17 +3,21 @@
 ## Issues Fixed
 
 ### Problem
+
 Multiple Python type annotation errors in the `fix_inline_styles.py` script:
+
 - Missing type hints for function parameters
 - Missing return type annotations
 - Untyped variables causing cascading errors
 
 ### Solution
+
 Added comprehensive type hints throughout the file:
 
 ## Changes Made
 
 ### 1. Import Updates
+
 ```python
 # BEFORE
 import re
@@ -29,6 +33,7 @@ from typing import Dict, List, Tuple, Any
 ### 2. Function Signatures
 
 **extract_style_properties:**
+
 ```python
 # BEFORE
 def extract_style_properties(style_str):
@@ -38,6 +43,7 @@ def extract_style_properties(style_str: str) -> Dict[str, str]:
 ```
 
 **properties_to_css:**
+
 ```python
 # BEFORE
 def properties_to_css(properties):
@@ -47,6 +53,7 @@ def properties_to_css(properties: Dict[str, str]) -> str:
 ```
 
 **generate_class_name:**
+
 ```python
 # BEFORE
 def generate_class_name(properties, index):
@@ -56,6 +63,7 @@ def generate_class_name(properties: Dict[str, str], index: int) -> str:
 ```
 
 **main:**
+
 ```python
 # BEFORE
 def main():
@@ -67,6 +75,7 @@ def main() -> None:
 ### 3. Variable Type Annotations
 
 Added explicit type annotations for:
+
 - `html_path: Path`
 - `content: str`
 - `style_pattern: str`
@@ -79,6 +88,7 @@ Added explicit type annotations for:
 ### 4. Nested Function Type Hints
 
 Added type hints to all nested functions:
+
 ```python
 def merge_style_class(match: Any) -> str:
     """Merge style attribute into class attribute."""
@@ -102,6 +112,7 @@ def replace_element(elem_match: Any) -> str:
 ## Validation
 
 All major type errors resolved:
+
 - [x] Function return types defined
 - [x] Function parameter types defined
 - [x] Variable types annotated

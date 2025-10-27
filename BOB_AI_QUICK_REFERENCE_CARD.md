@@ -7,6 +7,7 @@
 ## 🎯 3 Core Reasoning Principles
 
 ### Principle 1: Transparency
+
 **Always explain: WHAT, WHY, HOW, WHAT could go wrong, HOW to verify**
 
 ```
@@ -22,6 +23,7 @@
 ```
 
 ### Principle 2: Root Cause
+
 **Find the actual problem, not the symptom**
 
 ```
@@ -36,6 +38,7 @@
 ```
 
 ### Principle 3: Evidence-Based
+
 **Collect evidence FOR and AGAINST each decision**
 
 ```
@@ -61,6 +64,7 @@ AGAINST GPU:
 ## 🛡️ 3 Error Patterns (Learn from Past Mistakes)
 
 ### Pattern 1: Import-Time Configuration
+
 **Problem:** Libraries read env vars during import, not runtime
 
 ```python
@@ -77,6 +81,7 @@ import xformers  # Now safe
 ---
 
 ### Pattern 2: Inline Styles
+
 **Problem:** `style="width: 0%"` hides accessibility/linting issues
 
 ```html
@@ -99,6 +104,7 @@ import xformers  # Now safe
 ---
 
 ### Pattern 3: Missing Type Hints
+
 **Problem:** Untyped functions cause 5+ cascading errors in IDE
 
 ```python
@@ -158,6 +164,7 @@ ERROR OCCURS
 ## 📦 4 Pattern Sets (Proven Solutions)
 
 ### Set A: Configuration & Initialization
+
 ```
 ✓ Set env vars BEFORE imports
 ✓ Use lazy loading (not preload)
@@ -166,6 +173,7 @@ ERROR OCCURS
 ```
 
 ### Set B: Resource Management
+
 ```
 ✓ Pre-check before allocating (VRAM check)
 ✓ Try block → Execute → Finally: cleanup
@@ -174,6 +182,7 @@ ERROR OCCURS
 ```
 
 ### Set C: Communication & Events
+
 ```
 ✓ WebSocket rooms for subscriptions
 ✓ Targeted delivery, NOT global broadcast
@@ -182,6 +191,7 @@ ERROR OCCURS
 ```
 
 ### Set D: Error Handling
+
 ```
 ✓ Catch specific exceptions (not generic)
 ✓ Log context: state, input, expected vs actual
@@ -195,7 +205,7 @@ ERROR OCCURS
 
 **When something breaks:**
 
-1. ❓ **Has this worked before?** 
+1. ❓ **Has this worked before?**
    - Regression or new issue?
 
 2. ❓ **What exactly changed?**
@@ -315,9 +325,9 @@ except MemoryError as e:
 
 ---
 
-**Version:** 1.0  
-**Last Updated:** October 27, 2025  
-**Status:** ✅ Ready to use  
+**Version:** 1.0
+**Last Updated:** October 27, 2025
+**Status:** ✅ Ready to use
 **Commits:** 52ba6b7, 22c552b, 090faa7
 
 Print this! Bookmark this! Use this! 🚀

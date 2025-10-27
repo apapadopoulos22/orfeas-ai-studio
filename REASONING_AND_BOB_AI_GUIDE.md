@@ -1,7 +1,7 @@
 # Reasoning & BOB AI Knowledge Integration Guide
 
-**Date:** October 27, 2025  
-**Enhancement:** Added comprehensive reasoning frameworks and error learning patterns to copilot-instructions.md  
+**Date:** October 27, 2025
+**Enhancement:** Added comprehensive reasoning frameworks and error learning patterns to copilot-instructions.md
 **Commit:** 52ba6b7
 
 ## What's New in copilot-instructions.md
@@ -12,9 +12,10 @@ The GitHub Copilot instructions have been enhanced with three major reasoning fr
 
 A structured approach to problem-solving that explains the "why" behind every decision.
 
-#### Three Core Principles:
+#### Three Core Principles
 
 **Principle 1: Transparency in Problem-Solving**
+
 - Explicitly state WHAT you're doing
 - Explain WHY you're doing it
 - Show HOW it solves the problem
@@ -22,6 +23,7 @@ A structured approach to problem-solving that explains the "why" behind every de
 - Describe HOW you'll verify success
 
 Example: When fixing the template expression error on line 8574:
+
 ```
 ANALYSIS:
 - Error: ${progre" (incomplete template variable)
@@ -33,16 +35,19 @@ SOLUTION: Change to ${progressData.progress}%
 ```
 
 **Principle 2: Root Cause Before Symptoms**
+
 - Don't just fix the symptom
 - Dig deeper to find the actual cause
 - Use the "5 Whys" technique when stuck
 
-Example: 
+Example:
+
 - Symptom: "showSection function undefined"
 - Real cause: HTML body executes before head script loads
 - Fix: Move function to `<head>`, not just reorder in body
 
 **Principle 3: Evidence-Based Decision Making**
+
 - Collect evidence FOR and AGAINST each decision
 - Assign confidence levels (70% → maybe, 85% → probably, 95% → definitely)
 - Document the reasoning for future reference
@@ -58,6 +63,7 @@ Three major error patterns discovered during project development, with lessons l
 #### Pattern 1: Import-Time vs Runtime Configuration
 
 **The Mistake:**
+
 ```python
 # ❌ WRONG
 import os
@@ -71,6 +77,7 @@ import xformers  # CRASHES - env vars not set yet!
 **Lesson Learned:** Some libraries read environment variables during import. Must set them FIRST.
 
 **Correct Pattern:**
+
 ```python
 # ✅ CORRECT
 import os
@@ -85,18 +92,21 @@ import xformers  # Now safe
 #### Pattern 2: Inline Styles Hiding Real Issues
 
 **The Mistake:**
+
 ```html
 <!-- ❌ WRONG -->
 <div style="width: 0%">GPU Memory</div>
 ```
 
 **Problems Hidden:**
+
 - No semantic meaning in CSS
 - Hard to audit at scale
 - Accessibility tools fail
 - Can't apply responsive design
 
 **Correct Pattern:**
+
 ```html
 <!-- ✅ CORRECT -->
 <div class="progress-fill-bar">GPU Memory</div>
@@ -115,6 +125,7 @@ import xformers  # Now safe
 #### Pattern 3: Missing Type Hints Cascading
 
 **The Mistake:**
+
 ```python
 # ❌ WRONG: Untyped function causes 11 downstream errors
 def extract_style_properties(element):
@@ -124,6 +135,7 @@ def extract_style_properties(element):
 ```
 
 **Correct Pattern:**
+
 ```python
 # ✅ CORRECT: Full type hints prevent cascading errors
 from typing import Dict, List, Tuple
@@ -145,14 +157,16 @@ BOB AI represents a complete diagnostic and troubleshooting framework:
 - **O**ptimization - Find bottlenecks and improve performance
 - **B**uilding blocks - Modular solutions to recurring problems
 
-#### What BOB AI IS:
-✓ A methodology for problem-solving  
-✓ A knowledge base of proven patterns  
+#### What BOB AI IS
+
+✓ A methodology for problem-solving
+✓ A knowledge base of proven patterns
 ✓ A reasoning framework for debugging
 
-#### What BOB AI IS NOT:
-✗ A separate system or agent  
-✗ Machine learning inference  
+#### What BOB AI IS NOT
+
+✗ A separate system or agent
+✗ Machine learning inference
 ✗ A new framework or library
 
 #### BOB AI Decision Tree: "How Do I Fix This?"
@@ -160,16 +174,16 @@ BOB AI represents a complete diagnostic and troubleshooting framework:
 ```
 Step 1: IMPORT ERROR?
   → Check environment variables first (Pattern 1)
-  
+
 Step 2: RENDERING ERROR?
   → Check HTML structure (showSection, template syntax, CSS)
-  
+
 Step 3: MEMORY ERROR?
   → Check GPU/VRAM (pre-check, cleanup, fallback)
-  
+
 Step 4: WEBSOCKET ERROR?
   → Check subscriptions (subscribe_to_job, room emit, heartbeat)
-  
+
 Step 5: Still stuck?
   → Check Common Issues Table
 ```
@@ -177,24 +191,28 @@ Step 5: Still stuck?
 #### BOB AI Pattern Library
 
 **Pattern Set A: Configuration & Initialization**
+
 - ✓ Environment variables before imports
 - ✓ Lazy loading for expensive resources
 - ✓ Thread-safe singletons with locks
 - ✓ Validate configuration early
 
 **Pattern Set B: Resource Management**
+
 - ✓ Pre-check before allocating (VRAM check)
 - ✓ Execute in try block, cleanup in finally
 - ✓ Graceful degradation (GPU → CPU fallback)
 - ✓ Monitor resource usage continuously
 
 **Pattern Set C: Communication & Events**
+
 - ✓ WebSocket rooms for subscriptions
 - ✓ Targeted delivery, not global broadcast
 - ✓ Heartbeat for connection health
 - ✓ JSON serialization for communication
 
 **Pattern Set D: Error Handling**
+
 - ✓ Catch specific exceptions, not generic
 - ✓ Log context: state, inputs, expected vs actual
 - ✓ Provide fallback - never leave client hanging
@@ -212,21 +230,24 @@ Step 5: Still stuck?
 
 ## How to Use These Frameworks
 
-### When Solving Problems:
+### When Solving Problems
+
 1. **Explain your reasoning** - Write comments describing what/why/how
 2. **Look for patterns** - Does this match Error Pattern 1/2/3?
 3. **Use BOB AI decision tree** - Follow the diagnostic flow
 4. **Collect evidence** - Document what supports/contradicts each hypothesis
 5. **Apply pattern library** - Use proven solutions from Pattern Sets A-D
 
-### When Writing Code:
+### When Writing Code
+
 1. **Document assumptions** - What does this code assume will be true?
 2. **Add type hints** - Prevent cascading errors (Pattern 3)
 3. **Use CSS classes** - Don't hide issues with inline styles (Pattern 2)
 4. **Set env vars first** - Before importing heavy modules (Pattern 1)
 5. **Add validation** - Fail fast with clear error messages
 
-### When Debugging:
+### When Debugging
+
 1. **Verify assumptions** - Is it really what I think?
 2. **Check environment** - env vars, config, disk space, permissions
 3. **Narrow scope** - Which layer? Frontend? Backend? GPU?
@@ -240,12 +261,14 @@ Step 5: Still stuck?
 ### Example 1: Template Syntax Error (Line 8574)
 
 **Problem Discovered:**
+
 ```html
 <!-- ❌ BROKEN -->
 <div style="width: ${progre"%>  <!-- Incomplete template -->
 ```
 
 **Reasoning Applied:**
+
 ```
 WHAT: Missing closing brace and property
 WHY: Typo during template literal editing
@@ -262,6 +285,7 @@ VERIFY: Progress bar renders with correct percentage
 ### Example 2: showSection Function Undefined (Line 2076)
 
 **Problem Discovered:**
+
 ```html
 <!-- ❌ Function called before definition -->
 <body>
@@ -274,6 +298,7 @@ VERIFY: Progress bar renders with correct percentage
 ```
 
 **Reasoning Applied:**
+
 ```
 WHAT: Function called in HTML body
 WHY: HTML body executes scripts before later definitions load
@@ -290,6 +315,7 @@ VERIFY: Navigation buttons work, no console errors
 ### Example 3: Inline Styles in batch-studio.html (Lines 453, 462)
 
 **Problem Discovered:**
+
 ```html
 <!-- ❌ Inline styles -->
 <div id="gpu-memory-bar" style="width: 0%">Memory: 0%</div>
@@ -297,16 +323,18 @@ VERIFY: Navigation buttons work, no console errors
 ```
 
 **Issues:**
+
 - Can't apply responsive design
 - Hard to audit at scale
 - Linting tools can't catch patterns
 - No theme consistency
 
 **Reasoning Applied:**
+
 ```
 WHAT: Create .progress-fill-bar CSS class
 WHY: Centralize styling, enable linting, support responsive design
-HOW: 
+HOW:
   1. Create class with width, transition, gradient
   2. Remove inline style attributes
   3. Add class="progress-fill-bar" to divs
@@ -322,6 +350,7 @@ VERIFY: Progress bars still render, webhint passes
 ### Example 4: Missing Type Hints (fix_inline_styles.py)
 
 **Problem Discovered:**
+
 ```python
 # ❌ 11 Type errors reported by Pylance
 def extract_style_properties(element):  # No type hint
@@ -331,6 +360,7 @@ def extract_style_properties(element):  # No type hint
 ```
 
 **Reasoning Applied:**
+
 ```
 WHAT: Add comprehensive type hints
 WHY: IDE can't infer types, enables autocomplete, catches bugs
@@ -350,24 +380,28 @@ VERIFY: Pylance reports 0 major errors, IDE shows proper hints
 
 ## Integration with Current Workflow
 
-### During Development:
+### During Development
+
 - Reference the Decision Trees when stuck
 - Check Pattern Library before writing code
 - Apply Error Patterns to avoid known mistakes
 
-### During Code Review:
+### During Code Review
+
 - Use Transparency principle for PR comments
 - Check for inline styles (Pattern 2)
 - Verify type hints added (Pattern 3)
 - Confirm env vars set early (Pattern 1)
 
-### During Debugging:
+### During Debugging
+
 - Use BOB AI Diagnostic Questions in order
 - Follow decision tree for your error type
 - Collect evidence before deciding fix
 - Document reasoning in git commits
 
-### During Testing:
+### During Testing
+
 - Validate against Pattern Sets A-D
 - Check error messages are meaningful
 - Verify fallback mechanisms work
@@ -387,6 +421,7 @@ VERIFY: Pylance reports 0 major errors, IDE shows proper hints
 6. ✅ **Verify**: Test the fix works
 
 **Key Reminders:**
+
 - Root cause before symptoms
 - Environment variables FIRST (before imports)
 - Use CSS classes, not inline styles
@@ -413,6 +448,6 @@ VERIFY: Pylance reports 0 major errors, IDE shows proper hints
 
 ---
 
-**Last Updated:** October 27, 2025  
-**Maintainer:** GitHub Copilot Enhancement System  
+**Last Updated:** October 27, 2025
+**Maintainer:** GitHub Copilot Enhancement System
 **Reference:** Full copilot-instructions.md in `.github/` directory

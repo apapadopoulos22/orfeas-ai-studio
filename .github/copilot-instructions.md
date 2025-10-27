@@ -818,6 +818,7 @@ The 7-stage pipeline uses weighted percentages:
 ### Why Pessimism? (The Realistic Approach)
 
 Most developers are optimists. They assume:
+
 - ✗ "It will probably work"
 - ✗ "This edge case won't happen"
 - ✗ "We don't need to handle this error"
@@ -843,25 +844,25 @@ def process_job(job_id):
         if not data:
             logger.error(f"No data for job {job_id}")
             return None
-        
+
         # Assume calculation fails
         if len(data) > 100000:  # Data too large
             return graceful_fallback(job_id)
-        
+
         # Assume format is wrong
         try:
             result = calculate(data)
         except ValueError as e:
             logger.warning(f"Calculation failed: {e}, using cache")
             return get_cached_result(job_id)
-        
+
         # Assume result is invalid
         if not validate_result(result):
             logger.error(f"Invalid result for {job_id}")
             return fallback_result(job_id)
-        
+
         return result
-    
+
     except Exception as e:
         # Assume EVERYTHING can fail
         logger.error(f"Job {job_id} failed catastrophically: {e}", exc_info=True)
@@ -871,6 +872,7 @@ def process_job(job_id):
 ### Pessimistic Principles
 
 **Principle P1: Assume Everything Will Fail**
+
 - Input validation: Check EVERYTHING
 - Network calls: Always timeout and retry
 - File operations: Disk full, permission denied, corrupted
@@ -878,18 +880,21 @@ def process_job(job_id):
 - Users: Will do the wrong thing
 
 **Principle P2: Fail Fast With Context**
+
 - Don't let bad state propagate
 - Log the exact state when failure occurs
 - Provide meaningful error messages
 - Include stack trace AND context variables
 
 **Principle P3: Multiple Fallbacks**
+
 - Level 1: Graceful degradation (GPU → CPU)
 - Level 2: Cached fallback (use last known good)
 - Level 3: Simplified fallback (lower quality)
 - Level 4: Human intervention (admin console)
 
 **Principle P4: Prove It Works**
+
 - "It works on my machine" = worthless
 - Test on actual hardware
 - Test with real data (not mocked)
@@ -903,6 +908,7 @@ def process_job(job_id):
 ### The Problem With Single Perspectives
 
 One person (or one AI) looking at a problem sees:
+
 - ✗ Their own biases
 - ✗ Their preferred solutions
 - ✗ Their blind spots
@@ -915,9 +921,11 @@ One person (or one AI) looking at a problem sees:
 When facing a complex problem, consult 5 agents:
 
 #### Agent 1: THE PESSIMIST 😟
+
 **Role:** "What could go wrong?"
 
 **Questions:**
+
 - What's the worst case scenario?
 - What data format could break this?
 - What if the user has wrong permissions?
@@ -925,6 +933,7 @@ When facing a complex problem, consult 5 agents:
 - What if we run out of memory?
 
 **Example output:**
+
 ```
 PESSIMIST: This GPU memory check is wrong!
   - Problem: You check VRAM once, but it changes during execution
@@ -935,9 +944,11 @@ PESSIMIST: This GPU memory check is wrong!
 ```
 
 #### Agent 2: THE OPTIMIST 😊
+
 **Role:** "Why this could work"
 
 **Questions:**
+
 - What's the best case scenario?
 - What common patterns does this follow?
 - What's already proven in production?
@@ -945,6 +956,7 @@ PESSIMIST: This GPU memory check is wrong!
 - What defaults are safe?
 
 **Example output:**
+
 ```
 OPTIMIST: The GPU memory check works for 99% of cases!
   - Success rate: Works perfectly when code paths don't race
@@ -955,9 +967,11 @@ OPTIMIST: The GPU memory check works for 99% of cases!
 ```
 
 #### Agent 3: THE ENGINEER 🔧
+
 **Role:** "How do we actually build this?"
 
 **Questions:**
+
 - What's the simplest implementation?
 - What dependencies are needed?
 - What performance characteristics?
@@ -965,6 +979,7 @@ OPTIMIST: The GPU memory check works for 99% of cases!
 - How do we test this?
 
 **Example output:**
+
 ```
 ENGINEER: Implementation needs these components:
   - VRAM checker: nvidia-smi or PyTorch API (simple)
@@ -975,9 +990,11 @@ ENGINEER: Implementation needs these components:
 ```
 
 #### Agent 4: THE RESEARCHER 📚
+
 **Role:** "What does the industry know?"
 
 **Questions:**
+
 - How do other projects handle this?
 - What's the academic best practice?
 - What open source solutions exist?
@@ -985,6 +1002,7 @@ ENGINEER: Implementation needs these components:
 - What are common pitfalls?
 
 **Example output:**
+
 ```
 RESEARCHER: GPU memory management standards:
   - Industry practice: Pre-check + fallback (NVIDIA recommended)
@@ -995,9 +1013,11 @@ RESEARCHER: GPU memory management standards:
 ```
 
 #### Agent 5: THE DEVIL'S ADVOCATE 😈
+
 **Role:** "Why this approach might be fundamentally wrong"
 
 **Questions:**
+
 - Is this solving the right problem?
 - Are we making wrong assumptions?
 - What if the entire premise is flawed?
@@ -1005,6 +1025,7 @@ RESEARCHER: GPU memory management standards:
 - Could a different approach work better?
 
 **Example output:**
+
 ```
 DEVIL'S ADVOCATE: Why VRAM pre-checking is fundamentally flawed:
   - Wrong premise: Assuming we can predict memory needs (we can't)
@@ -1017,6 +1038,7 @@ DEVIL'S ADVOCATE: Why VRAM pre-checking is fundamentally flawed:
 ### Using Multi-Agent Argumentation
 
 **When to use:**
+
 - Making major architectural decisions
 - Debugging mysterious failures
 - Planning risky deployments
@@ -1067,26 +1089,31 @@ CONSENSUS: Use GPU with tiered fallback:
 When you encounter a problem, ask:
 
 **Query 1: Stack Overflow**
+
 ```
 site:stackoverflow.com [error message] [language] [framework]
 ```
 
 **Query 2: GitHub Issues**
+
 ```
 site:github.com/[project] [error] "500 error" OR "crash"
 ```
 
 **Query 3: Documentation**
+
 ```
 site:[project].org OR site:[project].readthedocs.io [error] troubleshooting
 ```
 
 **Query 4: Academic Research**
+
 ```
 site:arxiv.org [technical topic] performance optimization
 ```
 
 **Query 5: Blog Posts & Tutorials**
+
 ```
 [error message] solution tutorial 2024
 ```
@@ -1094,6 +1121,7 @@ site:arxiv.org [technical topic] performance optimization
 ### Problem-Solving Research Pattern
 
 **Step 1: Identify the error accurately**
+
 ```
 What is the EXACT error message?
 ❌ "Something went wrong"
@@ -1101,6 +1129,7 @@ What is the EXACT error message?
 ```
 
 **Step 2: Search for others who had same issue**
+
 ```
 Search 1: [Exact error message]
 Search 2: [Error + your framework] solution
@@ -1109,6 +1138,7 @@ Search 4: [Error + version info] issue
 ```
 
 **Step 3: Analyze solutions found**
+
 ```
 - Count how many solutions exist (1 = rare, 10+ = common)
 - Check dates (outdated solutions may not apply)
@@ -1117,6 +1147,7 @@ Search 4: [Error + version info] issue
 ```
 
 **Step 4: Test hypothesis before production**
+
 ```
 1. Reproduce error in isolated environment
 2. Apply solution from research
@@ -1257,6 +1288,7 @@ Before implementing ANY major change:
 Before merging ANY code, ask pessimistically:
 
 **Input & Validation**
+
 - [ ] What if input is NULL?
 - [ ] What if input is empty?
 - [ ] What if input is wrong type?
@@ -1264,6 +1296,7 @@ Before merging ANY code, ask pessimistically:
 - [ ] What if input is malicious?
 
 **State & Assumptions**
+
 - [ ] What if previous operation failed?
 - [ ] What if state is corrupted?
 - [ ] What if system is in unknown state?
@@ -1271,6 +1304,7 @@ Before merging ANY code, ask pessimistically:
 - [ ] What if assumptions are wrong?
 
 **Resources & Limits**
+
 - [ ] What if we run out of memory?
 - [ ] What if disk is full?
 - [ ] What if network is down?
@@ -1278,6 +1312,7 @@ Before merging ANY code, ask pessimistically:
 - [ ] What if rate limiting kicks in?
 
 **Error Handling**
+
 - [ ] What errors can occur?
 - [ ] Do we catch specific exceptions?
 - [ ] Do we log with context?
@@ -1285,6 +1320,7 @@ Before merging ANY code, ask pessimistically:
 - [ ] Do we cleanup resources?
 
 **Testing**
+
 - [ ] Does test cover happy path?
 - [ ] Does test cover error paths?
 - [ ] Do we test with real data?
@@ -1336,9 +1372,9 @@ IMPLEMENTATION PLAN:
 
 **Final Recommendation:**
 Implement caching with:
+
 - Daily TTL (adjust based on data update frequency)
 - Monitoring dashboard (cache hit rate)
 - Easy disable switch in config
 - Tests covering cache misses and expiry
 - Gradual rollout (10% → 50% → 100%)
-

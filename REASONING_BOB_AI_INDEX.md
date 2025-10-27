@@ -32,8 +32,10 @@ Three major reasoning frameworks have been integrated into `copilot-instructions
 ### What Each File Contains
 
 #### `.github/copilot-instructions.md`
-**Location:** Main copilot instructions file  
+
+**Location:** Main copilot instructions file
 **New Sections:**
+
 - Reasoning & Decision Framework (3 principles)
 - Mistake Learning & Error Recovery (3 patterns)
 - BOB AI Knowledge Base Integration (4 pattern sets)
@@ -45,8 +47,10 @@ Three major reasoning frameworks have been integrated into `copilot-instructions
 ---
 
 #### `REASONING_AND_BOB_AI_GUIDE.md`
-**Location:** Detailed implementation guide  
+
+**Location:** Detailed implementation guide
 **Contains:**
+
 - Explanation of each framework principle
 - Code examples (before/after)
 - Real project examples (4 actual fixes)
@@ -58,8 +62,10 @@ Three major reasoning frameworks have been integrated into `copilot-instructions
 ---
 
 #### `REASONING_ENHANCEMENT_SUMMARY.md`
-**Location:** High-level overview  
+
+**Location:** High-level overview
 **Contains:**
+
 - What was enhanced (summary)
 - Key changes explained
 - Integration with workflow
@@ -71,8 +77,10 @@ Three major reasoning frameworks have been integrated into `copilot-instructions
 ---
 
 #### `BOB_AI_QUICK_REFERENCE_CARD.md` ⭐ START HERE
-**Location:** Quick reference (this one!)  
+
+**Location:** Quick reference (this one!)
 **Contains:**
+
 - 3 core principles (one-liner each)
 - 3 error patterns (copy-paste solutions)
 - BOB AI decision tree (visual flow)
@@ -88,6 +96,7 @@ Three major reasoning frameworks have been integrated into `copilot-instructions
 ## 🧠 Three Core Reasoning Principles
 
 ### 1. Transparency in Problem-Solving
+
 **Explain: WHAT, WHY, HOW, WHAT could go wrong, HOW to verify**
 
 ```
@@ -99,12 +108,13 @@ RISK: Progress bar won't render
 VERIFY: Progress bar shows correct percentage
 ```
 
-✅ **Use When:** Making any change or fixing any bug  
+✅ **Use When:** Making any change or fixing any bug
 📖 **Learn More:** `REASONING_AND_BOB_AI_GUIDE.md` → Principle 1
 
 ---
 
 ### 2. Root Cause Before Symptoms
+
 **Find the actual problem, not the symptom**
 
 ```
@@ -114,12 +124,13 @@ Cause: HTML body executes before <head> loads
 Real Fix: Move function to <head>
 ```
 
-✅ **Use When:** Debugging (don't fix symptoms!)  
+✅ **Use When:** Debugging (don't fix symptoms!)
 📖 **Learn More:** `REASONING_AND_BOB_AI_GUIDE.md` → Principle 2
 
 ---
 
 ### 3. Evidence-Based Decision Making
+
 **Collect evidence FOR and AGAINST each decision**
 
 ```
@@ -129,7 +140,7 @@ AGAINST GPU: ✗ OOM last time ✓ Memory leak ✓ Unstable driver
 → Use GPU with fallback (85% confidence)
 ```
 
-✅ **Use When:** Making architectural decisions  
+✅ **Use When:** Making architectural decisions
 📖 **Learn More:** `REASONING_AND_BOB_AI_GUIDE.md` → Principle 3
 
 ---
@@ -137,6 +148,7 @@ AGAINST GPU: ✗ OOM last time ✓ Memory leak ✓ Unstable driver
 ## 🛡️ Three Error Patterns (Learn from Mistakes)
 
 ### Pattern 1: Import-Time Configuration
+
 **Libraries read env vars at import time, not runtime**
 
 ```python
@@ -148,13 +160,14 @@ os.environ['XFORMERS_DISABLED'] = '1'  # SET FIRST
 import xformers  # Now safe
 ```
 
-💡 **Discovered in:** ORFEAS project - xformers DLL crash  
-🛡️ **Prevention:** Set all env vars BEFORE imports  
+💡 **Discovered in:** ORFEAS project - xformers DLL crash
+🛡️ **Prevention:** Set all env vars BEFORE imports
 📖 **Learn More:** `REASONING_AND_BOB_AI_GUIDE.md` → Pattern 1
 
 ---
 
 ### Pattern 2: Inline Styles Hiding Real Issues
+
 **Inline styles bypass CSS audit and accessibility checks**
 
 ```html
@@ -165,13 +178,14 @@ import xformers  # Now safe
 <div class="progress-fill-bar">GPU Memory</div>
 ```
 
-💡 **Discovered in:** batch-studio.html - webhint failures  
-🛡️ **Prevention:** Use CSS classes, run `validate_html_css.py`  
+💡 **Discovered in:** batch-studio.html - webhint failures
+🛡️ **Prevention:** Use CSS classes, run `validate_html_css.py`
 📖 **Learn More:** `REASONING_AND_BOB_AI_GUIDE.md` → Pattern 2
 
 ---
 
 ### Pattern 3: Missing Type Hints Cascading
+
 **Untyped functions cause 5+ downstream type errors**
 
 ```python
@@ -184,8 +198,8 @@ def extract_style_properties(element: str) -> Dict[str, str]:
     return {}
 ```
 
-💡 **Discovered in:** fix_inline_styles.py - Pylance errors  
-🛡️ **Prevention:** Add type hints from day 1  
+💡 **Discovered in:** fix_inline_styles.py - Pylance errors
+🛡️ **Prevention:** Add type hints from day 1
 📖 **Learn More:** `REASONING_AND_BOB_AI_GUIDE.md` → Pattern 3
 
 ---
@@ -193,6 +207,7 @@ def extract_style_properties(element: str) -> Dict[str, str]:
 ## 🤖 BOB AI Knowledge Integration
 
 BOB AI is a **diagnostic and troubleshooting framework** representing:
+
 - **B**ehavioral observation - Track what actually happens
 - **O**ptimization - Find bottlenecks
 - **B**uilding blocks - Modular solutions
@@ -202,21 +217,21 @@ BOB AI is a **diagnostic and troubleshooting framework** representing:
 ```
 Step 1: IMPORT ERROR?
   → Check env vars first (Pattern 1)
-  
+
 Step 2: RENDERING ERROR?
   → Check HTML structure (functions, templates, CSS)
-  
+
 Step 3: MEMORY ERROR?
   → Check GPU/VRAM (pre-check, cleanup, fallback)
-  
+
 Step 4: WEBSOCKET ERROR?
   → Check subscriptions (rooms, heartbeat)
-  
+
 Step 5: STILL STUCK?
   → Check Common Issues Table
 ```
 
-✅ **Use When:** Systematic debugging  
+✅ **Use When:** Systematic debugging
 📖 **Learn More:** `BOB_AI_QUICK_REFERENCE_CARD.md` → Decision Tree
 
 ---
@@ -224,30 +239,34 @@ Step 5: STILL STUCK?
 ### BOB AI Pattern Library (4 Sets)
 
 **Set A: Configuration & Initialization**
+
 - ✓ Env vars before imports
 - ✓ Lazy loading (not preload)
 - ✓ Thread-safe singletons
 - ✓ Validate early, fail fast
 
 **Set B: Resource Management**
+
 - ✓ Pre-check before allocating
 - ✓ Try/Finally cleanup pattern
 - ✓ Graceful degradation
 - ✓ Monitor continuously
 
 **Set C: Communication & Events**
+
 - ✓ WebSocket rooms for subscriptions
 - ✓ Targeted delivery (not broadcast)
 - ✓ Heartbeat for health
 - ✓ JSON serialization
 
 **Set D: Error Handling**
+
 - ✓ Catch specific exceptions
 - ✓ Log context (state, input, expected)
 - ✓ Always provide fallback
 - ✓ Meaningful errors
 
-✅ **Use When:** Writing code to prevent issues  
+✅ **Use When:** Writing code to prevent issues
 📖 **Learn More:** `BOB_AI_QUICK_REFERENCE_CARD.md` → Pattern Sets
 
 ---
@@ -257,39 +276,47 @@ Step 5: STILL STUCK?
 All frameworks applied to actual ORFEAS project issues:
 
 ### Example 1: Template Syntax Error (Line 8574)
+
 ```
 Error: ${progre" incomplete template
 Pattern Used: Transparency principle
 Fix Applied: Changed to ${progressData.progress}%
 Result: ✅ Progress bar renders correctly
 ```
+
 📖 See: `REASONING_AND_BOB_AI_GUIDE.md` → Example 1
 
 ### Example 2: Function Undefined (Line 2076)
+
 ```
 Error: showSection() called before definition
 Pattern Used: Root Cause Before Symptoms
 Fix Applied: Moved function to <head>
 Result: ✅ All navigation working
 ```
+
 📖 See: `REASONING_AND_BOB_AI_GUIDE.md` → Example 2
 
 ### Example 3: Inline Styles (batch-studio.html)
+
 ```
 Error: Webhint: inline styles not auditable
 Pattern Used: Error Pattern 2
 Fix Applied: Created .progress-fill-bar CSS class
 Result: ✅ Webhint compliant, accessible
 ```
+
 📖 See: `REASONING_AND_BOB_AI_GUIDE.md` → Example 3
 
 ### Example 4: Type Hints (fix_inline_styles.py)
+
 ```
 Error: Pylance: 11 type annotation errors
 Pattern Used: Error Pattern 3
 Fix Applied: Added full type hints throughout
 Result: ✅ Type checking enabled
 ```
+
 📖 See: `REASONING_AND_BOB_AI_GUIDE.md` → Example 4
 
 ---
@@ -297,23 +324,27 @@ Result: ✅ Type checking enabled
 ## 🚀 How to Use
 
 ### During Development
+
 1. Reference Pattern Sets A-D when writing code
 2. Follow Principle 1: Document your reasoning
 3. Avoid patterns 1-3: env vars first, use CSS classes, add types
 
 ### During Debugging
+
 1. Ask diagnostic questions in order (Principle 2)
 2. Use decision tree to narrow scope
 3. Collect evidence before deciding fix
 4. Apply pattern library solution
 
 ### During Code Review
+
 1. Check reasoning explained (Principle 1)
 2. Verify no pattern violations (1-3)
 3. Confirm pattern sets followed (A-D)
 4. Validate error handling (Set D)
 
 ### Before Every Commit
+
 ```bash
 # Reasoning explained?
 grep -E "WHAT:|WHY:|HOW:" git diff
@@ -399,16 +430,16 @@ grep "finally:" *.py      # Set B?
 
 ## 💡 Key Takeaways
 
-✅ **Always explain your reasoning** (Principle 1)  
-✅ **Find root causes, not symptoms** (Principle 2)  
-✅ **Collect evidence before deciding** (Principle 3)  
-✅ **Learn from past mistakes** (Error Patterns 1-3)  
-✅ **Use proven solutions** (Pattern Sets A-D)  
-✅ **Debug systematically** (Decision Tree)  
+✅ **Always explain your reasoning** (Principle 1)
+✅ **Find root causes, not symptoms** (Principle 2)
+✅ **Collect evidence before deciding** (Principle 3)
+✅ **Learn from past mistakes** (Error Patterns 1-3)
+✅ **Use proven solutions** (Pattern Sets A-D)
+✅ **Debug systematically** (Decision Tree)
 
 ---
 
-## 🆘 Still Have Questions?
+## 🆘 Still Have Questions
 
 | Question | Answer Location |
 |----------|-----------------|
@@ -424,6 +455,7 @@ grep "finally:" *.py      # Set B?
 ## 📞 Support
 
 **For questions about:**
+
 - Reasoning frameworks → See `REASONING_AND_BOB_AI_GUIDE.md`
 - Quick reference → See `BOB_AI_QUICK_REFERENCE_CARD.md`
 - Implementation → See `REASONING_ENHANCEMENT_SUMMARY.md`
@@ -431,8 +463,8 @@ grep "finally:" *.py      # Set B?
 
 ---
 
-**Created:** October 27, 2025  
-**Status:** ✅ Complete and ready to use  
+**Created:** October 27, 2025
+**Status:** ✅ Complete and ready to use
 **Next Step:** Print quick reference card, bookmark files, start using!
 
 🚀 **Let's build better code with reasoning!**
