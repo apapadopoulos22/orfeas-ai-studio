@@ -1262,7 +1262,7 @@ class OrfeasUnifiedServer:
              allow_credentials=False,
              expose_headers=["Content-Disposition", "Content-Type", "Content-Length"],
              methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-             allow_headers=["Content-Type", "Authorization"])
+             allow_headers=["Content-Type", "Authorization", "ngrok-skip-browser-warning"])
 
         # [ORFEAS FIX 3] Initialize Basic Rate Limiter for DoS protection
         self.rate_limiter = RateLimiter()

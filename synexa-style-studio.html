@@ -1732,8 +1732,8 @@
         try {
           console.log("[HEALTH] Checking backend health at:", API_BASE);
 
-          // Use the /api/models-info endpoint which we know works
-          let response = await fetch(`${API_BASE}/api/models-info`, {
+          // Use the /models-info endpoint (API_BASE already includes /api)
+          let response = await fetch(`${API_BASE}/models-info`, {
             method: "GET",
             cache: "no-cache",
             headers: {
@@ -1893,7 +1893,7 @@
           formData.append("image", file);
 
           console.log("[UPLOAD] Sending fetch request...");
-          const response = await fetch(`${API_BASE}/api/upload-image`, {
+          const response = await fetch(`${API_BASE}/upload-image`, {
             method: "POST",
             body: formData,
             headers: {
@@ -1974,9 +1974,9 @@
           // Start generation
           console.log(
             "[GENERATE] Sending fetch to:",
-            `${API_BASE}/api/generate-3d`
+            `${API_BASE}/generate-3d`
           );
-          const response = await fetch(`${API_BASE}/api/generate-3d`, {
+          const response = await fetch(`${API_BASE}/generate-3d`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -2037,7 +2037,7 @@
           pollCount++;
           try {
             const response = await fetch(
-              `${API_BASE}/api/job-status/${currentJobId}`,
+              `${API_BASE}/job-status/${currentJobId}`,
               {
                 headers: { "ngrok-skip-browser-warning": "true" },
               }
@@ -2189,7 +2189,7 @@
           return;
         }
 
-        const downloadUrl = `${API_BASE}/api/download/${currentJobId}/${filename}`;
+        const downloadUrl = `${API_BASE}/download/${currentJobId}/${filename}`;
         console.log("[LOAD] Download URL:", downloadUrl);
 
         const canvas = document.getElementById("three-canvas");
@@ -2588,7 +2588,7 @@
         }
 
         const format = document.getElementById("format").value || "stl";
-        const modelUrl = `${API_BASE}/api/download/${currentJobId}/${lastOutputFile}`;
+        const modelUrl = `${API_BASE}/download/${currentJobId}/${lastOutputFile}`;
 
         // Create iframe fallback viewer using 3dviewer.net
         console.log("[3DVIEWER] Loading model:", modelUrl);
@@ -2628,7 +2628,7 @@
 
         const format = document.getElementById("format").value;
         const filename = lastOutputFile || `model.${format}`;
-        const downloadUrl = `${API_BASE}/api/download/${currentJobId}/${filename}`;
+        const downloadUrl = `${API_BASE}/download/${currentJobId}/${filename}`;
 
         // Trigger download
         window.location.href = downloadUrl;
@@ -2655,7 +2655,7 @@
           // Step 1: Enhance prompt with Bob AI (Mistral)
           console.log("[BOB-AI] Step 1: Enhancing prompt with Mistral...");
           const enhanceResponse = await fetch(
-            `${API_BASE}/api/local-llm/generate`,
+            `${API_BASE}/local-llm/generate`,
             {
               method: "POST",
               headers: {
@@ -2694,7 +2694,7 @@
 
           // Step 3: Generate actual image using text-to-image API
           console.log("[BOB-AI] Step 2: Calling real text-to-image API...");
-          const imageResponse = await fetch(`${API_BASE}/api/text-to-image`, {
+          const imageResponse = await fetch(`${API_BASE}/text-to-image`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -2798,7 +2798,7 @@
 
         try {
           const statusResponse = await fetch(
-            `${API_BASE}/api/job-status/${jobId}`,
+            `${API_BASE}/job-status/${jobId}`,
             {
               headers: { "ngrok-skip-browser-warning": "true" },
             }
@@ -2860,7 +2860,7 @@
             let imageUrl = statusData.preview_url;
 
             if (!imageUrl && statusData.filename) {
-              imageUrl = `${API_BASE}/api/preview/${statusData.filename}`;
+              imageUrl = `${API_BASE}/preview/${statusData.filename}`;
             }
 
             if (!imageUrl && statusData.image_url) {
