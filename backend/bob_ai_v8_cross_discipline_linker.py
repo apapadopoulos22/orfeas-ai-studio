@@ -30,10 +30,9 @@ class CrossDisciplineLinker:
             'Photography': [
                 ('Graphic Design', 0.8),
                 ('3D Modeling', 0.7),
-                ('Calligraphy', 0.4),
                 ('Comic Art', 0.6),
                 ('Video Compositing', 0.7),
-                ('Prompt Engineering', 0.5)
+                ('Calligraphy', 0.4)
             ],
             'Graphic Design': [
                 ('Photography', 0.8),
