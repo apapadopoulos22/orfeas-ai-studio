@@ -1,0 +1,359 @@
+================================================================================
+LOCAL-ONLY SETUP GUIDE - ORFEAS AI Studio
+================================================================================
+
+✅ CONFIGURATION STATUS: Fully converted to local-only
+❌ REMOVED: ngrok tunnel (no longer needed)
+❌ REMOVED: Vercel auto-deployment
+✅ ADDED: Local frontend server (port 8000)
+✅ LOCAL: Backend running on port 5000
+
+================================================================================
+QUICK START (2 terminals required)
+================================================================================
+
+TERMINAL 1 - Start Backend (Flask server):
+─────────────────────────────────────────
+
+    cd c:\Users\johng\Documents\oscar\backend
+    python main.py
+
+Expected output:
+    * Running on http://127.0.0.1:5000
+    * Models loaded successfully
+    ✅ Backend ready
+
+
+TERMINAL 2 - Start Frontend (HTTP server):
+──────────────────────────────────────────
+
+    cd c:\Users\johng\Documents\oscar
+    python -m http.server 8000
+
+Expected output:
+    Serving HTTP on :: port 8000 (http://[::]:8000/) ...
+    ✅ Frontend ready
+
+
+STEP 3 - Open in Browser:
+────────────────────────
+
+    http://localhost:8000/orfeas-ai-studio.html
+
+Expected in console (F12):
+    ✅ [CONFIG] BACKEND_URL: http://127.0.0.1:5000
+    ✅ [CONFIG] API_BASE: http://127.0.0.1:5000/api
+    ✅ [HEALTH] Response status: 200 ✅
+
+If you see these → System is working!
+
+
+================================================================================
+FULL SETUP INSTRUCTIONS
+================================================================================
+
+WHAT'S CHANGED:
+───────────────
+
+✅ All 6 HTML files updated:
+   - synexa-style-studio.html
+   - orfeas-ai-studio.html
+   - batch-studio.html
+   - bob-ai-chat.html
+   - orfeas-studio-responsive.html
+   - orfeas-studio.html
+
+✅ BACKEND_URL changed from:
+   "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev"
+   → "http://127.0.0.1:5000"
+
+✅ ngrok tunnel STOPPED and removed from system
+   (freed up bandwidth limit issue)
+
+❌ Vercel auto-deployment DISABLED
+   (GitHub pushes no longer trigger deployments)
+
+NO INTERNET TUNNEL NEEDED:
+  Local machine frontend ←→ Local machine backend (same LAN)
+
+
+STEP-BY-STEP SETUP:
+──────────────────
+
+1. STOP NGROK (if still running):
+
+   Get-Process -Name ngrok -ErrorAction SilentlyContinue | Stop-Process -Force
+
+   ✅ ngrok stopped
+
+
+2. OPEN TWO TERMINALS:
+
+   Terminal 1: Backend
+   Terminal 2: Frontend
+
+
+3. TERMINAL 1 - Start Backend:
+
+   cd c:\Users\johng\Documents\oscar\backend
+   python main.py
+
+   Wait for:
+   ✅ All initialization complete
+   ✅ Running on http://127.0.0.1:5000
+   ✅ WebSocket initialized
+
+
+4. TERMINAL 2 - Start Frontend:
+
+   cd c:\Users\johng\Documents\oscar
+   python -m http.server 8000
+
+   Wait for:
+   ✅ Serving HTTP on :: port 8000
+
+
+5. BROWSER - Open Application:
+
+   http://localhost:8000/orfeas-ai-studio.html
+
+   Check console (F12):
+   ✅ [CONFIG] BACKEND_URL: http://127.0.0.1:5000
+   ✅ [CONFIG] API_BASE: http://127.0.0.1:5000/api
+   ✅ [HEALTH] Response status: 200 ✅
+
+
+6. TEST FUNCTIONALITY:
+
+   Upload an image → Should process locally
+   No internet connection needed ✅
+   No ngrok tunnel needed ✅
+   Only local machine bandwidth ✅
+
+
+================================================================================
+KEEP BOTH TERMINALS RUNNING
+================================================================================
+
+You MUST keep both running:
+
+Terminal 1 (Backend):
+   ├─ http://127.0.0.1:5000
+   ├─ Handles 3D generation requests
+   ├─ Manages GPU/VRAM
+   └─ Processes all API calls
+
+Terminal 2 (Frontend):
+   ├─ http://localhost:8000
+   ├─ Serves HTML files
+   └─ Accessible from browser
+
+
+If you close either:
+   ❌ Frontend won't load OR
+   ❌ Backend APIs won't respond
+
+
+================================================================================
+CONFIGURATION REFERENCE
+================================================================================
+
+Frontend Server:
+   URL: http://localhost:8000
+   Files: All HTML files in c:\Users\johng\Documents\oscar\
+   Access: http://localhost:8000/FILENAME.html
+
+Backend Server:
+   URL: http://127.0.0.1:5000
+   Port: 5000 (MUST be 5000, hardcoded in HTML)
+   Process: Python Flask app
+   Location: c:\Users\johng\Documents\oscar\backend\main.py
+
+No Internet Tunnel:
+   ngrok is NOT running
+   No external access
+   Local-only (127.0.0.1 only)
+   No bandwidth limits
+
+
+================================================================================
+AVAILABLE PAGES
+================================================================================
+
+Open any of these in browser:
+
+   http://localhost:8000/orfeas-ai-studio.html
+   http://localhost:8000/synexa-style-studio.html
+   http://localhost:8000/batch-studio.html
+   http://localhost:8000/bob-ai-chat.html
+   http://localhost:8000/orfeas-studio-responsive.html
+   http://localhost:8000/orfeas-studio.html
+
+All connect to same backend on port 5000
+
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Problem: "Cannot connect to backend"
+─────────────────────────────────────
+Solution:
+   1. Check Terminal 1 is still running
+   2. Verify output says "Running on http://127.0.0.1:5000"
+   3. Check no error messages in Terminal 1
+   4. Restart backend if frozen
+
+
+Problem: "Frontend won't load"
+──────────────────────────────
+Solution:
+   1. Check Terminal 2 is still running
+   2. Verify output says "Serving HTTP on :: port 8000"
+   3. Try: http://localhost:8000/ (with trailing slash)
+   4. If still 404, files may be in wrong location
+   5. Verify pwd is c:\Users\johng\Documents\oscar\
+
+
+Problem: Console shows "Failed to fetch"
+───────────────────────────────────────
+Solution:
+   1. Backend likely crashed or stopped
+   2. Look at Terminal 1 for error messages
+   3. Common: Python process died, Redis connection failed
+   4. Restart backend: python main.py in Terminal 1
+
+
+Problem: "Port 8000 already in use"
+──────────────────────────────────
+Solution:
+   Get-Process | Where-Object {$_.handles -contains 8000}
+   Kill process using port 8000
+   Retry: python -m http.server 8000
+
+
+Problem: "Port 5000 already in use"
+──────────────────────────────────
+Solution:
+   Get-Process -Name python* | Where-Object {$_.CommandLine -contains "5000"}
+   Kill that Python process
+   Retry: python main.py in backend folder
+
+
+================================================================================
+WORKFLOW
+================================================================================
+
+Development Workflow:
+1. Edit HTML file in VS Code
+2. Save file (Ctrl+S)
+3. Refresh browser (Ctrl+R or F5)
+4. See changes instantly ✅
+
+NO waiting for deployment!
+NO Vercel builds!
+NO internet upload!
+
+Changes appear in < 1 second
+
+
+================================================================================
+KEEPING SYSTEM RUNNING
+================================================================================
+
+Keep These Tabs/Terminals Open:
+   Terminal 1: Backend (http://127.0.0.1:5000)
+   Terminal 2: Frontend (http://localhost:8000)
+   Browser: http://localhost:8000/orfeas-ai-studio.html
+
+Don't Close:
+   ❌ Terminal 1 (Backend stops working)
+   ❌ Terminal 2 (Frontend disappears)
+   ❌ Both might be needed simultaneously
+
+Auto-Restart (if process dies):
+   - Manually restart that terminal
+   - No auto-restart configured (intentional)
+   - Keeps control in your hands
+
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+✅ ngrok bandwidth issue FIXED (removed completely)
+✅ Local-only setup READY
+✅ No internet dependence
+✅ Instant feedback for development
+
+What's NOT running anymore:
+   ❌ ngrok tunnel
+   ❌ Vercel deployment
+   ❌ Internet connection required
+   ❌ Bandwidth limits
+
+What's NOW required:
+   ✅ Terminal 1: python main.py (backend)
+   ✅ Terminal 2: python -m http.server 8000 (frontend)
+   ✅ Keep both running while developing
+   ✅ Edit HTML and refresh to test
+
+
+================================================================================
+FAQ
+================================================================================
+
+Q: Can I close Terminal 1?
+A: No - backend will stop immediately. You need Terminal 1 running.
+
+Q: Can I close Terminal 2?
+A: No - frontend server will stop. You won't see HTML files.
+
+Q: Do I need ngrok anymore?
+A: No - removed completely. Local-only now.
+
+Q: Do I need Vercel?
+A: No - auto-deployment disabled. GitHub pushes won't deploy.
+
+Q: What about internet deployment?
+A: Not set up in this local configuration. This is LOCAL ONLY.
+
+Q: Can I use both terminals?
+A: YES - you MUST. One for backend, one for frontend.
+
+Q: Where do I edit code?
+A: VS Code - edit HTML files, refresh browser to see changes.
+
+Q: Do changes auto-load?
+A: Not auto-load, but:
+   1. Edit file in VS Code
+   2. Save (Ctrl+S)
+   3. Refresh browser (Ctrl+R)
+   → Changes appear in < 1 second (no build step!)
+
+Q: What about Python changes?
+A: Backend code changes require Terminal 1 restart:
+   1. Ctrl+C (stop backend)
+   2. Wait 2 seconds
+   3. python main.py (restart backend)
+   Then refresh browser.
+
+
+================================================================================
+Summary
+================================================================================
+
+✅ Setup: Local frontend + local backend
+✅ Bandwidth: Local-only (no limits)
+✅ Internet: NOT needed
+✅ ngrok: Removed (bandwidth fixed)
+✅ Vercel: Auto-deployment disabled
+✅ Development: Edit → Save → Refresh = instant feedback
+
+Terminal 1: Backend
+Terminal 2: Frontend
+Browser: http://localhost:8000/orfeas-ai-studio.html
+
+Keep both terminals running!
+
+================================================================================

@@ -1646,8 +1646,7 @@
       // Check window.BACKEND_URL first (set by external config), then use ngrok production URL
       const BACKEND_URL =
         (typeof window.BACKEND_URL !== "undefined" && window.BACKEND_URL) ||
-        "https://unsaid-ellsworth-uncorrespondingly.ngrok-free.dev";
-
+        "http://127.0.0.1:5000";
       const API_BASE =
         (typeof window.API_BASE !== "undefined" && window.API_BASE) ||
         BACKEND_URL + "/api";
