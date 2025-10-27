@@ -1,0 +1,53 @@
+📋 INLINE STYLES AUDIT REPORT
+Generated: October 27, 2025
+
+## Files with Inline Styles (Potential webhint Violations)
+
+### 🎯 Priority 1: Main Studio Files (Need Fixing)
+1. **synexa-style-studio.html** - 37 violations ❌
+2. **orfeas-studio.html** - 33 violations ❌
+3. **material-studio.html** - 11 violations ❌
+4. **ORFEAS-Connection-Fix/studio.html** - 7 violations ❌
+
+### ✅ Already Fixed
+- **orfeas-ai-studio.html** - FIXED (was 236 violations, now 0)
+
+### 📊 Detailed Breakdown
+
+| File | Count | Status | Size | Location |
+|------|-------|--------|------|----------|
+| synexa-style-studio.html | 37 | ❌ NEEDS FIX | ~2.3KB | root/ |
+| orfeas-studio.html | 33 | ❌ NEEDS FIX | ~2.0KB | root/ |
+| material-studio.html | 11 | ❌ NEEDS FIX | ~700B | root/ |
+| studio.html | 7 | ❌ NEEDS FIX | ~420B | ORFEAS-Connection-Fix/ |
+| orfeas-ai-studio.html | 0 | ✅ FIXED | N/A | root/ |
+
+### 📄 Documentation Files (Lower Priority)
+- coverage.html - 23 violations (auto-generated, can ignore)
+- genindex.html - 22 violations (auto-generated, can ignore)
+- internals.html - 14 violations (auto-generated, can ignore)
+- build.html - 10 violations (auto-generated, can ignore)
+- libtiff.html - 11 violations (documentation, can ignore)
+
+## Recommended Action Plan
+
+**Phase 1: Production Files** (URGENT)
+1. Fix synexa-style-studio.html (37 violations)
+2. Fix orfeas-studio.html (33 violations)
+3. Fix material-studio.html (11 violations)
+4. Fix ORFEAS-Connection-Fix/studio.html (7 violations)
+
+**Phase 2: Optional** (Documentation)
+- Skip auto-generated and documentation files (they will be regenerated)
+
+## Total Impact
+- **Production Files to Fix**: 4 files
+- **Total Violations**: 88 inline styles
+- **Estimated Time**: 10-15 minutes with automated conversion
+- **Compliance Gain**: 100% webhint "no-inline-styles" compliance across production files
+
+## Next Steps
+1. Use automated CSS class conversion for each file
+2. Test each file for functionality
+3. Commit and push changes
+4. Verify webhint compliance
