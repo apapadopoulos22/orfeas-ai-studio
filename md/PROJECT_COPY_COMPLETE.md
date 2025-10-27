@@ -48,8 +48,8 @@
 - 'úÖ `md/` - Markdown documentation
 
   - PROJECT_CLEANUP_COMPLETE.md
-  - THERION_REMOVAL_COMPLETE.md
-  - EREVUS_DEUSVULT_REMOVAL_COMPLETE.md
+  - _REMOVAL_COMPLETE.md
+  - _DEUSVULT_REMOVAL_COMPLETE.md
   - And all other docs
 
 - 'úÖ `txt/` - Text file documentation
@@ -183,7 +183,7 @@ robocopy "C:\Users\johng\Documents\Erevus\orfeas"
 - README files
 - API documentation
 - Setup guides
-- Cleanup reports (THERION, EREVUS, PROJECT)
+- Cleanup reports (, , PROJECT)
 
 ## # # Development Tools (Complete)
 

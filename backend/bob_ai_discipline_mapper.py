@@ -22,27 +22,73 @@ class DisciplineModuleMapper:
     """Maps and indexes all discipline modules"""
 
     # Tier mapping: tier number -> list of discipline modules
+    # v10.0 EXPANSION: 200+ new disciplines across all 12 tiers
     TIER_MODULES = {
         1: [
+            # Original Tier 1: Music (5 disciplines)
             "bob_ai_v9_music_composition",
             "bob_ai_v9_music_history",
             "bob_ai_v9_music_performance",
             "bob_ai_v9_music_production",
             "bob_ai_v9_music_education",
+            # v10 Expansion: Tier 1 Creative Arts (25 disciplines)
+            "bob_ai_expansion_tier1_creative_arts",
         ],
         2: [
             # External AI and Decision Reasoning (from previous sessions)
+            # v10 Expansion: Tier 2 Philosophy & Theory (25 disciplines)
+            "bob_ai_expansion_tier2_philosophy_theory",
         ],
-        3: ["bob_ai_v9_tier3_ethics_ai_safety"],
-        4: ["bob_ai_v9_tier4_business_economics"],
-        5: ["bob_ai_v9_tier5_science_research"],
-        6: ["bob_ai_v9_tier6_healthcare_medicine"],
-        7: ["bob_ai_v9_tier7_law_governance"],
-        8: ["bob_ai_v9_tier8_arts_humanities"],
-        9: ["bob_ai_v9_tier9_technology_engineering"],
-        10: ["bob_ai_v9_tier10_education_learning"],
-        11: ["bob_ai_v9_tier11_social_behavioral"],
-        12: ["bob_ai_v9_tier12_environment_sustainability"],
+        3: [
+            "bob_ai_v9_tier3_ethics_ai_safety",
+            # v10 Expansion: Tier 3 Ethics & AI (30 disciplines)
+            "bob_ai_expansion_tier3_ethics_ai_expansion",
+        ],
+        4: [
+            "bob_ai_v9_tier4_business_economics",
+            # v10 Expansion: Tier 4 Business & Economics (35 disciplines)
+            "bob_ai_expansion_tier4_business_economics_expanded",
+        ],
+        5: [
+            "bob_ai_v9_tier5_science_research",
+            # v10 Expansion: Tier 5 Science & Research (40 disciplines)
+            "bob_ai_expansion_tier5_science_research_expanded",
+        ],
+        6: [
+            "bob_ai_v9_tier6_healthcare_medicine",
+            # v10 Expansion: Tier 6 Healthcare & Medicine (35 disciplines)
+            "bob_ai_expansion_tier6_healthcare_medicine_expanded",
+        ],
+        7: [
+            "bob_ai_v9_tier7_law_governance",
+            # v10 Expansion: Tier 7 Law & Governance (30 disciplines)
+            "bob_ai_expansion_tier7_law_governance_expanded",
+        ],
+        8: [
+            "bob_ai_v9_tier8_arts_humanities",
+            # v10 Expansion: Tier 8 Arts & Humanities (40 disciplines)
+            "bob_ai_expansion_tier8_arts_humanities_expanded",
+        ],
+        9: [
+            "bob_ai_v9_tier9_technology_engineering",
+            # v10 Expansion: Tier 9 Technology & Engineering (40 disciplines)
+            "bob_ai_expansion_tier9_technology_engineering_expanded",
+        ],
+        10: [
+            "bob_ai_v9_tier10_education_learning",
+            # v10 Expansion: Tier 10 Education & Learning (30 disciplines)
+            "bob_ai_expansion_tier10_education_learning_expanded",
+        ],
+        11: [
+            "bob_ai_v9_tier11_social_behavioral",
+            # v10 Expansion: Tier 11 Social & Behavioral (35 disciplines)
+            "bob_ai_expansion_tier11_social_behavioral_expanded",
+        ],
+        12: [
+            "bob_ai_v9_tier12_environment_sustainability",
+            # v10 Expansion: Tier 12 Environment & Sustainability (25 disciplines)
+            "bob_ai_expansion_tier12_environment_sustainability_expanded",
+        ],
     }
 
     def __init__(self):

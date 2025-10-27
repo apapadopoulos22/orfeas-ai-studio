@@ -1,5 +1,5 @@
 # 
-#   THERION PROTOCOL - REAL 3D GENERATION ACTIVATOR                   
+#    PROTOCOL - REAL 3D GENERATION ACTIVATOR                   
 # â•'                                                                              â•'
 # â•' PURPOSE: Activate Hunyuan3D-2.1 REAL AI model generation                    â•'
 # â•' REPLACES: Placeholder STL files with ACTUAL 3D models                       â•'

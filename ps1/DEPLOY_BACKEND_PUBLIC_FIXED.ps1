@@ -1,4 +1,4 @@
-# THERION BACKEND DEPLOYMENT - NGROK QUICK START
+#  BACKEND DEPLOYMENT - NGROK QUICK START
 # ASCII-safe version for PowerShell compatibility
 
 param(
@@ -7,7 +7,7 @@ param(
 )
 
 Write-Host ""
-Write-Host "THERION BACKEND PUBLIC DEPLOYMENT" -ForegroundColor Cyan
+Write-Host " BACKEND PUBLIC DEPLOYMENT" -ForegroundColor Cyan
 Write-Host "Deploy ORFEAS AI Backend to Public Internet (HTTPS)" -ForegroundColor Cyan
 Write-Host ""
 
@@ -205,7 +205,7 @@ if ($ngrokInstalled) {
 
     Write-Host ""
     Write-Host "========================================" -ForegroundColor Green
-    Write-Host "THERION BACKEND DEPLOYMENT COMPLETE!" -ForegroundColor Green
+    Write-Host " BACKEND DEPLOYMENT COMPLETE!" -ForegroundColor Green
     Write-Host "========================================" -ForegroundColor Green
     Write-Host ""
     Write-Host "BACKEND NOW ACCESSIBLE WORLDWIDE!" -ForegroundColor Cyan

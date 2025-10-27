@@ -1,9 +1,9 @@
 # 
-#   THERION QUICK START - REAL 3D GENERATION - SUCCESS!            
+#    QUICK START - REAL 3D GENERATION - SUCCESS!            
 # 
 
 Write-Host "`n" -ForegroundColor Cyan
-Write-Host "  THERION QUICK START - ONE-COMMAND ACTIVATION                             " -ForegroundColor Cyan
+Write-Host "   QUICK START - ONE-COMMAND ACTIVATION                             " -ForegroundColor Cyan
 Write-Host "`n" -ForegroundColor Cyan
 
 Set-Location "C:\Users\johng\Documents\Erevus\orfeas"

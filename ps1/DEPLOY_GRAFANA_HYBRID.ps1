@@ -1,12 +1,12 @@
 # ================================================================
-# THERION ORFEAS - HYBRID GRAFANA DEPLOYMENT
+#  ORFEAS - HYBRID GRAFANA DEPLOYMENT
 # LOCAL BACKEND (RTX 3090) + DOCKER MONITORING STACK
-# NO SLACKING - MAXIMUM THERION INTENSITY
+# NO SLACKING - MAXIMUM  INTENSITY
 # ================================================================
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host " THERION ORFEAS - GRAFANA HYBRID DEPLOYMENT" -ForegroundColor Yellow
+Write-Host "  ORFEAS - GRAFANA HYBRID DEPLOYMENT" -ForegroundColor Yellow
 Write-Host " LOCAL GPU: RTX 3090 + DOCKER MONITORING" -ForegroundColor Green
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
@@ -231,7 +231,7 @@ docker-compose -f docker-compose-hybrid.yml ps
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host " THERION HYBRID DEPLOYMENT - COMPLETE" -ForegroundColor Green
+Write-Host "  HYBRID DEPLOYMENT - COMPLETE" -ForegroundColor Green
 Write-Host " LOCAL GPU (RTX 3090) + DOCKER MONITORING = MAXIMUM POWER" -ForegroundColor Yellow
 Write-Host " SUCCESS!" -ForegroundColor Cyan
 Write-Host "================================================================" -ForegroundColor Cyan

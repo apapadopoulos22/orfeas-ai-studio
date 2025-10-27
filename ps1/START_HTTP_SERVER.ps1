@@ -1,12 +1,12 @@
 #!/usr/bin/env pwsh
 # 
-#   THERION PROTOCOL - ORFEAS LOCAL HTTP SERVER                            
+#    PROTOCOL - ORFEAS LOCAL HTTP SERVER                            
 #  PWA Testing and Development Server                                          
 # 
 
 Write-Host ""
 Write-Host "" -ForegroundColor Cyan
-Write-Host "           THERION ORFEAS - LOCAL HTTP SERVER LAUNCHER                " -ForegroundColor Cyan
+Write-Host "            ORFEAS - LOCAL HTTP SERVER LAUNCHER                " -ForegroundColor Cyan
 Write-Host "" -ForegroundColor Cyan
 Write-Host ""
 

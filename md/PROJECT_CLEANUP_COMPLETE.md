@@ -32,11 +32,11 @@ Removed obsolete version files with numeric names:
 
 Removed temporary branding cleanup scripts:
 
-- '√∫√ñ `REMOVE_THERION_REFERENCES.ps1` (10.66 KB)
-- '√∫√ñ `REMOVE_THERION_SIMPLE.ps1` (4.63 KB)
-- '√∫√ñ `REMOVE_THERION_CLEAN.ps1` (3.81 KB)
-- '√∫√ñ `REMOVE_THERION_FINAL.ps1` (8.32 KB)
-- '√∫√ñ `REMOVE_EREVUS_DEUSVULT.ps1` (5.18 KB)
+- '√∫√ñ `REMOVE__REFERENCES.ps1` (10.66 KB)
+- '√∫√ñ `REMOVE__SIMPLE.ps1` (4.63 KB)
+- '√∫√ñ `REMOVE__CLEAN.ps1` (3.81 KB)
+- '√∫√ñ `REMOVE__FINAL.ps1` (8.32 KB)
+- '√∫√ñ `REMOVE__DEUSVULT.ps1` (5.18 KB)
 - '√∫√ñ `REMOVE_ALL_EMOJIS.py` (7.69 KB)
 
 **Impact:** Cleanup scripts completed their purpose and were no longer needed.
@@ -250,8 +250,8 @@ Remove-Item .\CLEANUP_PROJECT.ps1
 
 ## # # Review Documentation
 
-- Check `md/THERION_REMOVAL_COMPLETE.md`
-- Check `md/EREVUS_DEUSVULT_REMOVAL_COMPLETE.md`
+- Check `md/_REMOVAL_COMPLETE.md`
+- Check `md/_DEUSVULT_REMOVAL_COMPLETE.md`
 - Check `md/PROJECT_CLEANUP_COMPLETE.md` (this file)
 
 ---

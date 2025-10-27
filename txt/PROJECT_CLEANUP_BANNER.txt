@@ -22,11 +22,11 @@ Old Version Files:              33 files  (60.5 KB)
   - Removed: 0.15.0, 0.17.0, 0.2.7, 0.20.0, 0.21.0, etc.
 
 Removal Scripts:                6 files   (40.29 KB)
-  - REMOVE_THERION_REFERENCES.ps1
-  - REMOVE_THERION_SIMPLE.ps1
-  - REMOVE_THERION_CLEAN.ps1
-  - REMOVE_THERION_FINAL.ps1
-  - REMOVE_EREVUS_DEUSVULT.ps1
+  - REMOVE__REFERENCES.ps1
+  - REMOVE__SIMPLE.ps1
+  - REMOVE__CLEAN.ps1
+  - REMOVE__FINAL.ps1
+  - REMOVE__DEUSVULT.ps1
   - REMOVE_ALL_EMOJIS.py
 
 Test Files - Python:            11 files  (47.75 KB)

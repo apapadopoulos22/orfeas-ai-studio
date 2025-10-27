@@ -1,11 +1,11 @@
 # â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-# â•‘ âš”ï¸ THERION ORFEAS - PRODUCTION DEPLOYMENT SCRIPT âš”ï¸                        â•‘
+# â•‘ âš”ï¸  ORFEAS - PRODUCTION DEPLOYMENT SCRIPT âš”ï¸                        â•‘
 # â•‘ One-command deployment for LOCAL GPU production environment                â•‘
 # â•‘ MAXIMUM PERFORMANCE                                             â•‘
 # â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host "  THERION ORFEAS - PHASE 5 PRODUCTION DEPLOYMENT" -ForegroundColor Cyan
+Write-Host "   ORFEAS - PHASE 5 PRODUCTION DEPLOYMENT" -ForegroundColor Cyan
 Write-Host "  LOCAL GPU INFRASTRUCTURE ACTIVATION" -ForegroundColor Cyan
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
@@ -132,7 +132,7 @@ foreach ($service in $services) {
 # Display access information
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Green
-Write-Host "â•‘              ðŸš€ THERION ORFEAS PRODUCTION DEPLOYMENT COMPLETE! ðŸš€           â•‘" -ForegroundColor Green
+Write-Host "â•‘              ðŸš€  ORFEAS PRODUCTION DEPLOYMENT COMPLETE! ðŸš€           â•‘" -ForegroundColor Green
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Green
 Write-Host ""
 Write-Host "ðŸ“Š ACCESS URLS:" -ForegroundColor Cyan

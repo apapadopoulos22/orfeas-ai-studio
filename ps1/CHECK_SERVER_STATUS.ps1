@@ -2,7 +2,7 @@
 # Checks all dependencies and server status
 
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘     âš”ï¸ THERION - ORFEAS SERVER DIAGNOSTICS âš”ï¸            â•‘" -ForegroundColor Cyan
+Write-Host "â•‘     âš”ï¸  - ORFEAS SERVER DIAGNOSTICS âš”ï¸            â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
 

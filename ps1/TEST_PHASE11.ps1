@@ -1,9 +1,9 @@
-# PowerShell Script: THERION Phase 11 Test Launcher
+# PowerShell Script:  Phase 11 Test Launcher
 # Auto-opens Phase 11 test suite in browser
 
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Magenta
-Write-Host "â•‘   âš”ï¸ THERION PHASE 11 TEST SUITE LAUNCHER âš”ï¸               â•‘" -ForegroundColor Magenta
+Write-Host "â•‘   âš”ï¸  PHASE 11 TEST SUITE LAUNCHER âš”ï¸               â•‘" -ForegroundColor Magenta
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Magenta
 Write-Host ""
 

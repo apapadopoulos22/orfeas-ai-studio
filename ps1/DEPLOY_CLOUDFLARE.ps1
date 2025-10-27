@@ -1,9 +1,9 @@
-# THERION CLOUDFLARE TUNNEL - ONE-CLICK DEPLOYMENT
+#  CLOUDFLARE TUNNEL - ONE-CLICK DEPLOYMENT
 # MAXIMUM EFFICIENCY MODE
 
 Write-Host ""
 Write-Host "========================================================================" -ForegroundColor Cyan
-Write-Host "  THERION CLOUDFLARE TUNNEL DEPLOYMENT" -ForegroundColor Cyan
+Write-Host "   CLOUDFLARE TUNNEL DEPLOYMENT" -ForegroundColor Cyan
 Write-Host "========================================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -29,7 +29,7 @@ $backendRunning = Get-Process python -ErrorAction SilentlyContinue | Where-Objec
 
 if (-Not $backendRunning) {
     Write-Host "[WARN] Backend not running - starting now..." -ForegroundColor Yellow
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'C:\Users\johng\Documents\Erevus\orfeas\backend'; Write-Host 'THERION BACKEND SERVER' -ForegroundColor Green; python main.py"
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'C:\Users\johng\Documents\Erevus\orfeas\backend'; Write-Host ' BACKEND SERVER' -ForegroundColor Green; python main.py"
     Write-Host "[OK] Backend starting in new window..." -ForegroundColor Green
     Start-Sleep -Seconds 5
 } else {
@@ -52,7 +52,7 @@ Write-Host ""
 Write-Host "COPY THAT URL AND PASTE IT BELOW" -ForegroundColor Cyan
 Write-Host ""
 
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'C:\Users\johng\Documents\Erevus\orfeas'; Write-Host ''; Write-Host '======================================' -ForegroundColor Green; Write-Host '  THERION CLOUDFLARE TUNNEL ACTIVE' -ForegroundColor Green; Write-Host '======================================' -ForegroundColor Green; Write-Host ''; Write-Host 'COPY THE PUBLIC URL BELOW:' -ForegroundColor Yellow; Write-Host ''; .\cloudflared.exe tunnel --url http://localhost:5000"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'C:\Users\johng\Documents\Erevus\orfeas'; Write-Host ''; Write-Host '======================================' -ForegroundColor Green; Write-Host '   CLOUDFLARE TUNNEL ACTIVE' -ForegroundColor Green; Write-Host '======================================' -ForegroundColor Green; Write-Host ''; Write-Host 'COPY THE PUBLIC URL BELOW:' -ForegroundColor Yellow; Write-Host ''; .\cloudflared.exe tunnel --url http://localhost:5000"
 
 Write-Host "[OK] Cloudflare Tunnel window opened" -ForegroundColor Green
 Write-Host ""
@@ -105,7 +105,7 @@ if ($publicUrl -match "https://.*\.trycloudflare\.com") {
     Write-Host "HTTPS: ENABLED" -ForegroundColor Green
     Write-Host "PUBLIC ACCESS: WORLDWIDE" -ForegroundColor Green
     Write-Host ""
-    Write-Host "THERION DEPLOYMENT SUCCESSFUL!" -ForegroundColor Green
+    Write-Host " DEPLOYMENT SUCCESSFUL!" -ForegroundColor Green
     Write-Host ""
 
 } else {

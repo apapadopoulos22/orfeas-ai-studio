@@ -1,8 +1,8 @@
-# THERION PHASE 3 - Quick Test Script
+#  PHASE 3 - Quick Test Script
 # Simplified version without special characters
 
 Write-Host ""
-Write-Host "THERION PHASE 3: HYBRID 3D ENGINE TEST" -ForegroundColor Cyan
+Write-Host " PHASE 3: HYBRID 3D ENGINE TEST" -ForegroundColor Cyan
 Write-Host "======================================" -ForegroundColor Cyan
 Write-Host ""
 

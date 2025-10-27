@@ -1,6 +1,6 @@
 Write-Host "" -ForegroundColor Red
 Write-Host "                                                                              " -ForegroundColor Red
-Write-Host "            THERION PROTOCOL - HARD REFRESH REQUIRED!                     " -ForegroundColor Red
+Write-Host "             PROTOCOL - HARD REFRESH REQUIRED!                     " -ForegroundColor Red
 Write-Host "                                                                              " -ForegroundColor Red
 Write-Host "" -ForegroundColor Red
 Write-Host ""

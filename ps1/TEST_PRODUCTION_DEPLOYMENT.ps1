@@ -1,10 +1,10 @@
 # 
-#   THERION ORFEAS - PRODUCTION DEPLOYMENT TEST SCRIPT                    
+#    ORFEAS - PRODUCTION DEPLOYMENT TEST SCRIPT                    
 #  Validates all services and endpoints                                        
 # 
 
 Write-Host "" -ForegroundColor Cyan
-Write-Host "             THERION ORFEAS - DEPLOYMENT VALIDATION TEST                " -ForegroundColor Cyan
+Write-Host "              ORFEAS - DEPLOYMENT VALIDATION TEST                " -ForegroundColor Cyan
 Write-Host "" -ForegroundColor Cyan
 Write-Host ""
 

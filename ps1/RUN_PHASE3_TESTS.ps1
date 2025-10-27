@@ -1,10 +1,10 @@
 # â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-# â•‘                    âš”ï¸ THERION PHASE 3 EXECUTION SCRIPT âš”ï¸                    â•‘
+# â•‘                    âš”ï¸  PHASE 3 EXECUTION SCRIPT âš”ï¸                    â•‘
 # â•‘                    Testing & Validation - Maximum Efficiency                 â•‘
 # â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘              THERION PHASE 3 - TESTING & VALIDATION SUITE                    â•‘" -ForegroundColor Cyan
+Write-Host "â•‘               PHASE 3 - TESTING & VALIDATION SUITE                    â•‘" -ForegroundColor Cyan
 Write-Host "â•‘                    MAXIMUM EFFICIENCY MODE ENGAGED                           â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
@@ -14,7 +14,7 @@ $WORKSPACE = "C:\Users\johng\Documents\Erevus\orfeas"
 
 Set-Location $WORKSPACE
 
-Write-Host "ðŸ”¥ THERION AGENT ACTIVATED - NO SLACKING MODE" -ForegroundColor Yellow
+Write-Host "ðŸ”¥  AGENT ACTIVATED - NO SLACKING MODE" -ForegroundColor Yellow
 Write-Host "ðŸ“ Workspace: $WORKSPACE" -ForegroundColor Green
 Write-Host ""
 
@@ -59,8 +59,8 @@ python backend/tests/run_tests.py --stress
 Write-Host ""
 
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘                    THERION PHASE 3 TESTING COMPLETE                          â•‘" -ForegroundColor Cyan
+Write-Host "â•‘                     PHASE 3 TESTING COMPLETE                          â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "âœ… Phase 3 Testing & Validation Complete!" -ForegroundColor Green
-Write-Host "âš”ï¸ THERION PHASE 3 COMPLETE âš”ï¸" -ForegroundColor Cyan
+Write-Host "âš”ï¸  PHASE 3 COMPLETE âš”ï¸" -ForegroundColor Cyan

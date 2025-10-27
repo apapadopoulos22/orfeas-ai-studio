@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-THERION AI 2D STUDIO - REAL HUNYUAN3D-2.1 API SERVER
+ AI 2D STUDIO - REAL HUNYUAN3D-2.1 API SERVER
 MAXIMUM EFFORT - ACTUAL 3D GENERATION!
 """
 
@@ -9,13 +9,13 @@ import os
 from pathlib import Path
 
 # Add the source paths
-source_path = Path("C:/Users/johng/THERION_AI_LOCAL/Hunyuan3D-2.1-SOURCE")
+source_path = Path("C:/Users/johng/_AI_LOCAL/Hunyuan3D-2.1-SOURCE")
 sys.path.insert(0, str(source_path))
 sys.path.insert(0, str(source_path / "hy3dshape"))
 sys.path.insert(0, str(source_path / "hy3dpaint"))
 
-# Add THERION source path for PNG to STL converter
-therion_path = Path("C:/Users/johng/Documents/Erevus/Therion-AI-2D-Studio-main - Copy/THERION-AI-2D-STUDIO")
+# Add  source path for PNG to STL converter
+therion_path = Path("C:/Users/johng/Documents/Erevus/Therion-AI-2D-Studio-main - Copy/-AI-2D-STUDIO")
 sys.path.insert(0, str(therion_path))
 
 import uvicorn
@@ -46,7 +46,7 @@ except ImportError as e:
     png_to_stl_converter = None
 
 app = FastAPI(
-    title="THERION Hunyuan3D-2.1 REAL API",
+    title=" Hunyuan3D-2.1 REAL API",
     description="REAL 2D to 3D generation using actual Hunyuan3D-2.1 models",
     version="2.1.0"
 )
@@ -134,7 +134,7 @@ def create_fallback_response():
 
 def generate_simple_cube_obj():
     """Generate a simple cube OBJ file as fallback"""
-    cube_obj = """# Simple cube OBJ - THERION Fallback
+    cube_obj = """# Simple cube OBJ -  Fallback
 v -1.0 -1.0  1.0
 v  1.0 -1.0  1.0
 v  1.0  1.0  1.0
@@ -156,7 +156,7 @@ f 5 1 4 8
 @app.on_event("startup")
 async def startup_event():
     """Initialize the API server"""
-    logger.info("üöÄ Starting THERION Hunyuan3D-2.1 REAL API Server...")
+    logger.info("üöÄ Starting  Hunyuan3D-2.1 REAL API Server...")
 
     # Check CUDA availability
     if torch.cuda.is_available():
@@ -181,7 +181,7 @@ async def startup_event():
 async def root():
     """API root endpoint"""
     return {
-        "message": "THERION Hunyuan3D-2.1 REAL API Server",
+        "message": " Hunyuan3D-2.1 REAL API Server",
         "status": "running",
         "version": "2.1.0",
         "cuda_available": torch.cuda.is_available(),
@@ -494,8 +494,8 @@ async def download_stl(output_id: str):
     raise HTTPException(status_code=404, detail="STL file not found")
 
 if __name__ == "__main__":
-    logger.info("üöÄ Starting THERION Hunyuan3D-2.1 REAL API Server...")
-    logger.info("DEUS VULT - MAXIMUM EFFORT!")
+    logger.info("üöÄ Starting  Hunyuan3D-2.1 REAL API Server...")
+    logger.info(" - MAXIMUM EFFORT!")
 
     # Create outputs directory
     os.makedirs("outputs", exist_ok=True)

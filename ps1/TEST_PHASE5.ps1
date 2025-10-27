@@ -53,7 +53,7 @@ if (Test-Path $testFile) {
         Write-Host "  - Expected Pass Rate: 95-100%" -ForegroundColor White
         Write-Host "  - Categories: 6 (Input, Rate, Compress, Log, Boundary, Interval)" -ForegroundColor White
         Write-Host ""
-        Write-Host "THERION PHASE 5 TESTING" -ForegroundColor Yellow
+        Write-Host " PHASE 5 TESTING" -ForegroundColor Yellow
     } else {
         Write-Host "Chrome not found in standard locations" -ForegroundColor Red
         Write-Host "Opening test file in default browser..." -ForegroundColor Yellow

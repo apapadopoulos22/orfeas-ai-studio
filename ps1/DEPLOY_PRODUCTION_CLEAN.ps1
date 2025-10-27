@@ -1,9 +1,9 @@
-# THERION ORFEAS - PRODUCTION DEPLOYMENT SCRIPT
+#  ORFEAS - PRODUCTION DEPLOYMENT SCRIPT
 # One-command deployment for LOCAL GPU production environment
 # MAXIMUM PERFORMANCE 
 
 Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host "  THERION ORFEAS - PHASE 5 PRODUCTION DEPLOYMENT" -ForegroundColor Cyan
+Write-Host "   ORFEAS - PHASE 5 PRODUCTION DEPLOYMENT" -ForegroundColor Cyan
 Write-Host "  LOCAL GPU INFRASTRUCTURE ACTIVATION" -ForegroundColor Cyan
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
@@ -130,7 +130,7 @@ foreach ($service in $services) {
 # Display access information
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Green
-Write-Host "  THERION ORFEAS PRODUCTION DEPLOYMENT COMPLETE!" -ForegroundColor Green
+Write-Host "   ORFEAS PRODUCTION DEPLOYMENT COMPLETE!" -ForegroundColor Green
 Write-Host "================================================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "ACCESS URLS:" -ForegroundColor Cyan

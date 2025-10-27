@@ -1,5 +1,5 @@
 # ============================================================================
-# ðŸ”¥ THERION FRONTEND AUTO-CONFIGURATOR FOR PUBLIC BACKEND
+# ðŸ”¥  FRONTEND AUTO-CONFIGURATOR FOR PUBLIC BACKEND
 # ============================================================================
 # Automatically updates orfeas-studio.html with public backend URL
 # Reads from PUBLIC_BACKEND_URL.txt (created by deployment script)
@@ -7,7 +7,7 @@
 
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘ âš”ï¸ THERION FRONTEND PUBLIC URL CONFIGURATOR âš”ï¸                              â•‘" -ForegroundColor Cyan
+Write-Host "â•‘ âš”ï¸  FRONTEND PUBLIC URL CONFIGURATOR âš”ï¸                              â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
 

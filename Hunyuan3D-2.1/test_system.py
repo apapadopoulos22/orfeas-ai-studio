@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-THERION AI 2D STUDIO - HUNYUAN3D 2.1 TEST SCRIPT
+ AI 2D STUDIO - HUNYUAN3D 2.1 TEST SCRIPT
 """
 
 import sys
@@ -96,7 +96,7 @@ def test_api_server():
     return False
 
 if __name__ == "__main__":
-    print(" THERION Hunyuan3D 2.1 Test Suite")
+    print("  Hunyuan3D 2.1 Test Suite")
     print("=" * 50)
     
     success_count = 0

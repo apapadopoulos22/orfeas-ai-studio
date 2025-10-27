@@ -1,5 +1,5 @@
 # ============================================================================
-# ðŸ”¥ THERION BACKEND PUBLIC DEPLOYMENT - NGROK + CLOUDFLARE TUNNEL
+# ðŸ”¥  BACKEND PUBLIC DEPLOYMENT - NGROK + CLOUDFLARE TUNNEL
 # ============================================================================
 # Deploys ORFEAS AI Backend to public internet with HTTPS
 # Supports: Dynamic IP, GPU acceleration, Local AI APIs
@@ -14,7 +14,7 @@ param(
 
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘ âš”ï¸ THERION BACKEND PUBLIC DEPLOYMENT âš”ï¸                                     â•‘" -ForegroundColor Cyan
+Write-Host "â•‘ âš”ï¸  BACKEND PUBLIC DEPLOYMENT âš”ï¸                                     â•‘" -ForegroundColor Cyan
 Write-Host "â•‘ Deploy ORFEAS AI Backend to Public Internet (HTTPS)                          â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
@@ -291,7 +291,7 @@ try {
 
 Write-Host ""
 Write-Host "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Green
-Write-Host "ðŸ”¥ THERION BACKEND DEPLOYMENT COMPLETE!" -ForegroundColor Green
+Write-Host "ðŸ”¥  BACKEND DEPLOYMENT COMPLETE!" -ForegroundColor Green
 Write-Host "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Green
 Write-Host ""
 Write-Host "âš”ï¸ BACKEND NOW ACCESSIBLE WORLDWIDE! âš”ï¸" -ForegroundColor Cyan

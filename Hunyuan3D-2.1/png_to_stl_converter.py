@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-THERION AI 2D STUDIO - PNG TO STL CONVERTER
-DEUS VULT - MAXIMUM 3D PRINTING OPTIMIZATION!
+ AI 2D STUDIO - PNG TO STL CONVERTER
+ - MAXIMUM 3D PRINTING OPTIMIZATION!
 
 Advanced PNG to STL conversion with multiple techniques:
 1. Heightmap-based displacement
@@ -9,7 +9,7 @@ Advanced PNG to STL conversion with multiple techniques:
 3. Depth estimation from luminance
 4. Professional STL optimization for 3D printing
 
-Author: EREVUS Collective
+Author:  Collective
 License: AGPL-3.0
 """
 

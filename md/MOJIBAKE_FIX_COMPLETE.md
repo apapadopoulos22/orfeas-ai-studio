@@ -139,7 +139,7 @@ These files **document** mojibake patterns for testing/scanning purposes:
 
 - txt/CODE_QUALITY_IMPROVEMENT_REPORT.txt
 - txt/EMERGENCY_FIX_IN_PROGRESS.txt
-- txt/EREVUS_DEUSVULT_REMOVAL_BANNER.txt
+- txt/_DEUSVULT_REMOVAL_BANNER.txt
 - txt/ONE_CLICK_AUTOMATIC.txt
 - txt/PHASE1_COMPLETE_SUMMARY.txt
 - txt/VISUAL_START_GUIDE.txt

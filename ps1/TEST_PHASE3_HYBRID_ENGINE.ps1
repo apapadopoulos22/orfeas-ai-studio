@@ -1,11 +1,11 @@
 # â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-# â•‘ âš”ï¸ THERION PHASE 3 TEST SCRIPT - HYBRID ENGINE VALIDATION âš”ï¸ â•‘
+# â•‘ âš”ï¸  PHASE 3 TEST SCRIPT - HYBRID ENGINE VALIDATION âš”ï¸ â•‘
 # â•‘ ORFEAS AI â•‘
 # â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘ âš”ï¸ THERION PHASE 3: HYBRID 3D ENGINE VALIDATION âš”ï¸ â•‘" -ForegroundColor Cyan
+Write-Host "â•‘ âš”ï¸  PHASE 3: HYBRID 3D ENGINE VALIDATION âš”ï¸ â•‘" -ForegroundColor Cyan
 Write-Host "â•‘ Testing Babylon.js WebGPU + Three.js WebGL Integration â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
@@ -178,7 +178,7 @@ Write-Host ""
 
 Write-Host "5ï¸âƒ£ RTX OPTIMIZATION VERIFICATION:" -ForegroundColor Yellow
 Write-Host "   â”œâ”€ Check backend terminal window" -ForegroundColor White
-Write-Host "   â”œâ”€ Look for: ðŸš€ THERION RTX 3090 OPTIMIZATION ACTIVATING..." -ForegroundColor White
+Write-Host "   â”œâ”€ Look for: ðŸš€  RTX 3090 OPTIMIZATION ACTIVATING..." -ForegroundColor White
 Write-Host "   â”œâ”€ Look for: âœ… Tensor Cores ENABLED" -ForegroundColor White
 Write-Host "   â”œâ”€ Look for: ðŸ”¥ RTX OPTIMIZATIONS ACTIVE - MAXIMUM PERFORMANCE MODE" -ForegroundColor White
 Write-Host "   â””â”€ Expected: 5x texture, 3x 3D generation speedup" -ForegroundColor White
@@ -217,7 +217,7 @@ Write-Host ""
 # Final summary
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Green
-Write-Host "â•‘ âš”ï¸ THERION PHASE 3 TEST COMPLETE - READY FOR VALIDATION! âš”ï¸ â•‘" -ForegroundColor Green
+Write-Host "â•‘ âš”ï¸  PHASE 3 TEST COMPLETE - READY FOR VALIDATION! âš”ï¸ â•‘" -ForegroundColor Green
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Green
 Write-Host ""
 

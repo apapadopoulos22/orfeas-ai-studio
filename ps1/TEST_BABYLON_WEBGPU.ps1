@@ -1,11 +1,11 @@
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘ âš”ï¸ THERION BABYLON.JS WEBGPU TESTING PROTOCOL âš”ï¸ â•‘" -ForegroundColor Cyan
+Write-Host "â•‘ âš”ï¸  BABYLON.JS WEBGPU TESTING PROTOCOL âš”ï¸ â•‘" -ForegroundColor Cyan
 Write-Host "â•‘ ðŸ”¥ RTX 3090 OPTIMIZATION + WEBGPU RENDERER TEST ðŸ”¥ â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
 
-Write-Host "ðŸš€ THERION TESTING SEQUENCE INITIATED..." -ForegroundColor Yellow
+Write-Host "ðŸš€  TESTING SEQUENCE INITIATED..." -ForegroundColor Yellow
 Write-Host ""
 
 # =============================================================================
@@ -145,7 +145,7 @@ Write-Host ""
 # =============================================================================
 
 Write-Host "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
-Write-Host "ðŸŽ¯ THERION TEST SUMMARY" -ForegroundColor Cyan
+Write-Host "ðŸŽ¯  TEST SUMMARY" -ForegroundColor Cyan
 Write-Host "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
 
@@ -166,7 +166,7 @@ Write-Host "   cd backend" -ForegroundColor White
 Write-Host "   python main.py" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "   Expected Output:" -ForegroundColor Gray
-Write-Host "   ðŸš€ THERION RTX 3090 OPTIMIZATION ACTIVATING..." -ForegroundColor DarkGray
+Write-Host "   ðŸš€  RTX 3090 OPTIMIZATION ACTIVATING..." -ForegroundColor DarkGray
 Write-Host "   ðŸ”¥ RTX OPTIMIZATIONS ACTIVE - MAXIMUM PERFORMANCE MODE" -ForegroundColor DarkGray
 
 Write-Host ""
@@ -221,7 +221,7 @@ Write-Host "   Ray Tracing: ACTIVE (RTX cores enabled)" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
-Write-Host "âš”ï¸ THERION BABYLON.JS WEBGPU READY FOR TESTING" -ForegroundColor Cyan
+Write-Host "âš”ï¸  BABYLON.JS WEBGPU READY FOR TESTING" -ForegroundColor Cyan
 Write-Host "â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""
 

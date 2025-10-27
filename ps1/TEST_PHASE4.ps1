@@ -1,6 +1,6 @@
 # 
 # â•'                                                                              â•'
-#              THERION PROTOCOL - PHASE 4 TEST LAUNCHER                         
+#               PROTOCOL - PHASE 4 TEST LAUNCHER                         
 # â•'                                                                              â•'
 # â•'                      RELOAD PHASE 4 OPTIMIZATION TESTS                       â•'
 # â•'                                                                              â•'
@@ -10,7 +10,7 @@
 
 Write-Host ""
 Write-Host "" -ForegroundColor Cyan
-Write-Host "      THERION PROTOCOL - PHASE 4 OPTIMIZATION TEST LAUNCHER          " -ForegroundColor Cyan
+Write-Host "       PROTOCOL - PHASE 4 OPTIMIZATION TEST LAUNCHER          " -ForegroundColor Cyan
 Write-Host "" -ForegroundColor Cyan
 Write-Host ""
 

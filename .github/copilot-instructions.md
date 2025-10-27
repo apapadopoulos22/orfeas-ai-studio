@@ -3,6 +3,28 @@
 **Project:** Enterprise AI multimedia platform for 2D→3D model generation
 **Stack:** Python 3.10+/Flask/PyTorch + Next.js 15/TypeScript + Docker GPU (RTX 3090)
 **Quality:** 92% Grade A | ISO 9001/27001 | 464 tests | 50K+ LOC
+**Last Updated:** October 28, 2025
+
+## Quick Start for Coding Agents
+
+**Initial Setup:** Environment must be configured BEFORE starting any Python process.
+
+```powershell
+# Windows: Environment setup (CRITICAL - do this first!)
+$env:DEVICE='cuda'
+$env:XFORMERS_DISABLED='1'
+$env:ORT_TENSORRT_UNAVAILABLE='1'
+$env:HOME=$env:USERPROFILE
+$env:CUDA_MODULE_LOADING='LAZY'
+
+# Then start backend
+cd backend
+python main.py  # Starts on http://localhost:5000
+
+# In another terminal: Start frontend
+cd frontend-nextjs
+npm run dev  # http://localhost:3000
+```
 
 ## Quick Architecture Map
 
@@ -916,123 +938,376 @@ One person (or one AI) looking at a problem sees:
 
 **Solution:** Simulate multiple expert perspectives arguing the case.
 
-### The 5-Agent Argumentation System
+### The 5-Agent Argumentation System (Expert Level - 20+ Years Experience)
 
-When facing a complex problem, consult 5 agents:
+When facing a complex problem, consult 5 expert-level agents with 20+ years of professional experience across Python, Web Development, C/C++, SQL, and Windows environments:
 
-#### Agent 1: THE PESSIMIST 😟
+#### Agent 1: THE SENIOR PYTHON/DATA ARCHITECT 🏛️
 
-**Role:** "What could go wrong?"
+**Experience:** 22 years Python development | 18 years system architecture | 15 years ML/GPU systems
+**Expertise:** Production Python systems, async patterns, memory management, decorators, metaclasses, performance optimization
+**Platforms:** Windows 10/11, Linux, cloud deployment, Docker orchestration
+**Capabilities:**
 
-**Questions:**
+- Can open Python IDEs, debugging tools, system profilers outside VS Code
+- Listens to browser console for API calls, WebSocket events, performance metrics
+- Can launch DevTools, monitoring dashboards, logging applications
+- Monitors: Chrome DevTools, Edge DevTools, Firefox Console for real-time error tracking
 
-- What's the worst case scenario?
-- What data format could break this?
-- What if the user has wrong permissions?
-- What if the network times out?
-- What if we run out of memory?
+**Role:** "What could go wrong from a memory & resource perspective?"
 
-**Example output:**
+**Deep-Level Questions:**
 
-```
-PESSIMIST: This GPU memory check is wrong!
-  - Problem: You check VRAM once, but it changes during execution
-  - Worst case: Check shows 8GB free, but by the time you allocate 6GB,
-    another process grabbed 3GB. Now you're OOM mid-generation.
-  - Solution: Check AND reserve memory atomically, or check continuously
-  - Fallback: CPU processing if OOM occurs
-```
+- What's the garbage collection behavior under this scenario?
+- Are we creating circular references or memory leaks?
+- How will this perform under 10,000 concurrent requests?
+- What's the actual memory footprint including Python overhead?
+- Could this deadlock with other services?
+- Are we properly using context managers and with-statements?
 
-#### Agent 2: THE OPTIMIST 😊
-
-**Role:** "Why this could work"
-
-**Questions:**
-
-- What's the best case scenario?
-- What common patterns does this follow?
-- What's already proven in production?
-- What can we simplify?
-- What defaults are safe?
-
-**Example output:**
+**Expert Output Example:**
 
 ```
-OPTIMIST: The GPU memory check works for 99% of cases!
-  - Success rate: Works perfectly when code paths don't race
-  - Common pattern: Industry standard approach in other projects
-  - Already proven: Works in production for 6 months
-  - Simplification: Don't need real-time monitoring, check before job
-  - Safe defaults: Pre-check buffer prevents most OOM cases
+ARCHITECT: GPU memory management needs atomic operations!
+  Problem: Thread race conditions between VRAM check and allocation
+  Root Cause: VRAM can be consumed between check and torch.cuda.malloc()
+  Expert Solution:
+    1. Use torch.cuda.memory_reserved() not memory_allocated()
+    2. Pre-allocate fixed memory pool on startup (thread-safe)
+    3. Implement proper exception handling with context managers
+    4. Use multiprocessing.Manager for inter-process VRAM tracking
+  Production Pattern:
+    try:
+        gpu_mgr.reserve_vram(required_mb)  # Atomic operation
+        result = model.generate(input_data)
+    finally:
+        gpu_mgr.release_vram()  # Always cleanup
+        torch.cuda.empty_cache()
+  Validation: Tested with 10K concurrent requests, zero deadlocks
 ```
 
-#### Agent 3: THE ENGINEER 🔧
+#### Agent 2: THE SENIOR FULL-STACK WEB ARCHITECT 🌐
 
-**Role:** "How do we actually build this?"
+**Experience:** 24 years web development | 20 years TypeScript/JavaScript | 16 years Flask/FastAPI | REST API design
+**Expertise:** WebSocket optimization, real-time systems, database scaling, caching strategies, API security
+**Platforms:** Windows IIS/Apache, Next.js, modern frontend frameworks, database optimization
+**Capabilities:**
 
-**Questions:**
+- Can open browser DevTools (Chrome, Edge, Firefox) outside VS Code
+- Listens to browser console for network requests, errors, WebSocket messages, performance warnings
+- Can launch debuggers, profilers, network monitors (Postman, Insomnia, Wireshark)
+- Monitors: Network tab, Console tab, Application tab, Performance profiler, Sources debugger
+- Can analyze: XHR/Fetch calls, WebSocket frames, localStorage/sessionStorage, cookies, cache
 
-- What's the simplest implementation?
-- What dependencies are needed?
-- What performance characteristics?
-- What's the maintenance burden?
-- How do we test this?
+**Role:** "How do we build scalable, real-time systems?"
 
-**Example output:**
+**Deep-Level Questions:**
 
-```
-ENGINEER: Implementation needs these components:
-  - VRAM checker: nvidia-smi or PyTorch API (simple)
-  - Reservation system: Allocate dummy tensor to hold space (hacky)
-  - Cleanup logic: Empty cache in finally block (critical)
-  - Testing: Test with 5 different VRAM sizes (80% coverage)
-  - Maintenance: Monitor OOM incidents monthly (low burden)
-```
+- What's our database query optimization strategy?
+- Are we using connection pooling correctly?
+- How does WebSocket backpressure work in this scenario?
+- What's the optimal batch size for this workload?
+- Have we profiled the critical path?
+- What's our caching invalidation strategy?
 
-#### Agent 4: THE RESEARCHER 📚
-
-**Role:** "What does the industry know?"
-
-**Questions:**
-
-- How do other projects handle this?
-- What's the academic best practice?
-- What open source solutions exist?
-- What's the research saying?
-- What are common pitfalls?
-
-**Example output:**
+**Expert Output Example:**
 
 ```
-RESEARCHER: GPU memory management standards:
-  - Industry practice: Pre-check + fallback (NVIDIA recommended)
-  - Academic paper: "Efficient GPU Memory Management" (Chen et al, 2023)
-  - Open source: PyTorch uses cudaMallocManaged() with fallback
-  - Research finding: 40% of OOM occurs after memory freed not reclaimed
-  - Pitfall: Fragmentation - allocated/freed blocks prevent large allocations
+WEB_ARCHITECT: WebSocket architecture for 10K concurrent clients
+  Current Issue: Progress events flooding network, 40% packet loss
+  Root Analysis:
+    - Backend emitting every 100ms (100 events/sec × 10K clients = 1M/sec)
+    - Frontend receiving events faster than rendering (UI thread bottleneck)
+    - No backpressure mechanism (memory buildup)
+  Expert Solution:
+    1. Implement adaptive event throttling (50-200ms based on lag)
+    2. Add client-side event batching (max 5 events/batch)
+    3. Use binary frames (MessagePack) instead of JSON (40% less bandwidth)
+    4. Implement server-side backpressure queue with max size
+  Metrics Expected:
+    - Packet loss: 40% → 0.1%
+    - Latency: 800ms → 120ms
+    - Network bandwidth: 280Mbps → 45Mbps
+  Tested: Load tested with Locust, validated with 15K concurrent
 ```
 
-#### Agent 5: THE DEVIL'S ADVOCATE 😈
+#### Agent 3: THE SENIOR WINDOWS SYSTEMS ENGINEER 💻
 
-**Role:** "Why this approach might be fundamentally wrong"
+**Experience:** 25 years Windows development | 20 years C/C++ | 18 years registry/DLL/COM | system-level optimization
+**Expertise:** Windows 10/11 internals, DLL hell resolution, COM objects, process management, performance monitoring
+**Platforms:** Windows only expertise, registry manipulation, Windows services, batch automation
+**Capabilities:**
 
-**Questions:**
+- Can open Windows tools outside VS Code: Task Manager, Resource Monitor, Performance Monitor, Event Viewer, Registry Editor
+- Can launch system applications: Process Explorer, DebugView, WinDbg, Dependency Walker, DLL Export Viewer
+- Listens to Windows Event Log for system errors, warnings, and application crashes
+- Can monitor: Task Scheduler, System processes, DLL loading, memory allocation, registry changes
+- Can capture: ETW traces, Performance counters, Event logs, debug output, system metrics
 
-- Is this solving the right problem?
-- Are we making wrong assumptions?
-- What if the entire premise is flawed?
-- What are we NOT considering?
-- Could a different approach work better?
+**Role:** "How do we leverage Windows capabilities and avoid pitfalls?"
 
-**Example output:**
+**Deep-Level Questions:**
+
+- What Windows APIs are most efficient for this task?
+- Are we handling DLL versioning correctly (avoiding DLL Hell)?
+- What's the process priority and affinity for optimal performance?
+- Are we using Windows event logging properly?
+- How does this interact with Windows Defender/security software?
+- Are we managing registry settings appropriately?
+
+**Expert Output Example:**
 
 ```
-DEVIL'S ADVOCATE: Why VRAM pre-checking is fundamentally flawed:
-  - Wrong premise: Assuming we can predict memory needs (we can't)
-  - Better approach: Use memory pooling with adaptive allocation
-  - Assumption error: Assuming single check is sufficient
-  - Not considered: Dynamic memory from other GPU processes
-  - Alternative: Memory mapping to system RAM (slower but works)
+WINDOWS_ENGINEER: Docker Desktop on Windows 11 - Performance Optimization
+  Issue: Docker container builds 3x slower on Windows than Linux
+  Root Cause Analysis (Windows-specific):
+    1. File system translation layer (WSL2 → Windows NTFS)
+    2. Hyper-V VM overhead (3-5 second context switches)
+    3. Antivirus scanning (Windows Defender) on container files
+    4. Named pipe communication bottleneck
+  Expert Solutions (Windows 10/11 specific):
+    1. Disable Windows Defender scanning for Docker folder:
+       Add-MpPreference -ExclusionPath "C:\ProgramData\Docker"
+    2. Optimize WSL2 resources in .wslconfig:
+       [interop]
+       enabled=true
+       appendWindowsPath=true
+    3. Use buildkit for parallel layers (50% faster):
+       $env:DOCKER_BUILDKIT=1
+    4. Cache Docker images locally to C: drive (faster NTFS)
+  Performance Improvement:
+    - Build time: 5min 30sec → 1min 45sec (68% faster)
+    - WSL2 memory: 4GB max → 2GB (better resource usage)
+  Tested: 20+ builds with various Dockerfile sizes
+```
+
+#### Agent 4: THE SENIOR DATABASE ARCHITECT �️
+
+**Experience:** 23 years SQL optimization | 20 years performance tuning | 18 years Windows SQL Server | backup strategies
+**Expertise:** Query optimization, indexing strategies, transaction isolation, backup/recovery, data integrity
+**Platforms:** SQL Server, PostgreSQL, optimization for Windows environments, GitHub-like version control concepts
+**Capabilities:**
+
+- Can open SQL Server Management Studio (SSMS), Azure Data Studio, DBeaver outside VS Code
+- Can launch database profilers, query analyzers, and monitoring dashboards
+- Listens to SQL Server error logs for query failures, locking issues, performance warnings
+- Can monitor: Query execution plans, transaction logs, deadlock graphs, performance counters
+- Can analyze: Query duration, index fragmentation, table statistics, connection pools, replication status
+
+**Role:** "How do we manage data integrity and performance at scale?"
+
+**Deep-Level Questions:**
+
+- What's the optimal indexing strategy for this query pattern?
+- Are we using proper transaction isolation levels?
+- What's our backup and disaster recovery strategy?
+- How does query execution plan change under load?
+- Are we handling connection pooling efficiently?
+- What's the data growth projection and retention policy?
+
+**Expert Output Example:**
+
+```
+DATABASE_ARCHITECT: Local Backup System (Git-like for databases)
+  Requirement: Local backup on C: drive with version control
+  Expert Architecture:
+    1. Snapshot-based backups (differential daily, full weekly)
+    2. Backup versioning system (similar to Git commits)
+    3. Point-in-time recovery capability
+    4. Compression (50% space savings)
+    5. Integrity verification (checksums)
+
+  Implementation (Windows-specific):
+    ```powershell
+    # Daily incremental backup with version tracking
+    $BackupPath = "C:\Backups\orfeas-studio"
+    $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $BackupFile = "$BackupPath\backup-$Timestamp.zip"
+
+    # Create backup with compression and checksum
+    Compress-Archive -Path $DataPath -DestinationPath $BackupFile
+    (Get-FileHash $BackupFile).Hash | Set-Content "$BackupFile.sha256"
+    ```
+
+  Backup Retention Strategy:
+    - Daily backups: 7 days (7 versions)
+    - Weekly full: 4 weeks (4 versions)
+    - Monthly snapshots: 12 months (12 versions)
+    - Total storage needed: ~200GB (with compression)
+
+  Recovery Testing: Monthly full restore validation
+```
+
+#### Agent 5: THE SENIOR C/C++ SYSTEMS PROGRAMMER �
+
+**Experience:** 26 years C/C++ | 22 years low-level optimization | 20 years Windows native APIs | performance profiling
+**Expertise:** Memory management, pointer arithmetic, performance tuning, native Windows APIs, interop with Python
+**Platforms:** Windows native development, DLL creation, FFI/ctypes, performance-critical code
+**Capabilities:**
+
+- Can open Visual Studio Debugger, WinDbg, Ghidra, IDA Pro outside VS Code
+- Can launch performance profilers, memory analyzers, and disassemblers
+- Listens to debugger output for breakpoint hits, memory access violations, thread state changes
+- Can monitor: CPU registers, memory dumps, call stacks, assembly instruction traces
+- Can analyze: SIMD utilization, branch prediction, cache efficiency, pointer dereferencing, DLL loading events
+
+**Role:** "How do we optimize performance at the lowest level?"
+
+**Deep-Level Questions:**
+
+- What's the CPU cache efficiency of this algorithm?
+- Are we doing unnecessary memory allocations in hot paths?
+- Could we use SIMD instructions for this computation?
+- What's the branch prediction impact?
+- How does this interact with Windows API limitations?
+- Are we properly profiling with Windows Performance Analyzer?
+
+**Expert Output Example:**
+
+```
+SYSTEMS_PROGRAMMER: Python ↔ C/C++ Performance Bridge
+  Goal: 3D model generation 10x faster via native acceleration
+  Expert Approach (Windows-specific):
+    1. Identify Python hot spots (99% of time in 1% of code)
+    2. Write performance-critical path in C++ (STL algorithms)
+    3. Create Windows DLL with ctypes interface
+    4. Minimize data marshalling between Python/C++
+    5. Use Windows Performance Analyzer for profiling
+
+  Implementation Example:
+    ```cpp
+    // mesh_optimizer.cpp - High-performance mesh processing
+    #include <algorithm>
+    #include <vector>
+    #include <omp.h>  // OpenMP for parallelization
+
+    extern "C" {
+        __declspec(dllexport) void optimize_mesh(
+            float* vertices, int vertex_count,
+            int* indices, int index_count) {
+            // Parallel mesh optimization using all CPU cores
+            #pragma omp parallel for
+            for (int i = 0; i < vertex_count; ++i) {
+                // SIMD-friendly vertex processing
+                vertices[i*3 + 0] *= 0.95f;  // Auto-vectorized
+            }
+        }
+    }
+    ```
+
+  Python Interface (ctypes):
+    ```python
+    import ctypes
+    mesh_opt = ctypes.CDLL('mesh_optimizer.dll')
+    mesh_opt.optimize_mesh(vertices.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+                          len(vertices), indices.ctypes.data_as(...))
+    ```
+
+  Performance Results (Windows 11 i9-12900K):
+    - Pure Python: 45 seconds
+    - Optimized C++: 4.2 seconds (10.7x speedup)
+    - Profiling: 92% time in loop vectorized by SIMD
+    - Scaling: Linear across all 12 cores
+
+  Validation: Numerical equivalence tested, mesh integrity verified
+```
+
+#### Agent 6: THE SENIOR DEVOPS/PLATFORM ENGINEER �
+
+**Experience:** 20 years systems administration | 18 years automation | 15 years Windows automation | infrastructure as code
+**Expertise:** Backup strategies, local repository management, Windows automation scripts, disaster recovery, monitoring
+**Platforms:** Windows batch/PowerShell scripting, scheduled tasks, backup orchestration, GitHub-like local systems
+**Capabilities:**
+
+- Can open Docker Desktop, Kubernetes tools (K9s), container registries outside VS Code
+- Can launch monitoring dashboards: Prometheus, Grafana, ELK Stack, Datadog
+- Listens to Docker logs for container health, deployment events, application output
+- Can monitor: Container lifecycle, resource usage, network traffic, persistent volume status
+- Can analyze: Application logs, deployment pipelines, backup verification, infrastructure state
+
+**Role:** "How do we build reliable, reproducible systems?"
+
+**Deep-Level Questions:**
+
+- What's our disaster recovery time objective (RTO)?
+- How do we automate the entire deployment stack?
+- What's our monitoring and alerting strategy?
+- Can we reproduce this environment from scratch?
+- How do we manage configuration drift?
+- What's our backup verification process?
+
+**Expert Output Example:**
+
+```
+DEVOPS_ENGINEER: GitHub-Like Local Backup System (Windows)
+  Requirement: Version-controlled backup on C: drive with rollback capability
+
+  Architecture (Similar to Git):
+    - Objects database: C:\Backups\.objects (content-addressable)
+    - References: C:\Backups\.refs (branch pointers)
+    - Commit log: C:\Backups\.commits (version history)
+    - Working copy: C:\Backups\latest (current state)
+
+  PowerShell Implementation:
+    ```powershell
+    function New-BackupCommit {
+        param([string]$Message)
+
+        # 1. Create snapshot hash (like Git blob)
+        $snapshot = Get-DirectoryHash -Path $SourcePath
+        $snapshotId = New-Object System.Security.Cryptography.SHA256Managed |
+                      ForEach-Object {
+                          $_.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($snapshot))
+                      } | ForEach-Object { $_.ToString('X2') } | Join-String
+
+        # 2. Store backup with content deduplication
+        $backupPath = "C:\Backups\.objects\$($snapshotId.Substring(0,2))\$($snapshotId.Substring(2))"
+        Copy-Item -Path $SourcePath -Destination $backupPath -Recurse
+
+        # 3. Create commit metadata
+        $commit = @{
+            id = (Get-Random -Minimum 0 -Maximum 999999999).ToString('X8')
+            tree = $snapshotId
+            parent = Get-Content "C:\Backups\.refs\HEAD"
+            author = $env:USERNAME
+            timestamp = Get-Date -Format 'o'
+            message = $Message
+        }
+
+        # 4. Store commit log
+        $commit | ConvertTo-Json | Add-Content "C:\Backups\.commits\$($commit.id)"
+        Set-Content -Path "C:\Backups\.refs\HEAD" -Value $commit.id
+
+        Write-Host "Backup committed: $($commit.id)"
+    }
+
+    # Scheduled backup (daily at 2 AM)
+    Register-ScheduledTask -TaskName "DailyBackup" -Action {
+        New-BackupCommit -Message "Daily backup $(Get-Date -Format 'yyyy-MM-dd')"
+    }
+    ```
+
+  Rollback Capability:
+    ```powershell
+    function Restore-BackupCommit {
+        param([string]$CommitId)
+
+        $commit = Get-Content "C:\Backups\.commits\$CommitId" | ConvertFrom-Json
+        $backupPath = "C:\Backups\.objects\$($commit.tree.Substring(0,2))\..."
+        Copy-Item -Path $backupPath -Destination $RestorePath -Recurse -Force
+
+        Write-Host "Restored to commit $CommitId from $(Get-Date -Date $commit.timestamp)"
+    }
+    ```
+
+  Features:
+    - Automatic deduplication (70% storage savings)
+    - Point-in-time recovery (30-day history)
+    - Integrity verification (SHA256 hashes)
+    - Automated compression (NTFS compression on C:)
+    - Email notifications on backup success/failure
+
+  Tested: Full restore from 90-day-old backup successful
 ```
 
 ### Using Multi-Agent Argumentation
@@ -1378,3 +1653,205 @@ Implement caching with:
 - Easy disable switch in config
 - Tests covering cache misses and expiry
 - Gradual rollout (10% → 50% → 100%)
+
+---
+
+## PROJECT-SPECIFIC CONVENTIONS & PATTERNS
+
+### 1. Code Organization Conventions
+
+**Module Naming**: Use descriptive names with `_` prefix for private/internal modules:
+
+- `gpu_manager.py` - Public API, use `from gpu_manager import get_gpu_manager()`
+- `stl_processor.py` - Public mesh operations, import classes directly
+- `llm_integration.py` - LLM orchestration, use factory functions
+
+**Testing Patterns**:
+
+- Unit tests: `backend/tests/unit/test_*.py` - No GPU required, fast
+- Integration tests: `backend/tests/integration/test_*.py` - Full workflow, uses real models
+- Mark tests with `@pytest.mark.unit` or `@pytest.mark.integration`
+
+**Logging Standards**:
+
+```python
+logger = logging.getLogger(__name__)
+logger.info("[ORFEAS] Human-readable status message")  # [ORFEAS] prefix for traceability
+logger.warning("[WARN] Non-critical issue detected")
+logger.error("[ERROR] Operation failed", exc_info=True)  # Always include exc_info
+```
+
+### 2. Backend-Specific Patterns
+
+**Factory Functions Over Direct Imports**:
+
+- Use `get_gpu_manager()` instead of `GPUManager()` - enables singleton/mocking
+- Use `get_3d_processor()` instead of `Hunyuan3DProcessor()` - centralizes initialization
+- Located in main module files for discoverability
+
+**Thread Safety in Cache Classes**:
+
+```python
+class CachedProcessor:
+    _cache = {}
+    _lock = threading.Lock()
+
+    @classmethod
+    def process(cls, data):
+        if not cls._cache.get("initialized"):
+            with cls._lock:
+                if not cls._cache.get("initialized"):  # Double-check pattern
+                    cls._initialize()
+        return cls._execute(data)
+```
+
+**Error Recovery Pattern** (try-finally for GPU cleanup):
+
+```python
+try:
+    result = processor.generate(image)
+finally:
+    torch.cuda.empty_cache()  # ALWAYS cleanup, even if error occurred
+    logger.info(f"GPU cleanup complete. VRAM: {gpu_mgr.get_current_vram()}MB")
+```
+
+**WebSocket Room-Based Messaging**:
+
+- Clients subscribe: `socket.emit('subscribe_to_job', {'job_id': '123abc'})`
+- Backend emits to room: `socketio.emit('event_name', data, room='123abc')`
+- Only subscribers in that room receive (not broadcast to all)
+
+### 3. Frontend-Specific Patterns
+
+**Socket.IO Connection Management** (Next.js hook):
+
+```typescript
+export function useSocket(url: string): UseSocketReturn {
+  // Returns {socket, connected, connectionError}
+  // Auto-reconnect with exponential backoff
+  // Transports: polling → websocket upgrade
+  // Max 10 reconnection attempts
+}
+```
+
+**Section Navigation** (HTML frontend):
+
+```html
+<!-- Use showSection('sectionId') to switch between sections -->
+<section id="3Dstudio" style="display: none">...</section>
+<section id="image" style="display: none">...</section>
+<button onclick="showSection('3Dstudio')">3D Studio</button>
+```
+
+**Three.js Model Loading**:
+
+- Use `THREE.STLLoader` for static .stl imports
+- Use `babylon.js` for WebGPU-accelerated rendering
+- Support fallback to Three.js WebGL on older browsers
+
+### 4. GPU Memory Management Conventions
+
+**VRAM Budget for RTX 3090 (24GB)**:
+
+- Shape generation: ~6GB (largest component)
+- Texture synthesis: ~2GB
+- Reserved overhead: ~2GB
+- Available for concurrent jobs: ~14GB
+
+**Pre-Check Pattern**:
+
+```python
+# BEFORE starting job
+if not gpu_mgr.can_process_job(estimated_vram=6000):  # 6GB in MB
+    return jsonify({"error": "Insufficient VRAM"}), 503
+
+# Process job
+result = generate_3d(...)
+
+# AFTER (always)
+torch.cuda.empty_cache()
+```
+
+**Device Selection**:
+
+- Primary: CUDA if available (`DEVICE=cuda` env var)
+- Fallback: CPU if GPU OOM
+- Override: `DEVICE=cpu` to force CPU mode for testing
+
+### 5. API Endpoint Patterns
+
+**Synchronous Endpoints** (returns result immediately):
+
+```
+GET  /health          → {status, gpu_info, uptime}
+GET  /metrics         → Prometheus text format
+GET  /api/download/:id → Binary STL/OBJ file
+```
+
+**Asynchronous Endpoints** (returns job_id, use WebSocket for progress):
+
+```
+POST /api/generate-3d → {job_id, status, websocket_url}
+POST /api/upload-image → {file_path, image_id, dimensions}
+```
+
+**Polling Fallback**:
+
+```
+GET /api/job-status/:id → {progress, status, stage, eta_seconds}
+```
+
+Use only if WebSocket unavailable (firewall, old client).
+
+### 6. Environment Variable Initialization (CRITICAL)
+
+**Order Matters** - Set variables BEFORE imports:
+
+1. `ORT_TENSORRT_UNAVAILABLE=1` (ONNX Runtime crash prevention)
+2. `XFORMERS_DISABLED=1` (Windows DLL crash prevention)
+3. `HOME=$USERPROFILE` (Windows path resolution)
+4. `CUDA_MODULE_LOADING=LAZY` (Gradual CUDA initialization)
+5. THEN: `from dotenv import load_dotenv; load_dotenv()`
+6. THEN: Import torch, model libraries
+
+**Why**: Modules read environment variables at import time. Wrong order causes cryptic crashes.
+
+### 7. Quality Assurance Conventions
+
+**Validation Layers**:
+
+1. **Image Upload**: Max 16MB, validates EXIF/encoding, checks dimensions
+2. **Model Compatibility**: Checks GPU availability, VRAM
+3. **Mesh Generation**: Auto-repairs invalid meshes, validates STL format
+4. **Export**: Checks output format (STL/OBJ/GLB/PLY), validates binary encoding
+
+**Prometheus Metrics** (auto-tracked):
+
+- `generation_duration_seconds` - Wall-clock time per generation
+- `generation_success_total` / `generation_failure_total` - Success rate
+- `gpu_memory_used_mb` - Current VRAM usage
+- `websocket_connections_active` - Connected clients
+- `quality_printable_rate` - Mesh printability percentage
+
+Enable with: `ENABLE_MONITORING=true`
+
+### 8. Incremental Startup Pattern
+
+**Phase 1 - Fast** (3-5 seconds):
+
+- Flask/SocketIO init
+- Route registration
+- WebSocket handlers ready
+
+**Phase 2 - On-Demand** (30+ seconds on first request):
+
+- Lazy-load Hunyuan3D models (shape generation pipeline)
+- Lazy-load texture synthesis pipeline
+- Cache for subsequent requests (~5-10 seconds per job)
+
+**Why**: Developers get instant feedback. Production doesn't waste VRAM on unused models.
+
+---
+
+**Last Updated:** October 28, 2025
+**Reference:** Full extended docs in `.github/copilot-instructions-full.md`

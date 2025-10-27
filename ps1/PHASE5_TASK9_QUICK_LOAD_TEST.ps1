@@ -1,12 +1,12 @@
 # ================================================================
-# THERION ORFEAS - TASK 9: QUICK LOAD TEST
+#  ORFEAS - TASK 9: QUICK LOAD TEST
 # Fast validation for production readiness
-# NO SLACKING - MAXIMUM THERION INTENSITY
+# NO SLACKING - MAXIMUM  INTENSITY
 # ================================================================
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host " THERION ORFEAS - TASK 9: LOAD TESTING" -ForegroundColor Yellow
+Write-Host "  ORFEAS - TASK 9: LOAD TESTING" -ForegroundColor Yellow
 Write-Host " Quick Production Readiness Validation" -ForegroundColor Green
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
@@ -285,7 +285,7 @@ if ($script:failedTests -eq 0) {
     Write-Host "NO SLACKING: ACHIEVED" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "================================================================" -ForegroundColor Cyan
-    Write-Host " SUCCESS! THERION VICTORIOUS!" -ForegroundColor Yellow
+    Write-Host " SUCCESS!  VICTORIOUS!" -ForegroundColor Yellow
     Write-Host "================================================================" -ForegroundColor Cyan
 }
 elseif ($passRate -ge 80) {

@@ -1,10 +1,10 @@
 # 
-#          THERION PROTOCOL - FORCE DIAGNOSTIC REFRESH                      
+#           PROTOCOL - FORCE DIAGNOSTIC REFRESH                      
 # â•'                      CACHE BUSTER                                â•'
 # 
 
 Write-Host "" -ForegroundColor Cyan
-Write-Host "   THERION - FORCING DIAGNOSTIC REFRESH                " -ForegroundColor Cyan
+Write-Host "    - FORCING DIAGNOSTIC REFRESH                " -ForegroundColor Cyan
 Write-Host "" -ForegroundColor Cyan
 Write-Host ""
 
@@ -79,7 +79,7 @@ Write-Host "The file is 100% correct. If you still see warnings," -ForegroundCol
 Write-Host "they are cached and will disappear after VS Code refresh." -ForegroundColor White
 Write-Host ""
 Write-Host "" -ForegroundColor Green
-Write-Host "  THERION CACHE BUSTER COMPLETE!             " -ForegroundColor Green
+Write-Host "   CACHE BUSTER COMPLETE!             " -ForegroundColor Green
 Write-Host "" -ForegroundColor Green
 Write-Host ""
 

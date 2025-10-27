@@ -1,12 +1,12 @@
 # ================================================================
-# THERION ORFEAS - TASK 8: TESTING AND VALIDATION
+#  ORFEAS - TASK 8: TESTING AND VALIDATION
 # COMPREHENSIVE VALIDATION SUITE FOR HYBRID DEPLOYMENT
-# NO SLACKING - MAXIMUM THERION INTENSITY
+# NO SLACKING - MAXIMUM  INTENSITY
 # ================================================================
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host " THERION ORFEAS - TASK 8: TESTING AND VALIDATION" -ForegroundColor Yellow
+Write-Host "  ORFEAS - TASK 8: TESTING AND VALIDATION" -ForegroundColor Yellow
 Write-Host " COMPREHENSIVE VALIDATION SUITE" -ForegroundColor Green
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 BOB AI v9.0 - Automated Local Deployment Script
 Runs all deployment phases automatically with comprehensive logging and error handling
@@ -11,6 +12,12 @@ import time
 import json
 from datetime import datetime
 from pathlib import Path
+
+# Configure UTF-8 output encoding for Windows console
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 # Color codes for terminal output
 class Colors:
@@ -178,7 +185,7 @@ def phase_2_configuration_setup():
         print_warning("Configuration file not found")
 
     print_task("Checking requirements.txt")
-    if Path("requirements.txt").exists():
+    if Path("backend/requirements.txt").exists():
         print_success("Requirements file found")
     else:
         print_error("requirements.txt not found")

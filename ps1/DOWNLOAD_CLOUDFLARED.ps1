@@ -1,4 +1,4 @@
-# THERION - CLOUDFLARED DOWNLOAD SCRIPT
+#  - CLOUDFLARED DOWNLOAD SCRIPT
 # Downloads Cloudflare Tunnel executable
 
 Write-Host ""

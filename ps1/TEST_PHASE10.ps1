@@ -1,12 +1,12 @@
 #!/usr/bin/env pwsh
 # 
-#   THERION PROTOCOL - PHASE 10 TEST RUNNER                                
+#    PROTOCOL - PHASE 10 TEST RUNNER                                
 #  PWA Integration Testing - Optimizations 25-29                               
 # 
 
 Write-Host ""
 Write-Host "" -ForegroundColor Cyan
-Write-Host "           THERION PHASE 10 - PWA PRODUCTION INTEGRATION              " -ForegroundColor Cyan
+Write-Host "            PHASE 10 - PWA PRODUCTION INTEGRATION              " -ForegroundColor Cyan
 Write-Host "" -ForegroundColor Cyan
 Write-Host ""
 
@@ -60,7 +60,7 @@ Write-Host " Expected Result: 100% PASS RATE (25/25)" -ForegroundColor Yellow
 Write-Host ""
 
 Write-Host "" -ForegroundColor Magenta
-Write-Host "   THERION PROTOCOL - PHASE 10 OPTIMIZATIONS 25-29                  " -ForegroundColor Magenta
+Write-Host "    PROTOCOL - PHASE 10 OPTIMIZATIONS 25-29                  " -ForegroundColor Magenta
 Write-Host "  PWA Production Integration Complete                                   " -ForegroundColor Magenta
 Write-Host "" -ForegroundColor Magenta
 Write-Host ""

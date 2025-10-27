@@ -1,5 +1,5 @@
 Write-Host ""
-Write-Host "THERION ORFEAS - HTTP SERVER LAUNCHER" -ForegroundColor Cyan
+Write-Host " ORFEAS - HTTP SERVER LAUNCHER" -ForegroundColor Cyan
 Write-Host ""
 
 $PORT = 8080

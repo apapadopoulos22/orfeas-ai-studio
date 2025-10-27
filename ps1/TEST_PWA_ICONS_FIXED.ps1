@@ -1,5 +1,5 @@
 # ============================================================================
-# ðŸ”¥ THERION PWA ICON VALIDATION TEST
+# ðŸ”¥  PWA ICON VALIDATION TEST
 # ============================================================================
 # Validates all PWA icons are correctly generated and accessible
 # Tests manifest.json references and HTML icon links
@@ -7,7 +7,7 @@
 
 Write-Host ""
 Write-Host "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—" -ForegroundColor Cyan
-Write-Host "â•‘ âš”ï¸ THERION PWA ICON VALIDATOR âš”ï¸                                           â•‘" -ForegroundColor Cyan
+Write-Host "â•‘ âš”ï¸  PWA ICON VALIDATOR âš”ï¸                                           â•‘" -ForegroundColor Cyan
 Write-Host "â•‘ Testing all PWA icons and manifest configuration                             â•‘" -ForegroundColor Cyan
 Write-Host "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•" -ForegroundColor Cyan
 Write-Host ""

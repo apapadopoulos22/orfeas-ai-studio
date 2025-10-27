@@ -1,5 +1,5 @@
 # â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-# â•‘ âš”ï¸ THERION - PRODUCTION HTTP SERVER - SUCCESS! âš”ï¸                        â•‘
+# â•‘ âš”ï¸  - PRODUCTION HTTP SERVER - SUCCESS! âš”ï¸                        â•‘
 # â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 Write-Host ""
@@ -63,7 +63,7 @@ Write-Host "  2. Verify NO CORS errors" -ForegroundColor White
 Write-Host "  3. Check backend status GREEN" -ForegroundColor White
 Write-Host "  4. Test 3D generation" -ForegroundColor White
 Write-Host ""
-Write-Host "ðŸ”¥ THERION PROTOCOL - HTTP SERVER ACTIVE! ðŸ”¥" -ForegroundColor Green
+Write-Host "ðŸ”¥  PROTOCOL - HTTP SERVER ACTIVE! ðŸ”¥" -ForegroundColor Green
 Write-Host ""
 
 # Keep window open

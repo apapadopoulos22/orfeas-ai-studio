@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-THERION HUNYUAN3D TEST API SERVER
+ HUNYUAN3D TEST API SERVER
 """
 
 from fastapi import FastAPI, File, UploadFile, Form
@@ -13,7 +13,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="THERION Hunyuan3D Test API")
+app = FastAPI(title=" Hunyuan3D Test API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,7 +26,7 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {
-        "message": "THERION Hunyuan3D Test API Server",
+        "message": " Hunyuan3D Test API Server",
         "status": "running",
         "cuda_available": torch.cuda.is_available(),
         "gpu_count": torch.cuda.device_count() if torch.cuda.is_available() else 0
@@ -62,5 +62,5 @@ async def download_model(output_id: str):
     return {"error": "Download not implemented in test API"}
 
 if __name__ == "__main__":
-    print(" Starting THERION Hunyuan3D Test API Server...")
+    print(" Starting  Hunyuan3D Test API Server...")
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
