@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 9: Technology & Engineering (40 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier9TechnologyEngineering
+from bob_ai_expansion_200_disciplines import Tier9TechnologyEngineering
 
 class TechnologyEngineeringKnowledge:
     def get_knowledge_base(self) -> dict:

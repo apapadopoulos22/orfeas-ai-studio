@@ -1,0 +1,365 @@
+═══════════════════════════════════════════════════════════════════════════════
+                  PHASE 4.7 QUICK REFERENCE
+         Production Monitoring - Common Commands & Troubleshooting
+═══════════════════════════════════════════════════════════════════════════════
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK START (3 STEPS)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. RUN TESTS
+   $ cd backend
+   $ python test_phase4_monitoring.py
+
+   Expected: 30+ tests PASSED (100%)
+
+2. START MONITORING SERVER
+   $ python phase4_monitoring_app.py
+
+   Runs on: http://localhost:8000
+
+3. CHECK HEALTH
+   $ curl http://localhost:8000/health
+
+   Returns: {"status": "healthy", "uptime_seconds": ...}
+
+═══════════════════════════════════════════════════════════════════════════════
+MONITORING ENDPOINTS (15 TOTAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+METRICS (Prometheus format for scrapers):
+  curl http://localhost:8000/metrics
+
+METRICS SUMMARY (JSON):
+  curl http://localhost:8000/api/metrics/summary
+
+CACHE METRICS:
+  curl http://localhost:8000/api/metrics/cache
+
+AUTH METRICS:
+  curl http://localhost:8000/api/metrics/auth
+
+SECURITY METRICS:
+  curl http://localhost:8000/api/metrics/security
+
+ENDPOINT STATS:
+  curl http://localhost:8000/api/metrics/endpoints
+
+HEALTH CHECK (basic):
+  curl http://localhost:8000/health
+
+HEALTH CHECK (comprehensive):
+  curl http://localhost:8000/api/health/full
+
+SYSTEM HEALTH:
+  curl http://localhost:8000/api/health/system
+
+DEPENDENCIES HEALTH:
+  curl http://localhost:8000/api/health/dependencies
+
+RECENT LOGS:
+  curl "http://localhost:8000/api/logs/recent?lines=100"
+
+LOG STATISTICS:
+  curl http://localhost:8000/api/logs/stats
+
+RECENT ERRORS:
+  curl http://localhost:8000/api/logs/errors
+
+STATUS:
+  curl http://localhost:8000/status
+
+INFO:
+  curl http://localhost:8000/api/info
+
+═══════════════════════════════════════════════════════════════════════════════
+METRICS REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+HTTP METRICS:
+  • http_requests_total - Total requests per endpoint
+  • http_errors_total - Errors by status code
+  • http_requests_in_progress - Current load
+  • Request latency percentiles (p50, p95, p99)
+
+CACHE METRICS:
+  • cache_hits_total - Successful cache lookups
+  • cache_misses_total - Cache misses
+  • cache_hit_rate_percent - Hit rate (0-100%)
+  • cache_size_bytes - Current cache size
+
+AUTH METRICS:
+  • auth_successes_total - Successful authentications
+  • auth_failures_total - Failed authentication attempts
+  • auth_success_rate_percent - Success rate (0-100%)
+
+RATE LIMITING:
+  • rate_limit_violations_total - Quota exceeded count
+
+SECURITY:
+  • sql_injection_attempts_total - SQL injection attempts
+  • xss_attempts_total - XSS attack attempts
+
+═══════════════════════════════════════════════════════════════════════════════
+HEALTH CHECK THRESHOLDS
+═══════════════════════════════════════════════════════════════════════════════
+
+CPU:
+  ✓ Healthy: < 80%
+  ⚠ Warning: 80-90%
+  ✗ Critical: > 90%
+
+MEMORY:
+  ✓ Healthy: < 85%
+  ⚠ Warning: 85-95%
+  ✗ Critical: > 95%
+
+DISK:
+  ✓ Healthy: < 90%
+  ⚠ Warning: 90-95%
+  ✗ Critical: > 95%
+
+═══════════════════════════════════════════════════════════════════════════════
+LOGGING QUICK REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+Log Location:
+  logs/monitoring.log
+
+Log Levels:
+  DEBUG - Detailed diagnostic info
+  INFO - General operational info
+  WARNING - Warning conditions
+  ERROR - Error conditions
+  CRITICAL - Critical conditions
+
+Recent Logs:
+  curl http://localhost:8000/api/logs/recent?lines=50
+
+Error Logs:
+  curl http://localhost:8000/api/logs/errors
+
+Log Stats:
+  curl http://localhost:8000/api/logs/stats
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+ISSUE: Port 8000 already in use
+  SOLUTION: Kill process: netstat -ano | grep 8000
+            then: taskkill /PID <pid> /F
+
+ISSUE: Module not found errors
+  SOLUTION: pip install flask psutil
+
+ISSUE: Health check returns degraded
+  SOLUTION: Check individual components:
+    curl http://localhost:8000/api/health/system
+    curl http://localhost:8000/api/health/dependencies
+
+ISSUE: Metrics all zeros
+  SOLUTION: Make requests to main API (port 5000) to generate traffic
+    curl http://localhost:5000/api/disciplines
+
+ISSUE: Redis connection failed
+  SOLUTION: Redis is optional. System uses in-memory cache as fallback.
+            To use Redis: redis-server, then check:
+            curl http://localhost:8000/api/health/dependencies
+
+ISSUE: Cannot read log file
+  SOLUTION: Check permissions: ls -la logs/
+            Ensure logs/ directory exists: mkdir -p logs
+
+ISSUE: Tests won't run
+  SOLUTION: cd backend && python test_phase4_monitoring.py
+            If import errors: pip install -r requirements.txt
+
+═══════════════════════════════════════════════════════════════════════════════
+PERFORMANCE TARGETS
+═══════════════════════════════════════════════════════════════════════════════
+
+API Response Time:
+  Target: < 100ms
+  P95: < 200ms
+  Alert: > 500ms
+
+Cache Hit Rate:
+  Target: > 70%
+  Good: 60-70%
+  Alert: < 40%
+
+Error Rate:
+  Target: < 0.5%
+  Good: 0.5-1%
+  Alert: > 5%
+
+Authentication:
+  Success Rate Target: > 95%
+  Alert: < 90%
+
+═══════════════════════════════════════════════════════════════════════════════
+COMMON OPERATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+Monitor Cache Performance:
+  while true; do
+    curl -s http://localhost:8000/api/metrics/cache | python -m json.tool
+    sleep 5
+  done
+
+Monitor Auth Performance:
+  curl http://localhost:8000/api/metrics/auth
+
+Check Overall Health Every 30s:
+  while true; do
+    echo "=== Health Check ===" && \
+    curl -s http://localhost:8000/api/health | python -m json.tool && \
+    sleep 30
+  done
+
+View Last 50 Logs:
+  curl http://localhost:8000/api/logs/recent?lines=50
+
+Monitor for Security Events:
+  curl http://localhost:8000/api/logs/errors
+
+Track API Performance:
+  curl http://localhost:8000/api/metrics/endpoints
+
+═══════════════════════════════════════════════════════════════════════════════
+INTEGRATION WITH PROMETHEUS
+═══════════════════════════════════════════════════════════════════════════════
+
+Add to prometheus.yml:
+
+scrape_configs:
+  - job_name: 'bob_ai_monitoring'
+    static_configs:
+      - targets: ['localhost:8000']
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+Then access Prometheus:
+  http://localhost:9090
+
+Query examples:
+  rate(http_requests_total[1m])     # Requests per minute
+  cache_hit_rate_percent            # Cache effectiveness
+  auth_successes_total              # Auth attempts
+
+═══════════════════════════════════════════════════════════════════════════════
+INTEGRATION WITH KUBERNETES
+═══════════════════════════════════════════════════════════════════════════════
+
+Health probe config:
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /api/health/full
+    port: 8000
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+═══════════════════════════════════════════════════════════════════════════════
+FILE REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+Components:
+  backend/phase4_prometheus_metrics.py - Metrics collection
+  backend/phase4_health_check.py - Health checks
+  backend/phase4_logging.py - Logging system
+  backend/phase4_monitoring_app.py - Flask monitoring app
+  backend/test_phase4_monitoring.py - Test suite
+
+Documentation:
+  PHASE_4.7_IMPLEMENTATION_GUIDE.md - Detailed guide
+  PHASE_4.7_COMPLETION_REPORT.txt - Status report
+  PHASE_4.7_QUICK_REFERENCE.txt - This file
+  PHASE_4.7_SESSION_SUMMARY.txt - Session overview
+
+═══════════════════════════════════════════════════════════════════════════════
+KEY METRICS FORMULAS
+═══════════════════════════════════════════════════════════════════════════════
+
+Cache Hit Rate:
+  = (cache_hits / (cache_hits + cache_misses)) * 100
+
+Auth Success Rate:
+  = (auth_successes / (auth_successes + auth_failures)) * 100
+
+Error Rate:
+  = (http_errors / http_requests) * 100
+
+Throughput (requests/min):
+  = http_requests / uptime_minutes
+
+Avg Latency:
+  = sum(request_latencies) / request_count
+
+Security Event Rate:
+  = (sql_injection_attempts + xss_attempts) / time_period
+
+═══════════════════════════════════════════════════════════════════════════════
+ADVANCED: CUSTOM METRICS
+═══════════════════════════════════════════════════════════════════════════════
+
+Record custom metrics:
+
+from phase4_prometheus_metrics import get_metrics_collector
+metrics = get_metrics_collector()
+
+# HTTP request
+metrics.record_http_request('GET', '/api/test', 200, 25.5)
+
+# Cache operation
+metrics.record_cache_hit(duration_ms=0.5)
+
+# Auth
+metrics.record_auth_success(duration_ms=2.0)
+
+# Security event
+metrics.record_security_event('sql_injection', 'SELECT * FROM...')
+
+═══════════════════════════════════════════════════════════════════════════════
+ADVANCED: CUSTOM HEALTH CHECKS
+═══════════════════════════════════════════════════════════════════════════════
+
+Add custom check:
+
+from phase4_health_check import get_health_checker
+health_checker = get_health_checker()
+
+# Custom check method
+def check_custom_service():
+    try:
+        # Your check logic
+        return True, {'status': 'ok'}
+    except Exception as e:
+        return False, {'status': 'error', 'error': str(e)}
+
+# Use in full status
+status = health_checker.get_full_health_status(app)
+
+═══════════════════════════════════════════════════════════════════════════════
+GLOSSARY
+═══════════════════════════════════════════════════════════════════════════════
+
+COUNTER: Monotonically increasing metric (never decreases)
+GAUGE: Metric that can increase or decrease
+HISTOGRAM: Distribution of values (latencies, sizes)
+PERCENTILE: Value below which percentage of data falls
+LATENCY: Time taken to respond to request
+THROUGHPUT: Requests processed per unit time
+SLA: Service Level Agreement (performance targets)
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK REFERENCE - Last Updated October 28, 2025
+═══════════════════════════════════════════════════════════════════════════════

@@ -19,7 +19,7 @@ Knowledge Items: ~3,100+
 Created: October 28, 2025
 """
 
-from backend.bob_ai_expansion_200_disciplines import Tier1CreativeArts
+from bob_ai_expansion_200_disciplines import Tier1CreativeArts
 
 
 class CreativeArtsKnowledge:

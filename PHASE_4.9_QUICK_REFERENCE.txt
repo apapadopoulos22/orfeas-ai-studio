@@ -1,0 +1,304 @@
+# PHASE 4.9 - PRODUCTION DEPLOYMENT QUICK REFERENCE
+
+## Quick Start (3 Steps)
+
+```powershell
+# 1. Build production Docker image
+cd backend
+python docker_build.py
+
+# 2. Start services (production mode)
+docker-compose -f docker-compose.production.yml up -d
+
+# 3. Run smoke tests
+python test_phase4_production.py
+```
+
+## Test Suites
+
+### Smoke Tests
+```powershell
+python test_phase4_production.py
+```
+**Purpose:** Validate all endpoints are accessible, verify health checks, test basic functionality
+**Duration:** 2-3 minutes
+**Expected:** All tests passing (35+ tests)
+**Coverage:** API endpoints, monitoring, health checks, error handling, availability
+
+### Performance Validation
+```powershell
+python performance_validation.py
+```
+**Purpose:** Verify endpoints meet performance SLAs (<100ms average, <150ms p95)
+**Duration:** 2-3 minutes
+**Expected:** All SLAs met
+**SLAs:**
+- Average: <100ms
+- P95: <150ms
+- Success Rate: >99%
+
+### Production Tests
+```powershell
+python test_phase4_production.py
+```
+**Test Classes:**
+- TestProductionDeployment (API/Monitoring accessibility, health checks, response structure)
+- TestPerformanceSLA (Latency validation, p95/p99 percentiles)
+- TestSystemHealth (Metrics, system checks, dependencies, logs)
+- TestErrorHandling (Invalid endpoints, malformed queries, timeouts)
+- TestContinuousAvailability (Sequential & concurrent request stability)
+- TestDeploymentArtifacts (Docker, compose, requirements files present)
+- TestEnvironmentValidation (Environment variables, Docker containers running)
+
+## Key Endpoints
+
+### API Endpoints (Port 5000)
+
+| Endpoint | Method | Purpose | SLA |
+|----------|--------|---------|-----|
+| `/health` | GET | Health check | <100ms |
+| `/api/search` | GET | Search disciplines | <100ms |
+| `/api/disciplines` | GET | List all disciplines | <100ms |
+| `/api/metrics/summary` | GET | Metrics summary | <100ms |
+
+### Monitoring Endpoints (Port 8000)
+
+| Endpoint | Method | Purpose | SLA |
+|----------|--------|---------|-----|
+| `/health` | GET | Health check | <100ms |
+| `/metrics` | GET | Prometheus metrics | <100ms |
+| `/api/health/full` | GET | Complete system health | <100ms |
+| `/api/health/system` | GET | System resource check | <100ms |
+| `/api/health/dependencies` | GET | Dependency checks | <100ms |
+| `/api/logs/recent` | GET | Recent logs (param: lines) | <100ms |
+
+## Common Commands
+
+### Docker Management
+```bash
+# View running containers
+docker ps
+
+# View all containers
+docker ps -a
+
+# View container logs (last 20 lines)
+docker logs <container-id> --tail 20
+
+# View logs in real-time
+docker logs <container-id> -f
+
+# Stop containers
+docker-compose -f docker-compose.production.yml down
+
+# Start containers
+docker-compose -f docker-compose.production.yml up -d
+
+# Restart services
+docker-compose -f docker-compose.production.yml restart
+
+# View container stats
+docker stats
+
+# Inspect container
+docker inspect <container-id>
+```
+
+### Health Checks
+```bash
+# API health
+curl http://localhost:5000/health
+
+# Monitoring health
+curl http://localhost:8000/health
+
+# Full system health
+curl http://localhost:8000/api/health/full
+
+# System metrics
+curl http://localhost:8000/api/health/system | python -m json.tool
+
+# Check dependencies
+curl http://localhost:8000/api/health/dependencies | python -m json.tool
+```
+
+### Performance Testing
+```bash
+# Quick latency check
+for i in {1..10}; do time curl -o /dev/null -s http://localhost:5000/health; done
+
+# Performance validation
+python performance_validation.py
+
+# Full test suite
+python test_phase4_production.py
+```
+
+## Troubleshooting
+
+### Services Won't Start
+```bash
+# Check if ports are in use
+netstat -ano | findstr :5000
+
+# Kill process using port (if needed)
+taskkill /PID <pid> /F
+
+# Verify Docker running
+docker version
+
+# Check logs
+docker logs <container-id>
+```
+
+### Performance Below SLA
+```bash
+# Check resource usage
+docker stats
+
+# Check if container is throttled
+docker inspect <container-id> | grep MemoryStats
+
+# Review logs for errors
+docker logs <container-id> --tail 50 | grep -i error
+
+# Check specific endpoint
+curl -v http://localhost:5000/api/search?q=test
+```
+
+### Health Checks Failing
+```bash
+# Manual health check
+curl http://localhost:5000/health
+
+# Check container status
+docker ps --format "table {{.Names}}\t{{.Status}}"
+
+# Restart service
+docker-compose -f docker-compose.production.yml restart
+
+# View health check output
+docker inspect <container-id> | grep -A 20 "Health"
+```
+
+## Performance Baseline (Expected)
+
+Based on Phase 4.8 testing:
+
+| Metric | Target | Actual |
+|--------|--------|--------|
+| API startup time | <5s | ~3-4s |
+| First request (cold) | <500ms | ~200-300ms |
+| Subsequent requests | <100ms | ~20-50ms |
+| Health check | <100ms | ~10-20ms |
+| Metrics endpoint | <100ms | ~20-40ms |
+| P95 latency | <150ms | ~50-70ms |
+| P99 latency | <200ms | ~80-100ms |
+| Success rate | >99% | 99.9%+ |
+| Memory usage | <500MB | ~300-400MB |
+| Image size | <600MB | ~550MB |
+
+## Environment Variables
+
+**Production Configuration:**
+
+```bash
+# Flask
+FLASK_ENV=production
+PYTHONUNBUFFERED=1
+
+# GPU (optional)
+DEVICE=cuda  # or 'cpu' for CPU-only
+GPU_MEMORY_LIMIT=0.8
+
+# Logging
+LOG_LEVEL=INFO
+
+# Monitoring
+ENABLE_MONITORING=true
+
+# Cache
+REDIS_ENABLED=true
+REDIS_URL=redis://localhost:6379
+
+# API
+API_PORT=5000
+MONITORING_PORT=8000
+```
+
+## Deployment Checklist
+
+Before production deployment:
+
+- [ ] Phase 4.8 validation complete (50+ tests passing)
+- [ ] docker-compose.production.yml reviewed
+- [ ] All environment variables defined
+- [ ] SSL certificates ready (if needed)
+- [ ] Backup strategy configured
+- [ ] Monitoring dashboards set up
+- [ ] Alert notifications configured
+- [ ] Runbook documentation complete
+- [ ] Team trained on deployment process
+- [ ] Rollback procedure documented
+
+## Success Criteria
+
+✅ Deployment successful when:
+
+1. **Smoke Tests:** All tests passing
+2. **Performance:** All SLAs met (<100ms avg)
+3. **Health Checks:** All 9 checks passing
+4. **Availability:** >99% uptime
+5. **Metrics:** All 30+ metrics collected
+6. **Logs:** No errors or warnings
+7. **Monitoring:** Dashboards active
+8. **Documentation:** Runbooks updated
+
+## Files
+
+**Test Files:**
+- `backend/test_phase4_production.py` - Smoke test suite (35+ tests)
+- `backend/performance_validation.py` - Performance validation tool
+
+**Documentation:**
+- `PHASE_4.9_DEPLOYMENT_GUIDE.md` - Complete deployment procedures
+- `PHASE_4.9_QUICK_REFERENCE.txt` - This file
+
+**Configuration:**
+- `docker-compose.production.yml` - Production Docker config
+- `Dockerfile` - Multi-stage Docker image
+- `backend/requirements.txt` - Python dependencies
+
+## Next Steps
+
+1. Run smoke test suite
+2. Validate performance against SLAs
+3. Monitor system for 24 hours
+4. Document baseline metrics
+5. Set up CI/CD pipeline
+6. Plan Phase 4 Complete
+
+## Support
+
+**Level 1 - Quick Checks:**
+- `curl http://localhost:5000/health`
+- `curl http://localhost:8000/health`
+- `docker ps`
+
+**Level 2 - Detailed Diagnostics:**
+- `python test_phase4_production.py`
+- `python performance_validation.py`
+- `docker logs <container-id>`
+
+**Level 3 - Full Investigation:**
+- Review `PHASE_4.9_DEPLOYMENT_GUIDE.md` troubleshooting section
+- Check container resource usage
+- Review application logs
+- Execute rollback if needed
+
+---
+
+**Version:** 1.0.0
+**Status:** Production-Ready
+**Phase:** 4.9
+**Last Updated:** 2025-01-15

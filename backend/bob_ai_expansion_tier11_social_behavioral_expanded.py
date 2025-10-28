@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 11: Social & Behavioral Sciences (35 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier11SocialBehavioral
+from bob_ai_expansion_200_disciplines import Tier11SocialBehavioral
 
 class SocialBehavioralKnowledge:
     def get_knowledge_base(self) -> dict:

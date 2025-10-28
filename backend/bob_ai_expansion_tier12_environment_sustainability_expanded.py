@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 12: Environment & Sustainability (25 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier12EnvironmentSustainability
+from bob_ai_expansion_200_disciplines import Tier12EnvironmentSustainability
 
 class EnvironmentSustainabilityKnowledge:
     def get_knowledge_base(self) -> dict:

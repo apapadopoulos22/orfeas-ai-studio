@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 4: Business & Economics (35+ disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier4BusinessEconomics
+from bob_ai_expansion_200_disciplines import Tier4BusinessEconomics
 
 class BusinessEconomicsKnowledge:
     def get_knowledge_base(self) -> dict:

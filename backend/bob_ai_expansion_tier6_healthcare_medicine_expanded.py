@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 6: Healthcare & Medicine (35 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier6HealthcareMedicine
+from bob_ai_expansion_200_disciplines import Tier6HealthcareMedicine
 
 class HealthcareMedicineKnowledge:
     def get_knowledge_base(self) -> dict:

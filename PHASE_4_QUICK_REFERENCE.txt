@@ -1,0 +1,541 @@
+═══════════════════════════════════════════════════════════════════════════════
+BOB AI v10.0 - PHASE 4 QUICK REFERENCE GUIDE
+Production Deployment - API Usage & Testing
+═══════════════════════════════════════════════════════════════════════════════
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK START
+═══════════════════════════════════════════════════════════════════════════════
+
+1. RUN TESTS (Validate API Implementation)
+   ─────────────────────────────────────────
+   cd c:\Users\johng\Documents\oscar
+   python backend/test_phase4_api.py
+
+   Expected: ✓ ALL TESTS PASSED (25+ tests)
+
+2. START SERVER (Run Flask Application)
+   ──────────────────────────────────────
+   cd backend
+   python phase4_app.py
+
+   Expected: Flask server running on http://localhost:5000
+
+3. TEST API (Manual Verification)
+   ───────────────────────────────
+   curl http://localhost:5000/api/health
+   curl http://localhost:5000/api/disciplines?limit=5
+   curl http://localhost:5000/api/statistics/phase3
+
+═══════════════════════════════════════════════════════════════════════════════
+API ENDPOINTS REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+ROOT ENDPOINT
+─────────────
+GET /
+  Returns API documentation
+  Response: {name, phase, version, status, endpoints{}}
+
+HEALTH ENDPOINTS
+────────────────
+GET /api/health
+  Returns system health status
+  Response: {status: "healthy", phase: "4", version: "1.0.0", timestamp}
+
+GET /api/ready
+  Returns readiness status
+  Response: {ready: boolean, disciplines_loaded: number, version}
+
+DISCIPLINE ENDPOINTS
+────────────────────
+GET /api/disciplines?limit=50&offset=0
+  List all 403 disciplines with pagination
+  Query Params: limit (1-500), offset (default 0), tier (1-12), category
+  Response: {success: true, data: {disciplines[], count}, meta{}}
+
+GET /api/disciplines/{id}
+  Get single discipline details
+  Path Params: id = discipline name/ID
+  Response: {success: true, data: {name, category, tier, keywords, ...}}
+
+GET /api/disciplines/{id}/related?max_results=50
+  Get semantically related disciplines
+  Path Params: id = discipline name
+  Query Params: max_results (default 50)
+  Response: {success: true, data: {discipline, related[], count}}
+
+KNOWLEDGE GRAPH ENDPOINTS
+──────────────────────────
+GET /api/knowledge-graph?include_stats=true
+  Get complete knowledge graph (403 nodes, 64 edges)
+  Query Params: include_stats (true/false)
+  Response: {success: true, data: {nodes[], edges[], statistics, graph_metrics}}
+
+GET /api/disciplines/path/{from}/{to}?max_depth=5
+  Find shortest path between disciplines (BFS)
+  Path Params: from, to (discipline names)
+  Query Params: max_depth (default 5)
+  Response: {success: true, data: {from, to, path[], path_length, found}}
+
+TIER & STATISTICS ENDPOINTS
+────────────────────────────
+GET /api/tier/{tier}/connections
+  Get cross-tier connections analysis for tier 1-12
+  Path Params: tier (1-12)
+  Response: {success: true, data: {tier, disciplines, connections, ...}}
+
+GET /api/statistics/phase3
+  Get comprehensive Phase 3 system statistics
+  Response: {success: true, data: {phase, total_disciplines, total_items, ...}}
+
+ADVANCED QUERY ENDPOINT
+───────────────────────
+POST /api/query
+  Advanced semantic query interface
+  Body JSON:
+    {
+      "query_type": "semantic_search|related|pathfinding|tier_analysis",
+      "params": { ... query-type-specific params ... }
+    }
+
+  Query Types:
+    1. semantic_search
+       params: {query: string, limit: number}
+
+    2. related
+       params: {discipline: string, max_results: number}
+
+    3. pathfinding
+       params: {from: string, to: string, max_depth: number}
+
+    4. tier_analysis
+       params: {tier: number}
+
+═══════════════════════════════════════════════════════════════════════════════
+EXAMPLE API CALLS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. GET ALL DISCIPLINES (Paginated)
+   ────────────────────────────────
+   Request:
+     GET http://localhost:5000/api/disciplines?limit=10&offset=0
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "disciplines": ["Physics", "Chemistry", ...],
+         "count": 10
+       },
+       "meta": {
+         "limit": 10,
+         "offset": 0,
+         "total": 403
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+
+2. GET DISCIPLINE DETAILS
+   ──────────────────────
+   Request:
+     GET http://localhost:5000/api/disciplines/Physics
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "name": "Physics",
+         "category": "Natural Sciences",
+         "tier": 1,
+         "total_items": 1243,
+         "keywords": ["force", "motion", "energy", ...],
+         "related_count": 5
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+
+3. GET RELATED DISCIPLINES
+   ───────────────────────
+   Request:
+     GET http://localhost:5000/api/disciplines/Physics/related
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "discipline": "Physics",
+         "related": ["Physical Chemistry", "Engineering", ...],
+         "count": 5
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+
+4. GET KNOWLEDGE GRAPH
+   ───────────────────
+   Request:
+     GET http://localhost:5000/api/knowledge-graph?include_stats=true
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "nodes": [
+           {"id": "Physics", "label": "Physics"},
+           {"id": "Chemistry", "label": "Chemistry"},
+           ...
+         ],
+         "edges": [
+           {"source": "Physics", "target": "Chemistry"},
+           ...
+         ],
+         "graph_metrics": {
+           "avg_degree": 0.318,
+           "num_nodes": 403,
+           "num_edges": 64,
+           "edge_density": 0.000787
+         }
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+
+5. FIND PATH BETWEEN DISCIPLINES
+   ────────────────────────────
+   Request:
+     GET http://localhost:5000/api/disciplines/path/Physics/Chemistry?max_depth=5
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "from": "Physics",
+         "to": "Chemistry",
+         "path": ["Physics", "Physical Chemistry", "Chemistry"],
+         "path_length": 2,
+         "found": true
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+
+6. ADVANCED QUERY - SEMANTIC SEARCH
+   ────────────────────────────────
+   Request:
+     POST http://localhost:5000/api/query
+     Content-Type: application/json
+
+     {
+       "query_type": "semantic_search",
+       "params": {
+         "query": "physics",
+         "limit": 10
+       }
+     }
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "query_type": "semantic_search",
+         "query": "physics",
+         "results": ["Physics", "Physical Chemistry", ...],
+         "count": 10
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+
+7. ADVANCED QUERY - PATHFINDING
+   ──────────────────────────────
+   Request:
+     POST http://localhost:5000/api/query
+     Content-Type: application/json
+
+     {
+       "query_type": "pathfinding",
+       "params": {
+         "from": "Physics",
+         "to": "Biology",
+         "max_depth": 5
+       }
+     }
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "query_type": "pathfinding",
+         "from": "Physics",
+         "to": "Biology",
+         "path": ["Physics", "Biophysics", "Biology"],
+         "path_length": 2,
+         "found": true
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+
+8. GET STATISTICS
+   ───────────────
+   Request:
+     GET http://localhost:5000/api/statistics/phase3
+
+   Response:
+     {
+       "success": true,
+       "data": {
+         "phase": "Phase 3",
+         "total_disciplines": 403,
+         "total_knowledge_items": 51879,
+         "semantic_relationships": 64,
+         "average_relationships_per_discipline": 0.159,
+         "knowledge_graph_edges": 64,
+         "cross_tier_links": 42,
+         "tier_breakdown": {...}
+       },
+       "timestamp": "2025-10-28T15:20:30.123456"
+     }
+
+═══════════════════════════════════════════════════════════════════════════════
+ERROR HANDLING
+═══════════════════════════════════════════════════════════════════════════════
+
+ERROR RESPONSE FORMAT:
+  {
+    "success": false,
+    "error": "Error Type",
+    "message": "Detailed error message",
+    "status": 400,
+    "timestamp": "2025-10-28T15:20:30.123456"
+  }
+
+COMMON ERRORS:
+
+400 Bad Request
+  - Validation error (invalid parameters)
+  - Example: max_depth out of range, limit > 500
+
+404 Not Found
+  - Discipline not found
+  - Endpoint doesn't exist
+  - Example: GET /api/disciplines/NONEXISTENT
+
+405 Method Not Allowed
+  - Wrong HTTP method for endpoint
+  - Example: DELETE /api/disciplines (should be GET)
+
+500 Internal Server Error
+  - Unexpected server error
+  - Check server logs for details
+
+═══════════════════════════════════════════════════════════════════════════════
+TESTING COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+RUN ALL TESTS
+─────────────
+python backend/test_phase4_api.py
+  Runs 25+ test cases
+  Expected: ~15 seconds execution time
+  Output: Test results with ASCII checkmarks (✓)
+
+RUN INDIVIDUAL TEST
+───────────────────
+python -m unittest backend.test_phase4_api.Phase4APITestCase.test_get_all_disciplines
+  Runs single test function
+  Useful for debugging specific endpoint
+
+RUN WITH VERBOSE OUTPUT
+──────────────────────
+python backend/test_phase4_api.py -v
+  Increases verbosity
+  Shows detailed test execution information
+
+═══════════════════════════════════════════════════════════════════════════════
+USING CURL FOR TESTING
+═══════════════════════════════════════════════════════════════════════════════
+
+SIMPLE GET REQUEST
+──────────────────
+curl http://localhost:5000/api/disciplines?limit=5
+
+GET WITH PRETTY OUTPUT
+──────────────────────
+curl http://localhost:5000/api/disciplines?limit=5 | python -m json.tool
+
+GET WITH CUSTOM HEADER
+──────────────────────
+curl -H "Accept: application/json" http://localhost:5000/api/disciplines
+
+POST REQUEST (JSON)
+──────────────────
+curl -X POST http://localhost:5000/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"query_type": "semantic_search", "params": {"query": "physics"}}'
+
+SAVE RESPONSE TO FILE
+────────────────────
+curl http://localhost:5000/api/knowledge-graph > graph.json
+
+MEASURE RESPONSE TIME
+─────────────────────
+curl -w "\nTime: %{time_total}s\n" http://localhost:5000/api/disciplines
+
+═══════════════════════════════════════════════════════════════════════════════
+PYTHON REQUESTS EXAMPLES
+═══════════════════════════════════════════════════════════════════════════════
+
+INSTALL REQUESTS
+────────────────
+pip install requests
+
+SIMPLE GET REQUEST
+──────────────────
+import requests
+resp = requests.get('http://localhost:5000/api/disciplines?limit=5')
+print(resp.json())
+
+POST REQUEST
+────────────
+import requests
+payload = {
+    "query_type": "semantic_search",
+    "params": {"query": "physics"}
+}
+resp = requests.post('http://localhost:5000/api/query', json=payload)
+print(resp.json())
+
+WITH ERROR HANDLING
+──────────────────
+import requests
+try:
+    resp = requests.get('http://localhost:5000/api/disciplines/Physics')
+    if resp.status_code == 200:
+        print(f"Success: {len(resp.json()['data'])} items")
+    else:
+        print(f"Error {resp.status_code}: {resp.json()['error']}")
+except requests.exceptions.RequestException as e:
+    print(f"Request failed: {e}")
+
+═══════════════════════════════════════════════════════════════════════════════
+FRONTEND INTEGRATION
+═══════════════════════════════════════════════════════════════════════════════
+
+FETCH API (JavaScript/React)
+────────────────────────────
+fetch('http://localhost:5000/api/disciplines?limit=10')
+  .then(r => r.json())
+  .then(data => console.log(data))
+
+AXIOS (React/Node)
+──────────────────
+import axios from 'axios'
+axios.get('http://localhost:5000/api/disciplines?limit=10')
+  .then(r => console.log(r.data))
+
+TANSTACK QUERY (React)
+──────────────────────
+import { useQuery } from '@tanstack/react-query'
+
+function DisciplineList() {
+  const { data } = useQuery({
+    queryKey: ['disciplines'],
+    queryFn: () => fetch('/api/disciplines').then(r => r.json())
+  })
+  return <div>{data?.data?.count} disciplines</div>
+}
+
+═══════════════════════════════════════════════════════════════════════════════
+PERFORMANCE BASELINE (NO CACHE)
+═══════════════════════════════════════════════════════════════════════════════
+
+Endpoint                              Response Time    Data Size
+─────────────────────────────────────────────────────────────────
+GET /api/health                       ~5ms             <1KB
+GET /api/disciplines (limit=50)       ~50ms            ~10KB
+GET /api/disciplines/{id}             ~20ms            ~2KB
+GET /api/disciplines/{id}/related     ~30ms            ~5KB
+GET /api/knowledge-graph              ~200ms           ~100KB
+GET /api/disciplines/path             ~50ms            ~2KB
+GET /api/tier/{tier}/connections      ~100ms           ~20KB
+GET /api/statistics/phase3            ~50ms            ~5KB
+POST /api/query                       ~100ms           Variable
+
+Average: ~100-150ms
+
+═══════════════════════════════════════════════════════════════════════════════
+WITH CACHING (EXPECTED AFTER REDIS IMPLEMENTATION)
+═══════════════════════════════════════════════════════════════════════════════
+
+Endpoint                              Response Time    Improvement
+─────────────────────────────────────────────────────────────────
+GET /api/health                       ~5ms             No change (no cache)
+GET /api/disciplines (limit=50)       ~10ms            5x faster (cached)
+GET /api/disciplines/{id}             ~10ms            2x faster (cached)
+GET /api/disciplines/{id}/related     ~5ms             6x faster (cached)
+GET /api/knowledge-graph              ~30ms            7x faster (cached)
+GET /api/disciplines/path             ~20ms            2.5x faster (cached)
+GET /api/tier/{tier}/connections      ~20ms            5x faster (cached)
+GET /api/statistics/phase3            ~10ms            5x faster (cached)
+POST /api/query                       Variable         ~2x faster (cached)
+
+Average: ~20-50ms (80%+ cache hit rate)
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+ISSUE: Server won't start
+SOLUTION:
+  - Check port 5000 is available: netstat -ano | findstr :5000
+  - Kill process using port: taskkill /PID <PID> /F
+  - Try different port: Change line in phase4_app.py
+
+ISSUE: Tests fail with import error
+SOLUTION:
+  - Ensure backend path is in sys.path (already in code)
+  - Check Python 3.10+ installed
+  - Install Flask: pip install flask flask-cors
+
+ISSUE: Knowledge graph empty
+SOLUTION:
+  - Check Phase 3 mapper initialized correctly
+  - Verify 403 disciplines loaded: GET /api/ready
+  - Check server logs for errors
+
+ISSUE: Slow response times
+SOLUTION:
+  - Without cache: Normal for first calls (~200ms)
+  - Check if graph generation bottleneck: GET /api/knowledge-graph timing
+  - Implement Redis cache for speedup
+  - Consider query optimization
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE DEPLOYMENT:
+  ☐ All tests pass (25/25)
+  ☐ Response times within targets (<100ms)
+  ☐ Error handling tested (404/400/500)
+  ☐ Health check returns correct data
+  ☐ Ready check shows 403+ disciplines
+  ☐ Knowledge graph generates correctly
+  ☐ All 8 endpoints respond with data
+
+BEFORE PRODUCTION:
+  ☐ Redis cache implemented and tested
+  ☐ Security measures in place (API keys, rate limiting)
+  ☐ Monitoring and logging active
+  ☐ Frontend connected and working
+  ☐ Performance targets met (<100ms avg)
+  ☐ Load testing successful
+  ☐ Graceful error handling verified
+
+═══════════════════════════════════════════════════════════════════════════════
+More information: See PHASE_4_IMPLEMENTATION_COMPLETE.txt for full documentation
+═══════════════════════════════════════════════════════════════════════════════

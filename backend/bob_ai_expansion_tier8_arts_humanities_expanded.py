@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 8: Arts & Humanities (40 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier8ArtsHumanities
+from bob_ai_expansion_200_disciplines import Tier8ArtsHumanities
 
 class ArtsHumanitiesKnowledge:
     def get_knowledge_base(self) -> dict:

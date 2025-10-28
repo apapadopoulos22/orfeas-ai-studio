@@ -1,0 +1,418 @@
+PHASE 2 TECHNICAL REFERENCE CARD
+================================
+
+Quick lookup for developers implementing or using Phase 2
+
+═══════════════════════════════════════════════════════════════════════
+
+
+INSTALLATION
+═════════════
+
+# Minimum (required)
+pip install networkx
+
+# Full (recommended for production)
+pip install networkx elasticsearch pandas
+
+
+INTEGRATION CODE TEMPLATE
+═════════════════════════
+
+# Add to main.py after Phase 1 initialization:
+
+from bob_ai_expansion_phase2_knowledge_graph import initialize_knowledge_graph
+from bob_ai_expansion_phase2_search import AdvancedSearchEngine
+from bob_ai_expansion_phase2_api import init_bob_ai_phase2_api
+
+# Initialize components
+db_session = expansion_loader.Session()
+graph, analyzer, recommendation_engine = initialize_knowledge_graph(db_session)
+
+if graph:
+    search_engine = AdvancedSearchEngine(
+        expansion_loader.Session(),
+        use_elasticsearch=False  # Set True for Elasticsearch
+    )
+    init_bob_ai_phase2_api(
+        app,
+        expansion_loader.Session,
+        analyzer,
+        recommendation_engine,
+        search_engine
+    )
+    logger.info("✅ Phase 2 initialized")
+
+
+API ENDPOINTS REFERENCE
+═══════════════════════
+
+GRAPH ANALYSIS:
+  GET /api/v2/graph/analyze/{id}
+    Returns prerequisites, related, metrics
+    Example: curl http://localhost:5000/api/v2/graph/analyze/1
+
+  GET /api/v2/graph/prerequisites/{id}
+    Returns ordered prerequisite chain
+    Example: curl http://localhost:5000/api/v2/graph/prerequisites/1
+
+RECOMMENDATIONS:
+  GET /api/v2/recommendations?completed=1,2,3&difficulty=progressive&limit=5
+    Parameters:
+      completed (required): comma-separated discipline IDs
+      difficulty (optional): "progressive" or "lateral"
+      limit (optional): number of results (default 5)
+    Example: curl 'http://localhost:5000/api/v2/recommendations?completed=1,2,3'
+
+LEARNING PATHS:
+  GET /api/v2/learning-paths/optimized/{id}?current_level=beginner
+    Parameters:
+      current_level: beginner, intermediate, advanced, expert
+    Example: curl 'http://localhost:5000/api/v2/learning-paths/optimized/10?current_level=intermediate'
+
+SKILL GAP ANALYSIS:
+  POST /api/v2/skill-gaps/analyze/{id}
+    Body: {"skills": ["Python", "Statistics"]}
+    Example:
+      curl -X POST http://localhost:5000/api/v2/skill-gaps/analyze/10 \
+        -H "Content-Type: application/json" \
+        -d '{"skills": ["Python", "Statistics"]}'
+
+ADVANCED SEARCH:
+  POST /api/v2/search/advanced
+    Body:
+    {
+      "query": "machine learning",
+      "filters": {
+        "difficulty": ["intermediate"],
+        "languages": ["python"],
+        "estimated_hours_max": 40
+      },
+      "limit": 20
+    }
+
+SKILL SEARCH:
+  GET /api/v2/search/by-skill?skills=Python,Data%20Science
+    Example: curl 'http://localhost:5000/api/v2/search/by-skill?skills=Python'
+
+INDUSTRY SEARCH:
+  GET /api/v2/search/by-industry?industry=Finance
+    Example: curl 'http://localhost:5000/api/v2/search/by-industry?industry=Finance'
+
+HEALTH CHECK:
+  GET /api/v2/health
+    Returns: service status, components, backends
+
+
+RECOMMENDATION SCORING ALGORITHM
+═════════════════════════════════
+
+Score = (PageRank * 0.3 * 100) + (PrereqSatisfaction * 0.4 * 100)
+        + (RelationshipScore * 0.2 * 100) + (DifficultyProgression * 0.1 * 100)
+
+  PageRank (0.3 weight):
+    Measures global importance in knowledge graph
+    Scale: 0.0-1.0, multiplied by 100 for scoring
+
+  Prerequisite Satisfaction (0.4 weight):
+    % of prerequisites already completed
+    Scale: 0-100 (0 = none completed, 100 = all completed)
+
+  Relationship Score (0.2 weight):
+    How connected to already-completed disciplines
+    Scale: 0-100 (0 = unrelated, 100 = directly related)
+
+  Difficulty Progression (0.1 weight):
+    For "progressive" mode: prefer harder disciplines
+    Scale: 20-50 points based on beginner/expert level
+
+Final Score Normalization: Divide by 100 to get 0.0-1.0 range
+
+
+SEARCH RELEVANCE SCORING
+════════════════════════
+
+Score Levels:
+  1.0 → Exact name match (highest)
+  0.8 → Query in name
+  0.6 → Query term in name
+  0.4 → Query in description
+  0.3 → Query in keywords (lowest)
+
+Used to rank results in SQL backend
+
+
+GRAPH METRICS EXPLAINED
+═══════════════════════
+
+PageRank:
+  Importance score (0.0-1.0)
+  Higher = more central to knowledge base
+  Used for: Recommendation scoring, importance ranking
+
+Betweenness Centrality:
+  How often node appears on shortest paths between others
+  Higher = bridges different topic areas
+  Used for: Identifying connector topics
+
+Community Detection:
+  Groups related disciplines
+  Used for: Suggesting parallel learning topics
+
+
+PERFORMANCE TARGETS
+═══════════════════
+
+Component              | Time     | Notes
+─────────────────────────────────────────────────────────
+Graph Construction     | 2s       | One-time on startup
+Prerequisite Query     | <100ms   | Per query
+Recommendation Gen     | <500ms   | Per user
+Search (SQL)           | <100ms   | Typical query
+Search (Elasticsearch) | <20ms    | Typical query
+API Endpoint           | <300ms   | Average response
+Health Check           | <50ms    | Status only
+
+
+ENVIRONMENT VARIABLES
+═════════════════════
+
+BOB_AI_GRAPH_CACHE=true/false
+  Cache graph in memory (default: true)
+  Set false to rebuild on each request (not recommended)
+
+BOB_AI_USE_ELASTICSEARCH=true/false
+  Use Elasticsearch backend (default: false)
+  Requires: Elasticsearch server running
+
+ES_HOSTS=localhost:9200
+  Elasticsearch connection string
+  Default: localhost:9200 (local development)
+
+ES_INDEX_NAME=bob_ai_knowledge
+  Elasticsearch index name
+  Default: bob_ai_knowledge
+
+BOB_AI_RECOMMENDATION_LIMIT=5
+  Default number of recommendations to return
+  Default: 5
+
+
+DATABASE QUERIES (Phase 2)
+══════════════════════════
+
+# Get all prerequisite relationships
+SELECT * FROM discipline_links WHERE link_type = 'prerequisite'
+
+# Count disciplines by difficulty
+SELECT difficulty_level, COUNT(*)
+FROM expanded_disciplines
+GROUP BY difficulty_level
+
+# Find disciplines teaching a skill
+SELECT * FROM expanded_disciplines
+WHERE topics @> '["Python"]'  -- PostgreSQL JSONB contains
+
+# Get all libraries for a discipline
+SELECT lm.* FROM library_mappings lm
+JOIN expanded_disciplines ed ON lm.discipline_id = ed.id
+WHERE ed.id = ?
+
+
+ERROR HANDLING
+══════════════
+
+Error: "NetworkX not installed"
+  Status: 503 Service Unavailable
+  Fix: pip install networkx
+
+Error: "Knowledge graph not initialized"
+  Status: 503 Service Unavailable
+  Cause: Database not loaded with data
+  Fix: Run Phase 1 data loading
+
+Error: "Elasticsearch connection fails"
+  Status: Falls back to SQL backend
+  Fix: Run Elasticsearch or set use_elasticsearch=false
+
+Error: "Invalid discipline ID"
+  Status: 404 Not Found
+  Cause: Discipline doesn't exist
+  Fix: Verify ID with /api/v2/disciplines endpoint
+
+Error: "Query timeout"
+  Status: 504 Gateway Timeout
+  Cause: Large dataset or complex query
+  Fix: Implement Elasticsearch backend or optimize query
+
+
+TESTING CHECKLIST
+═════════════════
+
+□ Graph analysis endpoint returns 200 OK
+□ Recommendations generated successfully
+□ Learning path shows prerequisites in order
+□ Skill gaps identified correctly
+□ Search returns results with scores
+□ Elasticsearch backend optional (works without it)
+□ Health check shows all components
+□ Error handling works for invalid inputs
+□ Performance meets <300ms target
+□ All endpoints documented in Postman/Swagger
+
+
+DEBUGGING TIPS
+══════════════
+
+Check graph initialized:
+  curl http://localhost:5000/api/v2/health
+
+Get graph stats:
+  graph.number_of_nodes() → should be ~891
+  graph.number_of_edges() → should be ~891+
+
+Trace recommendations:
+  reason field shows scoring factors
+  prerequisite_gaps shows what's missing
+
+Check search performance:
+  execution_time_ms in response tells latency
+
+Verify prerequisites:
+  /api/v2/graph/prerequisites/{id} shows full chain
+
+
+OPTIMIZATION TIPS
+═════════════════
+
+For Slow Recommendations:
+  1. Implement graph caching (enabled by default)
+  2. Pre-compute recommendation batches
+  3. Use Elasticsearch for search
+
+For Slow Search:
+  1. Add indexes (SQL automatically creates them)
+  2. Switch to Elasticsearch backend
+  3. Reduce query complexity (fewer filters)
+
+For High Memory Usage:
+  1. Disable graph caching
+  2. Clear search result cache periodically
+  3. Use Elasticsearch (offloads indexing)
+
+For Startup Delays:
+  1. Pre-build graph on startup
+  2. Cache results in Redis (optional, Phase 3+)
+  3. Use lazy loading for endpoints
+
+
+CODE EXAMPLES (Python)
+══════════════════════
+
+# Initialize graph and recommendation engine
+from bob_ai_expansion_phase2_knowledge_graph import initialize_knowledge_graph
+from sqlalchemy.orm import sessionmaker
+
+Session = sessionmaker(bind=engine)
+session = Session()
+graph, analyzer, rec_engine = initialize_knowledge_graph(session)
+
+# Get recommendations for user
+recommendations = rec_engine.recommend_next_disciplines(
+    completed_disciplines=[1, 2, 3],
+    difficulty_preference='progressive',
+    limit=5
+)
+
+for rec in recommendations:
+    print(f"{rec.discipline_name}: {rec.score:.2f} ({rec.reason})")
+
+# Get optimized learning path
+path = rec_engine.recommend_learning_path(
+    target_discipline_id=42,
+    current_level='beginner'
+)
+print(f"Total hours: {path.total_hours}")
+print(f"Estimated weeks: {path.estimated_completion_weeks}")
+
+# Search with filters
+from bob_ai_expansion_phase2_search import AdvancedSearchEngine, FacetFilters
+
+engine = AdvancedSearchEngine(session, use_elasticsearch=False)
+filters = FacetFilters(
+    difficulty=['intermediate', 'advanced'],
+    languages=['python'],
+    estimated_hours_max=40
+)
+results = engine.search("machine learning", filters, limit=20)
+
+
+CODE EXAMPLES (curl)
+════════════════════
+
+# Test basic endpoint
+curl http://localhost:5000/api/v2/health
+
+# Get recommendations
+curl 'http://localhost:5000/api/v2/recommendations?completed=1,2&limit=5'
+
+# Search with JSON body
+curl -X POST http://localhost:5000/api/v2/search/advanced \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "python machine learning",
+    "filters": {
+      "difficulty": ["intermediate"],
+      "languages": ["python"]
+    },
+    "limit": 10
+  }'
+
+# Analyze skill gaps
+curl -X POST http://localhost:5000/api/v2/skill-gaps/analyze/1 \
+  -H "Content-Type: application/json" \
+  -d '{"skills": ["Python", "Statistics", "SQL"]}'
+
+
+FILE ORGANIZATION
+═════════════════
+
+backend/
+  ├── bob_ai_expansion_phase1_database.py    ← Phase 1: Models & loader
+  ├── bob_ai_expansion_phase1_api.py         ← Phase 1: Basic endpoints
+  ├── bob_ai_expansion_phase1_data_loader.py ← Phase 1: Data import
+  ├── bob_ai_expansion_phase2_knowledge_graph.py ← Phase 2: Graph
+  ├── bob_ai_expansion_phase2_search.py      ← Phase 2: Search
+  ├── bob_ai_expansion_phase2_api.py         ← Phase 2: Endpoints
+  └── main.py                                ← Initialization code
+
+root/
+  ├── PHASE_1_IMPLEMENTATION_GUIDE.txt       ← Phase 1 docs
+  ├── PHASE_2_IMPLEMENTATION_GUIDE.txt       ← Phase 2 docs (DETAILED)
+  ├── PHASE_2_QUICK_START.txt                ← Phase 2 docs (QUICK)
+  ├── bob_ai_expansion_verify.py             ← Verification script
+  └── [other support files]
+
+
+RELATED DOCUMENTATION
+═════════════════════
+
+For Phase 1:
+  PHASE_1_IMPLEMENTATION_GUIDE.txt
+  BOB_AI_EXPANSION_IMPLEMENTATION_COMPLETE.txt
+
+For Phase 2:
+  PHASE_2_QUICK_START.txt (START HERE)
+  PHASE_2_IMPLEMENTATION_GUIDE.txt (DETAILED)
+  This file (REFERENCE)
+
+For API Details:
+  backend/bob_ai_expansion_phase2_api.py (docstrings)
+  backend/bob_ai_expansion_phase2_knowledge_graph.py (classes)
+  backend/bob_ai_expansion_phase2_search.py (classes)
+
+
+═══════════════════════════════════════════════════════════════════════
+
+Last updated: October 28, 2025
+For latest info: See PHASE_2_IMPLEMENTATION_GUIDE.txt

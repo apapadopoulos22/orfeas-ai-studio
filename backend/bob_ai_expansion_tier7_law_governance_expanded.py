@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 7: Law & Governance (30 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier7LawGovernance
+from bob_ai_expansion_200_disciplines import Tier7LawGovernance
 
 class LawGovernanceKnowledge:
     def get_knowledge_base(self) -> dict:

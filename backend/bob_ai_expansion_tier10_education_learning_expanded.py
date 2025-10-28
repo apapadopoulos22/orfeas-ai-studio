@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 10: Education & Learning (30 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier10EducationLearning
+from bob_ai_expansion_200_disciplines import Tier10EducationLearning
 
 class EducationLearningKnowledge:
     def get_knowledge_base(self) -> dict:

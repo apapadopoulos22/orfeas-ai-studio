@@ -1,5 +1,5 @@
 """BOB AI v10.0 - Tier 5: Science & Research (41 disciplines)"""
-from backend.bob_ai_expansion_200_disciplines import Tier5ScienceResearch
+from bob_ai_expansion_200_disciplines import Tier5ScienceResearch
 
 class ScienceResearchKnowledge:
     def get_knowledge_base(self) -> dict:
