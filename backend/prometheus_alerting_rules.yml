@@ -1,0 +1,341 @@
+groups:
+  - name: orfeas_system_alerts
+    interval: 30s
+    rules:
+      # ========== ERROR RATE ALERTS ==========
+      - alert: HighErrorRate
+        expr: rate(errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 5%)"
+
+      - alert: CriticalErrorRate
+        expr: rate(errors_total[5m]) > 0.20
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: Very high error rate"
+          description: "Error rate is {{ $value | humanizePercentage }} (threshold: 20%)"
+
+      # ========== LATENCY ALERTS ==========
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, http_request_duration_seconds) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "High response time detected"
+          description: "P95 response time is {{ $value }}s (threshold: 1.0s)"
+
+      - alert: CriticalResponseTime
+        expr: histogram_quantile(0.99, http_request_duration_seconds) > 5.0
+        for: 2m
+        labels:
+          severity: critical
+          component: performance
+        annotations:
+          summary: "CRITICAL: Very high response time"
+          description: "P99 response time is {{ $value }}s (threshold: 5.0s)"
+
+      # ========== DATABASE ALERTS ==========
+      - alert: DatabaseConnectionPoolNearingExhaustion
+        expr: (db_connections_active / db_connection_pool_size) > 0.80
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database connection pool usage high"
+          description: "{{ $value | humanizePercentage }} of connections in use"
+
+      - alert: DatabaseConnectionPoolExhausted
+        expr: (db_connections_active / db_connection_pool_size) > 0.95
+        for: 2m
+        labels:
+          severity: critical
+          component: database
+        annotations:
+          summary: "CRITICAL: Database connection pool exhausted"
+          description: "{{ $value | humanizePercentage }} of connections in use"
+
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, db_query_duration_seconds) > 2.0
+        for: 10m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "P95 query time is {{ $value }}s"
+
+      - alert: DatabaseQueryErrors
+        expr: rate(db_queries_total{status="error"}[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database query errors detected"
+          description: "Error rate is {{ $value }}/sec"
+
+      # ========== RESOURCE ALERTS ==========
+      - alert: HighCPUUsage
+        expr: cpu_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%"
+
+      - alert: CriticalCPUUsage
+        expr: cpu_usage_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: CPU usage critical"
+          description: "CPU usage is {{ $value }}%"
+
+      - alert: HighMemoryUsage
+        expr: (memory_usage_bytes / memory_available_bytes) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      - alert: CriticalMemoryUsage
+        expr: (memory_usage_bytes / memory_available_bytes) > 0.95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: Memory usage critical"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      - alert: LowDiskSpace
+        expr: (disk_available_bytes / disk_total_bytes) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Low disk space"
+          description: "{{ $value | humanizePercentage }} disk space remaining"
+
+      - alert: CriticalDiskSpace
+        expr: (disk_available_bytes / disk_total_bytes) < 0.05
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CRITICAL: Disk space critically low"
+          description: "{{ $value | humanizePercentage }} disk space remaining"
+
+      # ========== CACHE ALERTS ==========
+      - alert: LowCacheHitRate
+        expr: |
+          (rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m]))) < 0.70
+        for: 10m
+        labels:
+          severity: info
+          component: cache
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | humanizePercentage }} (threshold: 70%)"
+
+      - alert: CacheEvictionRate
+        expr: rate(cache_evictions_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "High cache eviction rate"
+          description: "{{ $value }} evictions/sec"
+
+      # ========== 3D GENERATION ALERTS ==========
+      - alert: HighGenerationFailureRate
+        expr: |
+          (rate(generation_total{status="failed"}[5m]) / rate(generation_total[5m])) > 0.10
+        for: 5m
+        labels:
+          severity: warning
+          component: generation
+        annotations:
+          summary: "High 3D generation failure rate"
+          description: "Failure rate is {{ $value | humanizePercentage }}"
+
+      - alert: GenerationQueueBacklog
+        expr: generation_queue_depth > 50
+        for: 10m
+        labels:
+          severity: warning
+          component: generation
+        annotations:
+          summary: "3D generation queue backlog"
+          description: "{{ $value }} jobs queued"
+
+      - alert: GenerationSlowdown
+        expr: histogram_quantile(0.95, generation_duration_seconds) > 120
+        for: 10m
+        labels:
+          severity: warning
+          component: generation
+        annotations:
+          summary: "3D generation slowdown detected"
+          description: "P95 generation time is {{ $value }}s (threshold: 120s)"
+
+      # ========== AUTHENTICATION ALERTS ==========
+      - alert: HighLoginFailureRate
+        expr: rate(auth_failed_login_attempts[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: authentication
+        annotations:
+          summary: "High login failure rate"
+          description: "{{ $value }} failed attempts/sec"
+
+      - alert: BruteForceAttempt
+        expr: rate(auth_failed_login_attempts[1m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+          component: authentication
+        annotations:
+          summary: "CRITICAL: Possible brute force attack"
+          description: "{{ $value }} failed login attempts/sec"
+
+      - alert: AccountLockouts
+        expr: increase(auth_account_lockouts[1h]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: authentication
+        annotations:
+          summary: "Multiple account lockouts detected"
+          description: "{{ $value }} accounts locked in last hour"
+
+      # ========== GPU ALERTS ==========
+      - alert: GPUMemoryNearlyFull
+        expr: (gpu_memory_used_mb / gpu_memory_total_mb) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          component: gpu
+        annotations:
+          summary: "GPU memory usage high"
+          description: "GPU memory is {{ $value | humanizePercentage }} full"
+
+      - alert: GPUMemoryExhausted
+        expr: (gpu_memory_used_mb / gpu_memory_total_mb) > 0.95
+        for: 1m
+        labels:
+          severity: critical
+          component: gpu
+        annotations:
+          summary: "CRITICAL: GPU memory exhausted"
+          description: "GPU memory is {{ $value | humanizePercentage }} full"
+
+      - alert: HighGPUTemperature
+        expr: gpu_temperature_celsius > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: gpu
+        annotations:
+          summary: "High GPU temperature"
+          description: "GPU temperature is {{ $value }}°C"
+
+      - alert: CriticalGPUTemperature
+        expr: gpu_temperature_celsius > 90
+        for: 2m
+        labels:
+          severity: critical
+          component: gpu
+        annotations:
+          summary: "CRITICAL: GPU temperature critical"
+          description: "GPU temperature is {{ $value }}°C"
+
+      - alert: GPUHighUtilization
+        expr: gpu_utilization_percent > 95
+        for: 10m
+        labels:
+          severity: info
+          component: gpu
+        annotations:
+          summary: "GPU fully utilized"
+          description: "GPU utilization is {{ $value }}% - consider scaling"
+
+      # ========== WEBSOCKET ALERTS ==========
+      - alert: WebSocketConnectionDrop
+        expr: rate(websocket_connections_closed_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: websocket
+        annotations:
+          summary: "High WebSocket connection drop rate"
+          description: "{{ $value }} connections/sec being closed"
+
+      - alert: HighWebSocketMessageQueue
+        expr: websocket_message_queue_depth > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: websocket
+        annotations:
+          summary: "WebSocket message queue backlog"
+          description: "{{ $value }} messages queued"
+
+  - name: orfeas_slo_alerts
+    interval: 30s
+    rules:
+      # Service Level Objectives (SLO) based alerts
+      - alert: SLOViolation_Latency
+        expr: |
+          (histogram_quantile(0.95, http_request_duration_seconds) / 1.0) > 1.0
+        for: 15m
+        labels:
+          severity: critical
+          slo: "latency"
+        annotations:
+          summary: "SLO violation: Latency"
+          description: "Request latency SLO (p95 < 1.0s) violated for 15 minutes"
+
+      - alert: SLOViolation_Availability
+        expr: |
+          (rate(errors_total[5m]) / rate(http_requests_total[5m])) > 0.01
+        for: 15m
+        labels:
+          severity: critical
+          slo: "availability"
+        annotations:
+          summary: "SLO violation: Availability"
+          description: "Availability SLO (99.9%) violated - error rate > 0.1%"
+
+      - alert: SLOViolation_GenerationSuccess
+        expr: |
+          (rate(generation_total{status="failed"}[5m]) / rate(generation_total[5m])) > 0.05
+        for: 15m
+        labels:
+          severity: critical
+          slo: "generation_success"
+        annotations:
+          summary: "SLO violation: Generation success rate"
+          description: "Generation success SLO (95%) violated - failure rate > 5%"

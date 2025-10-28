@@ -1,0 +1,30 @@
+﻿================================================================================
+ORFEAS AI 2D->3D STUDIO - COMPREHENSIVE DIAGNOSTIC REPORT
+================================================================================
+Generated: 2025-10-28 10:26:42
+Duration: 8.8550355 seconds
+
+SUMMARY
+================================================================================
+Total Issues Checked: 6
+Passed: 1
+Failed: 5
+Warnings: 0
+Overall Status: NEEDS ATTENTION
+
+DETAILED RESULTS
+================================================================================
+[PASS] xformers DLL
+[WARN] CUDA OOM
+[FAIL] WebSocket Timeout
+[FAIL] Model Path
+[FAIL] Import Error
+[FAIL] STL Validation
+
+================================================================================
+FOR MORE INFORMATION:
+
+See .github/copilot-instructions.md for detailed issue explanations
+
+See backend/DIAGNOSTIC-SCRIPT-README.md for usage and troubleshooting
+

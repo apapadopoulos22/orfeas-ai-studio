@@ -1,0 +1,21 @@
+{
+  "dr_test_1761671158": {
+    "record_id": "dr_test_1761671158",
+    "backup_id": "dr_test",
+    "backup_type": "full",
+    "status": "verified",
+    "start_time": "2025-10-28T19:05:58.296074",
+    "end_time": "2025-10-28T19:05:58.312719",
+    "backup_path": "backups\\dr_test\\full_20251028_190558.tar.gz",
+    "backup_size": 197,
+    "files_backed_up": 0,
+    "compression_ratio": 0,
+    "checksum": "1165bdd44481671f9ae5c4fdf8bb7ba3531a41de5a2d7a777279ccff1828d99f",
+    "error_message": null,
+    "metrics": {
+      "duration_seconds": 0.016645,
+      "throughput_mb_per_sec": 0.01128710365467295,
+      "compression_ratio": 0
+    }
+  }
+}

@@ -1,0 +1,196 @@
+version: '3.8'
+
+services:
+  # ========== PROMETHEUS - Metrics Collection ==========
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: orfeas-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus_alerting_rules.yml:/etc/prometheus/prometheus_alerting_rules.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d' # Keep 30 days of metrics
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== GRAFANA - Dashboards & Visualization ==========
+  grafana:
+    image: grafana/grafana:latest
+    container_name: orfeas-grafana
+    ports:
+      - "3001:3000" # Port 3001 to avoid conflict with Next.js on 3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-orfeas-admin}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-clock-panel
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_DISABLE_BRUTE_FORCE_LOGIN_PROTECTION=false
+      - TZ=UTC
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== ALERTMANAGER - Alert Management ==========
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: orfeas-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== NODE_EXPORTER - System Metrics ==========
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: orfeas-node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== REDIS_EXPORTER - Cache Metrics ==========
+  redis_exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: orfeas-redis-exporter
+    ports:
+      - "9121:9121"
+    environment:
+      REDIS_ADDR: redis:6379
+      TZ: UTC
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== POSTGRES_EXPORTER - Database Metrics ==========
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: orfeas-postgres-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:${POSTGRES_PASSWORD:-orfeas}@postgres:5432/orfeas?sslmode=disable"
+      TZ: UTC
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== CADVISOR - Docker Container Metrics ==========
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: orfeas-cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== LOKI - Log Aggregation (Optional) ==========
+  loki:
+    image: grafana/loki:latest
+    container_name: orfeas-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/local-config.yml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yml
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== REDIS - Cache Backend ==========
+  redis:
+    image: redis:7-alpine
+    container_name: orfeas-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+  # ========== POSTGRES - Database ==========
+  postgres:
+    image: postgres:15-alpine
+    container_name: orfeas-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: orfeas
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-orfeas}
+      TZ: UTC
+    restart: unless-stopped
+    networks:
+      - orfeas-monitoring
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  alertmanager-data:
+  loki-data:
+  redis-data:
+  postgres-data:
+
+
+networks:
+  orfeas-monitoring:
+    driver: bridge
